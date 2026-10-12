@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout — Northbay</title>
+  <meta name="description" content="Demo checkout for the Northbay marketplace template.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23123936'/%3E%3Cpath d='M16 6l3.2 8.2L16 16l-3.2-1.8L16 6z' fill='%23e7b15a'/%3E%3Cpath d='M16 26l-3.2-8.2L16 16l3.2 1.8L16 26z' fill='%23f4f0e8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/store.css" rel="stylesheet">
+</head>
+<body data-page="checkout">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-top sticky-top">
+    <div class="promo-bar">
+      <div class="container promo-inner">
+        <span>Free shipping on orders over $49</span>
+        <span class="d-none d-md-inline">30-day returns · Demo checkout stays in your browser</span>
+      </div>
+    </div>
+    <header class="site-header">
+      <div class="container header-row">
+        <button class="icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#deptDrawer" aria-label="Open menu">
+          <i class="bi bi-list"></i>
+        </button>
+        <a class="brand" href="index.html">
+          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+            <path d="M16 5.5l3.4 8.6L16 16.2l-3.4-2.1L16 5.5z" fill="#e7b15a"></path>
+            <path d="M16 26.5l-3.4-8.6L16 15.8l3.4 2.1L16 26.5z" fill="currentColor"></path>
+          </svg>
+          <span class="brand-copy">
+            <span class="brand-name">northbay</span>
+            <span class="brand-tag">marketplace</span>
+          </span>
+        </a>
+        <form class="search-bar" action="shop.html" method="get" role="search">
+          <label class="visually-hidden" for="search-cat">Department</label>
+          <select class="form-select search-cat" id="search-cat" name="cat">
+            <option value="">All</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Home">Home goods</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Kitchen">Kitchen</option>
+            <option value="Outdoors">Outdoors</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Stationery">Stationery</option>
+          </select>
+          <label class="visually-hidden" for="search-q">Search</label>
+          <input class="form-control" id="search-q" name="q" type="search" placeholder="Search Northbay">
+          <button class="btn search-btn" type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
+        </form>
+        <div class="header-actions">
+          <div class="deliver d-none d-xl-flex">
+            <i class="bi bi-geo-alt"></i>
+            <span><small>Deliver to</small><strong>Portland, OR</strong></span>
+          </div>
+          <button class="text-btn" type="button" data-bs-toggle="modal" data-bs-target="#authModal">
+            <i class="bi bi-person d-md-none" aria-hidden="true"></i>
+            <span class="d-none d-md-block"><small>Hello, sign in</small><strong>Account</strong></span>
+          </button>
+          <a class="text-btn d-none d-md-flex" href="#help">
+            <small>Need a hand?</small>
+            <strong>Help</strong>
+          </a>
+          <a class="cart-btn" href="cart.html">
+            <span class="cart-icon">
+              <i class="bi bi-bag"></i>
+              <span class="cart-count" data-cart-count>0</span>
+            </span>
+            <em class="d-none d-sm-inline">Cart</em>
+          </a>
+        </div>
+      </div>
+    </header>
+    <nav class="dept-nav d-none d-lg-block" aria-label="Departments">
+      <div class="container dept-scroll">
+        <button type="button" data-bs-toggle="offcanvas" data-bs-target="#deptDrawer"><i class="bi bi-list"></i> All departments</button>
+        <a href="shop.html">All products</a>
+        <a href="shop.html?cat=Electronics">Electronics</a>
+        <a href="shop.html?cat=Home">Home goods</a>
+        <a href="shop.html?cat=Fashion">Fashion</a>
+        <a href="shop.html?cat=Kitchen">Kitchen</a>
+        <a href="shop.html?cat=Outdoors">Outdoors</a>
+        <a href="shop.html?cat=Grocery">Grocery</a>
+        <a href="shop.html?cat=Beauty">Beauty</a>
+        <a href="shop.html?cat=Stationery">Stationery</a>
+      </div>
+    </nav>
+  </div>
+
+  <main id="main" class="container page">
+    <h1 class="page-title">Checkout</h1>
+    <div id="empty-checkout" class="empty-state" hidden>
+      <i class="bi bi-bag"></i>
+      <h2>Nothing to check out</h2>
+      <p>Your cart is empty.</p>
+      <a class="btn btn-accent" href="shop.html">Browse products</a>
+    </div>
+    <form id="checkout-form" class="row g-4" novalidate>
+      <div class="col-lg-7">
+        <section class="panel">
+          <h2 class="h4 mb-3" style="font-family: Fraunces, Georgia, serif;">Shipping</h2>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="full-name">Full name</label>
+              <input class="form-control" id="full-name" name="name" required autocomplete="name">
+              <div class="invalid-feedback">Enter your full name.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="email">Email</label>
+              <input class="form-control" id="email" name="email" type="email" required autocomplete="email">
+              <div class="invalid-feedback">Enter a valid email.</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="address">Street address</label>
+              <input class="form-control" id="address" name="address" required autocomplete="address-line1">
+              <div class="invalid-feedback">Enter a street address.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="city">City</label>
+              <input class="form-control" id="city" name="city" required autocomplete="address-level2">
+              <div class="invalid-feedback">Enter a city.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="region">State</label>
+              <input class="form-control" id="region" name="region" required autocomplete="address-level1">
+              <div class="invalid-feedback">Enter a state.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="postal">Postal code</label>
+              <input class="form-control" id="postal" name="postal" required autocomplete="postal-code">
+              <div class="invalid-feedback">Enter a postal code.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="country">Country</label>
+              <select class="form-select" id="country" name="country" required autocomplete="country-name">
+                <option value="">Choose</option>
+                <option>United States</option>
+                <option>Canada</option>
+                <option>United Kingdom</option>
+              </select>
+              <div class="invalid-feedback">Choose a country.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="phone">Phone <span class="optional">(optional)</span></label>
+              <input class="form-control" id="phone" name="phone" type="tel" autocomplete="tel">
+            </div>
+          </div>
+        </section>
+        <section class="panel mt-3">
+          <fieldset class="pay-box">
+            <legend>Payment</legend>
+            <label class="pay-option"><input type="radio" name="pay" id="pay-card" value="card" checked> Card</label>
+            <label class="pay-option"><input type="radio" name="pay" id="pay-delivery" value="delivery"> Pay on delivery</label>
+            <div id="card-fields" class="row g-3 mt-1">
+              <div class="col-12">
+                <label class="form-label" for="card-name">Name on card</label>
+                <input class="form-control" id="card-name" required autocomplete="cc-name">
+                <div class="invalid-feedback">Enter the name on the card.</div>
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="card-number">Card number</label>
+                <input class="form-control" id="card-number" inputmode="numeric" required autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                <div class="invalid-feedback">Enter a card number.</div>
+              </div>
+              <div class="col-6">
+                <label class="form-label" for="card-exp">Expiry</label>
+                <input class="form-control" id="card-exp" required autocomplete="cc-exp" placeholder="MM/YY" maxlength="5">
+                <div class="invalid-feedback">Enter an expiry date.</div>
+              </div>
+              <div class="col-6">
+                <label class="form-label" for="card-cvc">Security code</label>
+                <input class="form-control" id="card-cvc" required autocomplete="cc-csc" maxlength="4" inputmode="numeric">
+                <div class="invalid-feedback">Enter the security code.</div>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+      </div>
+      <div class="col-lg-5" id="order-summary"></div>
+    </form>
+    <section id="confirmation" class="confirm" hidden>
+      <i class="bi bi-check-circle"></i>
+      <h2>Order placed</h2>
+      <p>Your demo order number is <strong data-order>NB-000000</strong>.</p>
+      <p>No payment was processed and nothing will be delivered.</p>
+      <a class="btn btn-accent" href="index.html">Back to the shop</a>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="help">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-6 col-lg-3">
+          <h2>Shop</h2>
+          <a href="shop.html">All products</a>
+          <a href="shop.html?cat=Electronics">Electronics</a>
+          <a href="shop.html?cat=Home">Home goods</a>
+          <a href="shop.html?cat=Kitchen">Kitchen</a>
+          <a href="shop.html?cat=Fashion">Fashion</a>
+        </div>
+        <div class="col-6 col-lg-3">
+          <h2>Help</h2>
+          <a href="cart.html">Cart</a>
+          <a href="checkout.html">Checkout</a>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#authModal">Sign in</a>
+          <a href="index.html">Home</a>
+        </div>
+        <div class="col-lg-6">
+          <h2>Notes from Northbay</h2>
+          <p>This checkout is a front-end demo. Wire it to your own payment provider before taking real orders.</p>
+          <form id="news-form" class="newsletter">
+            <label class="visually-hidden" for="news-email">Email address</label>
+            <input id="news-email" class="form-control" type="email" required placeholder="Email address">
+            <button class="btn btn-accent" type="submit">Join</button>
+          </form>
+          <p id="news-msg" class="news-msg" hidden>You are on the list. This demo does not send email.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">© 2026 Northbay. Frontend template for learning and projects.</div>
+    </div>
+  </footer>
+
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="deptDrawer" aria-labelledby="deptLabel">
+    <div class="offcanvas-header">
+      <h2 class="offcanvas-title h5" id="deptLabel">Departments</h2>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body dept-list">
+      <a href="index.html">Home</a>
+      <a href="shop.html">All products</a>
+      <a href="shop.html?cat=Electronics">Electronics</a>
+      <a href="shop.html?cat=Home">Home goods</a>
+      <a href="shop.html?cat=Fashion">Fashion</a>
+      <a href="shop.html?cat=Kitchen">Kitchen</a>
+      <a href="shop.html?cat=Outdoors">Outdoors</a>
+      <a href="shop.html?cat=Grocery">Grocery</a>
+      <a href="shop.html?cat=Beauty">Beauty</a>
+      <a href="shop.html?cat=Stationery">Stationery</a>
+      <a href="cart.html">Cart</a>
+    </div>
+  </div>
+
+  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="authLabel">Sign in</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="auth-form">
+            <div class="mb-3">
+              <label class="form-label" for="auth-email">Email</label>
+              <input class="form-control" id="auth-email" type="email" required autocomplete="username">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="auth-password">Password</label>
+              <input class="form-control" id="auth-password" type="password" required minlength="8" autocomplete="current-password">
+            </div>
+            <button class="btn btn-accent w-100" type="submit">Continue</button>
+            <p id="auth-note" class="fine" hidden>This is a visual demo. No account is created.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="cart-toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="toast-body d-flex justify-content-between align-items-center gap-3">
+        <span id="toast-text">Added to cart</span>
+        <a href="cart.html" class="btn btn-sm btn-accent">View cart</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/store.js"></script>
+</body>
+</html>

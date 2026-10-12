@@ -1,0 +1,133 @@
+:root {
+    --dash-ink: #14213d;
+    --dash-side: #14213d;
+    --dash-paper: #f4f1ea;
+    --dash-accent: #e07a3d;
+}
+
+body.dash-body {
+    background: var(--dash-paper);
+    color: var(--dash-ink);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+.dash-side {
+    background: var(--dash-side);
+    color: #f7f4ee;
+    min-height: 100vh;
+    padding: 1.4rem 1rem;
+    width: 250px;
+}
+
+.dash-brand {
+    color: #fff;
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.4rem;
+    text-decoration: none;
+}
+
+.dash-user {
+    color: #c9c2b6;
+    font-size: 0.9rem;
+    margin: 0.35rem 0 1.4rem;
+}
+
+.dash-nav a,
+.dash-nav button {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 0.7rem;
+    color: #f7f4ee;
+    display: flex;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    text-decoration: none;
+    width: 100%;
+}
+
+.dash-nav a:hover,
+.dash-nav a.active,
+.dash-nav button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.dash-main {
+    min-width: 0;
+}
+
+.dash-top {
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #e6e0d6;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.9rem 1.25rem;
+}
+
+.dash-top h1 {
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.35rem;
+    margin: 0;
+}
+
+.stat-card,
+.panel {
+    background: #fff;
+    border: 1px solid #e6e0d6;
+    border-radius: 1rem;
+    height: 100%;
+    padding: 1.15rem 1.2rem;
+}
+
+.stat-card span {
+    color: #6b645b;
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 1.15rem;
+    margin-top: 0.35rem;
+    overflow-wrap: anywhere;
+}
+
+.panel h2 {
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.3rem;
+}
+
+.dash-btn {
+    background: var(--dash-accent);
+    border: 0;
+    color: #fff;
+    font-weight: 700;
+}
+
+.dash-btn:hover {
+    background: #c4622a;
+    color: #fff;
+}
+
+.offcanvas .dash-nav a,
+.offcanvas .dash-nav button {
+    color: var(--dash-ink);
+}
+
+.offcanvas .dash-nav a:hover,
+.offcanvas .dash-nav a.active {
+    background: #f4f1ea;
+    color: var(--dash-ink);
+}
+
+@media (max-width: 991.98px) {
+    .dash-side {
+        display: none;
+    }
+}

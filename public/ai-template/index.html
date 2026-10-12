@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Keel — AI design tool</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M18 3l-8 13h7l-3 13 12-16h-8l4-10z' fill='%238d7bff'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/ai.css" rel="stylesheet">
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-nav">
+        <div class="container nav-row">
+            <a class="brand" href="index.html">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13l0-8z" fill="currentColor"></path>
+                    </svg>
+                </span>
+                Keel
+            </a>
+            <nav class="nav-links" aria-label="Primary">
+                <a href="#features">Feature</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="pricing.html#faq">FAQ</a>
+                <a href="product.html">Docs</a>
+                <a href="pricing.html">Buy</a>
+            </nav>
+            <div class="nav-actions">
+                <a class="btn login-btn" href="/login">Log in</a>
+                <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#aiMenu" aria-label="Open menu">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main">
+        <section class="hero">
+            <div class="container">
+                <h1>Introducing AI Design Tool for the Next Generation</h1>
+                <p class="lede">Embrace the Future with AI-Driven Design</p>
+                <div class="hero-actions">
+                    <a class="btn btn-lg" href="workspace.html">Try For Free</a>
+                    <a class="btn btn-lg" href="#stage">Watch Demo</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="stage-wrap" id="stage">
+            <div class="container">
+                <div class="stage">
+                    <div class="stage-top">
+                        <span>Keel</span>
+                        <span>Layers · Assets · Page 1</span>
+                    </div>
+                    <div class="stage-body">
+                        <div class="stage-tools" aria-hidden="true">
+                            <i class="bi bi-cursor"></i>
+                            <i class="bi bi-square"></i>
+                            <i class="bi bi-type"></i>
+                            <i class="bi bi-image"></i>
+                            <i class="bi bi-pen"></i>
+                        </div>
+                        <div class="stage-canvas">
+                            <div class="art">
+                                <button class="resize-pill" type="button">
+                                    <span class="rec" aria-hidden="true"></span>
+                                    Resize the Image Now
+                                    <i class="bi bi-mic"></i>
+                                </button>
+                                <span class="handle tl"></span>
+                                <span class="handle tr"></span>
+                                <span class="handle bl"></span>
+                                <span class="handle br"></span>
+                            </div>
+                        </div>
+                        <aside class="stage-side">
+                            <h2>Layers</h2>
+                            <div class="layer active"><span>Hero glow</span><i class="bi bi-eye"></i></div>
+                            <div class="layer"><span>Abstract frame</span><i class="bi bi-eye"></i></div>
+                            <div class="layer"><span>Headline</span><i class="bi bi-eye"></i></div>
+                            <div class="layer"><span>Background</span><i class="bi bi-eye"></i></div>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="logo-band">
+            <div class="container">
+                <p>Used by teams who design every day</p>
+                <div class="logo-row" aria-hidden="true">
+                    <span>keel</span><span>keel</span><span>keel</span><span>keel</span><span>keel</span><span>keel</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="features">
+            <div class="container">
+                <div class="section-head">
+                    <h2 class="feature-title">Packed with Features Beyond your Imagination</h2>
+                </div>
+                <div class="card-grid">
+                    <article class="feature-card">
+                        <h3>Resize by asking</h3>
+                        <p>Tell the canvas what to change. The frame stays selected while the layout updates.</p>
+                    </article>
+                    <article class="feature-card">
+                        <h3>Layers you can see</h3>
+                        <p>Glow, type, and art stay on their own layers so a change does not wipe the page.</p>
+                    </article>
+                    <article class="feature-card">
+                        <h3>A desk, then a file</h3>
+                        <p>Try a prompt in the workspace. This demo answers from a script, ready for a real model later.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h2>Keel</h2>
+                    <p>An AI design template. The workspace on this site answers from a script, so you can design the front end before you connect a model.</p>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h2>Look</h2>
+                    <a href="product.html">Docs</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="workspace.html">Desk</a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h2>Also here</h2>
+                    <a href="../store/index.html">Northbay shop</a>
+                </div>
+            </div>
+            <div class="footer-bottom">© 2026 Keel. A static template in public/ai-template.</div>
+        </div>
+    </footer>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="aiMenu" aria-labelledby="aiMenuLabel">
+        <div class="offcanvas-header">
+            <h2 class="offcanvas-title h5" id="aiMenuLabel">Keel</h2>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-grid gap-2">
+            <a href="index.html">Home</a>
+            <a href="#features">Feature</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="pricing.html#faq">FAQ</a>
+            <a href="product.html">Docs</a>
+            <a href="/login">Log in</a>
+            <a href="/register">Register</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
