@@ -16,7 +16,7 @@ class AuthTest extends TestCase
     public function test_login_register_and_forgot_pages_are_available(): void
     {
         $this->get('/login')->assertOk()->assertSee('Forgot password?')->assertSee('Create an account');
-        $this->get('/register')->assertOk()->assertSee('Create an account');
+        $this->get('/register')->assertOk()->assertSee('Create an account')->assertSee('Sponsor name');
         $this->get('/forgot-password')->assertOk()->assertSee('Forgot password');
     }
 
@@ -24,12 +24,17 @@ class AuthTest extends TestCase
     {
         $this->post('/register', [
             'name' => 'Test User',
+            'sponsor_name' => 'Jordan Lee',
             'email' => 'avery@example.com',
             'password' => 'password1',
             'password_confirmation' => 'password1',
         ])->assertRedirect('/dashboard');
 
         $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'avery@example.com',
+            'sponsor_name' => 'Jordan Lee',
+        ]);
 
         $this->post('/logout')->assertRedirect('/login');
         $this->assertGuest();
