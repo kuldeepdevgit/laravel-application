@@ -45,6 +45,29 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public static function sponsorFullName(string $sponsorName): ?string
+    {
+        $sponsorName = mb_strtolower(trim($sponsorName));
+
+        if ($sponsorName === '') {
+            return null;
+        }
+
+        $byUsername = static::query()
+            ->whereRaw('LOWER(user_name) = ?', [$sponsorName])
+            ->value('name');
+
+        if (is_string($byUsername) && $byUsername !== '') {
+            return $byUsername;
+        }
+
+        $byName = static::query()
+            ->whereRaw('LOWER(name) = ?', [$sponsorName])
+            ->value('name');
+
+        return is_string($byName) && $byName !== '' ? $byName : null;
+    }
+
     public static function generateUserName(): string
     {
         do {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,9 +47,22 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    public function createRegister(): View
+    public function createRegister(Request $request): View
     {
-        return view('auth.register');
+        return view('auth.register', [
+            'sponsorName' => (string) $request->query('ref', ''),
+        ]);
+    }
+
+    public function sponsor(Request $request): JsonResponse
+    {
+        $name = User::sponsorFullName((string) $request->query('ref', ''));
+
+        if ($name === null) {
+            return response()->json(['name' => null], 404);
+        }
+
+        return response()->json(['name' => $name]);
     }
 
     public function storeRegister(Request $request): RedirectResponse

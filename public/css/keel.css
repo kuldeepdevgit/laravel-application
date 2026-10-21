@@ -212,6 +212,14 @@ button.menu-btn {
   margin-top: 8px;
 }
 
+.sponsor-full-name {
+  margin: 0;
+  color: #efeaff;
+  font-weight: 700;
+}
+
+.sponsor-full-name:empty { display: none; }
+
 .auth-links {
   display: flex;
   justify-content: space-between;

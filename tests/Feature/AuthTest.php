@@ -20,6 +20,29 @@ class AuthTest extends TestCase
         $this->get('/forgot-password')->assertOk()->assertSee('Forgot password');
     }
 
+    public function test_a_sponsor_username_returns_the_full_name(): void
+    {
+        User::factory()->create([
+            'name' => 'Jordan Lee',
+            'user_name' => 'GSI6185588',
+        ]);
+
+        $this->getJson('/register/sponsor?ref=GSI6185588')
+            ->assertOk()
+            ->assertJson(['name' => 'Jordan Lee']);
+
+        $this->getJson('/register/sponsor?ref=nobody')
+            ->assertNotFound()
+            ->assertJson(['name' => null]);
+    }
+
+    public function test_a_referral_link_fills_the_sponsor_name(): void
+    {
+        $this->get('/register?ref=GSI6185588')
+            ->assertOk()
+            ->assertSee('value="GSI6185588"', false);
+    }
+
     public function test_registration_rejects_an_unknown_sponsor(): void
     {
         $this->from('/register')->post('/register', [

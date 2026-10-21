@@ -15,8 +15,6 @@
 <body class="dash-body">
     <div class="d-flex">
         <aside class="dash-side flex-shrink-0">
-            <a class="dash-brand" href="{{ route('dashboard') }}">Member desk</a>
-            <p class="dash-user">{{ auth()->user()->name }}</p>
             @include('dashboard.nav')
         </aside>
 
@@ -40,10 +38,10 @@
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="dashMenu" aria-labelledby="dashMenuLabel">
+    <div class="offcanvas offcanvas-start dash-drawer" tabindex="-1" id="dashMenu" aria-labelledby="dashMenuLabel">
         <div class="offcanvas-header">
-            <h2 class="offcanvas-title h5" id="dashMenuLabel">Member desk</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <h2 class="offcanvas-title h5" id="dashMenuLabel">Menu</h2>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             @include('dashboard.nav')

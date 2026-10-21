@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'create'])->name('login');
     Route::post('/login', [AuthController::class, 'store'])->middleware('throttle:10,1')->name('login.store');
+    Route::get('/register/sponsor', [AuthController::class, 'sponsor'])->middleware('throttle:30,1')->name('register.sponsor');
     Route::get('/register', [AuthController::class, 'createRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'storeRegister'])->middleware('throttle:10,1')->name('register.store');
     Route::get('/forgot-password', [AuthController::class, 'createForgot'])->name('password.request');
@@ -24,6 +25,9 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/{section}', [DashboardController::class, 'section'])
+        ->where('section', 'ref-link|manage-profile|edit-profile|change-password|update-wallet-address|team-report|fund-management|income-report|withdrawal|support|document-list')
+        ->name('dashboard.section');
     Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 });
