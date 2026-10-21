@@ -54,18 +54,45 @@ class AuthController extends Controller
     public function storeRegister(Request $request): RedirectResponse
     {
         $data = $request->validate([
+            'sponsor_name' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! User::isValidSponsor((string) $value)) {
+                        $fail('The sponsor name is not valid.');
+                    }
+                },
+            ],
             'name' => ['required', 'string', 'max:255'],
-            'sponsor_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8'],
         ]);
+
+        $data['user_name'] = User::generateUserName();
+        $data['user_role'] = 'users';
 
         $user = User::create($data);
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return redirect()
+            ->route('registered')
+            ->with('signup_user_name', $user->user_name)
+            ->with('signup_password', $data['password']);
+    }
+
+    public function registered(Request $request): View|RedirectResponse
+    {
+        if (! $request->session()->has('signup_user_name')) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('auth.registered', [
+            'userName' => $request->session()->get('signup_user_name'),
+            'password' => $request->session()->get('signup_password'),
+        ]);
     }
 
     public function createForgot(): View

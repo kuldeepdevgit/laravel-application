@@ -24,6 +24,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 });
 

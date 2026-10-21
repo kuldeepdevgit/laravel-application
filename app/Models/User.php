@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'sponsor_name', 'email', 'password'])]
+#[Fillable(['name', 'sponsor_name', 'user_name', 'user_role', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -29,6 +29,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public static function isValidSponsor(string $sponsorName): bool
+    {
+        $sponsorName = mb_strtolower(trim($sponsorName));
+
+        if ($sponsorName === '') {
+            return false;
+        }
+
+        return static::query()
+            ->whereRaw('LOWER(name) = ?', [$sponsorName])
+            ->orWhereRaw('LOWER(user_name) = ?', [$sponsorName])
+            ->exists();
+    }
+
+    public static function generateUserName(): string
+    {
+        do {
+            $userName = 'GSI'.random_int(1000000, 9999999);
+        } while (static::query()->where('user_name', $userName)->exists());
+
+        return $userName;
     }
 
     public function sendPasswordResetNotification($token): void

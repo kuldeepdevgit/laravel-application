@@ -196,6 +196,22 @@ button.menu-btn {
 
 .auth-submit { width: 100%; }
 
+.auth-credential {
+  margin: 0;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid rgba(148, 130, 255, 0.35);
+  border-radius: 10px;
+  background: #0c0a1c;
+  color: white;
+  font-weight: 700;
+}
+
+.auth-center {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
 .auth-links {
   display: flex;
   justify-content: space-between;

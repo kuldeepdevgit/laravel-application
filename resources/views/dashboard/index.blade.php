@@ -37,6 +37,10 @@
                     <dd class="col-sm-9">{{ auth()->user()->name }}</dd>
                     <dt class="col-sm-3">Sponsor</dt>
                     <dd class="col-sm-9">{{ auth()->user()->sponsor_name }}</dd>
+                    <dt class="col-sm-3">Username</dt>
+                    <dd class="col-sm-9">{{ auth()->user()->user_name }}</dd>
+                    <dt class="col-sm-3">Role</dt>
+                    <dd class="col-sm-9">{{ auth()->user()->user_role }}</dd>
                     <dt class="col-sm-3">Email</dt>
                     <dd class="col-sm-9">{{ auth()->user()->email }}</dd>
                     <dt class="col-sm-3">Template</dt>
