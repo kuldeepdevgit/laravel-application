@@ -134,13 +134,10 @@ body.dash-body {
     flex: 1;
 }
 
-.dash-mark {
-    background: currentColor;
-    border-radius: 1px;
-    display: block;
-    flex: 0 0 auto;
-    height: 2px;
-    width: 0.7rem;
+.dash-subitem > .bi {
+    font-size: 1rem;
+    text-align: center;
+    width: 1.15rem;
 }
 
 .dash-subitem:hover {

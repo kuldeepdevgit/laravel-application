@@ -25,9 +25,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/{section}', [DashboardController::class, 'section'])
-        ->where('section', 'ref-link|manage-profile|edit-profile|change-password|update-wallet-address|team-report|fund-management|income-report|withdrawal|support|document-list')
-        ->name('dashboard.section');
+    Route::get('/dashboard/{section}', [DashboardController::class, 'section'])->name('dashboard.section');
     Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 });

@@ -6,7 +6,7 @@
     <section class="auth-shell">
         <div class="auth-card">
             <h1>Create an account</h1>
-            <p class="lede">Register with your sponsor name, name, email, and a password.</p>
+            <p class="lede">Register with your sponsor name, name, phone number, email, and a password.</p>
 
             <form method="POST" action="{{ route('register.store') }}">
                 @csrf
@@ -19,9 +19,27 @@
                     <p id="sponsor-full-name" class="sponsor-full-name" aria-live="polite"></p>
                 </div>
                 <div class="field">
+                    <label for="position">Position</label>
+                    <select id="position" name="position" required>
+                        <option value="" @selected(old('position') === null || old('position') === '')>Select position</option>
+                        <option value="left" @selected(old('position') === 'left')>Left</option>
+                        <option value="right" @selected(old('position') === 'right')>Right</option>
+                    </select>
+                    @error('position')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="field">
                     <label for="name">Name</label>
                     <input id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" required @if (old('sponsor_name', $sponsorName)) autofocus @endif>
                     @error('name')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="field">
+                    <label for="phone_number">Phone number</label>
+                    <input id="phone_number" name="phone_number" type="tel" value="{{ old('phone_number') }}" autocomplete="tel" required>
+                    @error('phone_number')
                         <p class="field-error">{{ $message }}</p>
                     @enderror
                 </div>

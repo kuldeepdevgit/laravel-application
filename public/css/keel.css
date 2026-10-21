@@ -172,7 +172,8 @@ button.menu-btn {
 
 .field label { font-size: 0.9rem; color: #d9d4ea; }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   padding: 0.72rem 0.85rem;
   border: 1px solid rgba(148, 130, 255, 0.35);
@@ -182,7 +183,8 @@ button.menu-btn {
   font: inherit;
 }
 
-.field input:focus { outline: 2px solid rgba(122, 92, 255, 0.7); outline-offset: 1px; }
+.field input:focus,
+.field select:focus { outline: 2px solid rgba(122, 92, 255, 0.7); outline-offset: 1px; }
 
 .field-error { margin: 0; color: #ffb4c0; font-size: 0.85rem; }
 

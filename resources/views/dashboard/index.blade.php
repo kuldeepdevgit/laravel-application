@@ -37,12 +37,16 @@
                     <dd class="col-sm-9">{{ auth()->user()->name }}</dd>
                     <dt class="col-sm-3">Sponsor</dt>
                     <dd class="col-sm-9">{{ auth()->user()->sponsor_name }}</dd>
+                    <dt class="col-sm-3">Position</dt>
+                    <dd class="col-sm-9">{{ auth()->user()->position ? ucfirst(auth()->user()->position) : '' }}</dd>
                     <dt class="col-sm-3">Username</dt>
                     <dd class="col-sm-9">{{ auth()->user()->user_name }}</dd>
                     <dt class="col-sm-3">Role</dt>
                     <dd class="col-sm-9">{{ auth()->user()->user_role }}</dd>
                     <dt class="col-sm-3">Email</dt>
                     <dd class="col-sm-9">{{ auth()->user()->email }}</dd>
+                    <dt class="col-sm-3">Phone</dt>
+                    <dd class="col-sm-9">{{ auth()->user()->phone_number }}</dd>
                     <dt class="col-sm-3">Template</dt>
                     <dd class="col-sm-9 mb-0">{{ $template->name ?? 'Ecommerce' }} is the public home page.</dd>
                 </dl>

@@ -33,11 +33,27 @@ class DashboardTest extends TestCase
             ->assertSee('Change Password')
             ->assertSee('Update Wallet Address')
             ->assertSee('Team Report')
+            ->assertSee('My Team')
+            ->assertSee('My Downline Team')
             ->assertSee('Fund Management')
+            ->assertSee('Fund Request (USDT)')
+            ->assertSee('Fund Request List')
+            ->assertSee('Fund From Admin')
+            ->assertSee('Upgrade List')
+            ->assertSee('Activation/ Upgrade')
+            ->assertSee('Fund Wallet')
             ->assertSee('Income Report')
+            ->assertSee('Self ROI Income')
+            ->assertSee('Level Income History')
+            ->assertSee('Level ROI Income History')
+            ->assertSee('Booster Income')
+            ->assertSee('Life Time Reward')
+            ->assertSee('Salary Income')
             ->assertSee('Withdrawal')
-            ->assertSee('Support')
-            ->assertSee('Document List')
+            ->assertSee('Withdrawal List')
+            ->assertSee('Withdrawal Now')
+            ->assertDontSee('Support')
+            ->assertDontSee('Document List')
             ->assertSee('Logout')
             ->assertDontSee('Overview')
             ->assertDontSee('Member desk');
@@ -61,6 +77,30 @@ class DashboardTest extends TestCase
             ->assertSee('Edit Profile')
             ->assertSee('Change Password')
             ->assertSee('Update Wallet Address');
+
+        $this->actingAs($user)
+            ->get('/dashboard/my-team')
+            ->assertOk()
+            ->assertSee('My Team')
+            ->assertSee('My Downline Team');
+
+        $this->actingAs($user)
+            ->get('/dashboard/fund-wallet')
+            ->assertOk()
+            ->assertSee('Fund Request (USDT)')
+            ->assertSee('Fund Wallet');
+
+        $this->actingAs($user)
+            ->get('/dashboard/salary-income')
+            ->assertOk()
+            ->assertSee('Self ROI Income')
+            ->assertSee('Salary Income');
+
+        $this->actingAs($user)
+            ->get('/dashboard/withdrawal-now')
+            ->assertOk()
+            ->assertSee('Withdrawal List')
+            ->assertSee('Withdrawal Now');
 
         $this->actingAs($user)
             ->get('/dashboard/not-a-section')

@@ -16,7 +16,7 @@ class AuthTest extends TestCase
     public function test_login_register_and_forgot_pages_are_available(): void
     {
         $this->get('/login')->assertOk()->assertSee('Forgot password?')->assertSee('Create an account');
-        $this->get('/register')->assertOk()->assertSee('Create an account')->assertSee('Sponsor name')->assertDontSee('Confirm password');
+        $this->get('/register')->assertOk()->assertSee('Create an account')->assertSee('Sponsor name')->assertSee('Phone number')->assertSee('Position')->assertSee('Left')->assertSee('Right')->assertDontSee('Confirm password');
         $this->get('/forgot-password')->assertOk()->assertSee('Forgot password');
     }
 
@@ -48,6 +48,8 @@ class AuthTest extends TestCase
         $this->from('/register')->post('/register', [
             'name' => 'Test User',
             'sponsor_name' => 'Nobody',
+            'position' => 'left',
+            'phone_number' => '9876543210',
             'email' => 'avery@example.com',
             'password' => 'password1',
         ])->assertRedirect('/register')->assertSessionHasErrors('sponsor_name');
@@ -68,6 +70,8 @@ class AuthTest extends TestCase
         $this->post('/register', [
             'name' => 'Test User',
             'sponsor_name' => 'Jordan Lee',
+            'position' => 'left',
+            'phone_number' => '9876543210',
             'email' => 'avery@example.com',
             'password' => 'password1',
         ])->assertRedirect('/registered')->assertSessionHas('signup_password', 'password1');
@@ -76,6 +80,8 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'avery@example.com',
             'sponsor_name' => 'Jordan Lee',
+            'position' => 'left',
+            'phone_number' => '9876543210',
             'user_role' => 'users',
         ]);
         $userName = User::query()->where('email', 'avery@example.com')->value('user_name');
@@ -101,6 +107,8 @@ class AuthTest extends TestCase
         $this->post('/register', [
             'name' => 'Second User',
             'sponsor_name' => 'gsi1000001',
+            'position' => 'right',
+            'phone_number' => '9123456789',
             'email' => 'second@example.com',
             'password' => 'password1',
         ])->assertRedirect('/registered');
@@ -108,6 +116,7 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'second@example.com',
             'sponsor_name' => 'gsi1000001',
+            'position' => 'right',
         ]);
     }
 
