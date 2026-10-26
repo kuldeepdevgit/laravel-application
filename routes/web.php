@@ -25,6 +25,9 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/edit-profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::post('/dashboard/change-password', [DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
+    Route::post('/dashboard/update-wallet-address', [DashboardController::class, 'updateWallet'])->name('dashboard.wallet.update');
     Route::get('/dashboard/{section}', [DashboardController::class, 'section'])->name('dashboard.section');
     Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');

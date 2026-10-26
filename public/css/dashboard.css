@@ -28,6 +28,40 @@ body.dash-body {
     gap: 0.55rem;
 }
 
+.dash-brand {
+    background: #fff;
+    border: 3px solid #1b7a34;
+    border-radius: 1.15rem;
+    box-shadow: 0 0 0 2px #d4a017;
+    display: block;
+    margin: 0.1rem 0.15rem 0.35rem;
+    padding: 0.4rem;
+}
+
+.dash-brand img {
+    display: block;
+    height: auto;
+    width: 100%;
+}
+
+.dash-mark {
+    background: #fff;
+    border: 2px solid #1b7a34;
+    border-radius: 0.7rem;
+    box-shadow: 0 0 0 1px #d4a017;
+    flex: 0 0 auto;
+    height: 42px;
+    overflow: hidden;
+    width: 42px;
+}
+
+.dash-mark img {
+    display: block;
+    height: 42px;
+    object-fit: cover;
+    width: 42px;
+}
+
 .dash-nav form {
     margin: 0;
 }
@@ -196,6 +230,21 @@ body.dash-body {
 .panel h2 {
     font-family: Fraunces, Georgia, serif;
     font-size: 1.3rem;
+}
+
+.team-table {
+    color: var(--dash-ink);
+}
+
+.team-table th,
+.team-table td {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.team-table th {
+    font-size: 0.85rem;
+    font-weight: 700;
 }
 
 .dash-btn {

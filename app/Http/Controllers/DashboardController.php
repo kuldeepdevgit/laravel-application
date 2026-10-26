@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Template;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -65,6 +68,60 @@ class DashboardController extends Controller
             'section' => $section,
             'referral' => $referral,
             'user' => $user,
+            'members' => $section === 'my-team' ? $user->directMembers() : null,
         ]);
+    }
+
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'address' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:80'],
+            'state' => ['nullable', 'string', 'max:80'],
+            'zip_code' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $user->update($data);
+
+        return redirect()
+            ->route('dashboard.section', 'edit-profile')
+            ->with('status', 'Profile saved.');
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => $data['password'],
+        ]);
+
+        return redirect()
+            ->route('dashboard.section', 'change-password')
+            ->with('status', 'Password saved.');
+    }
+
+    public function updateWallet(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'usdt_bep20' => ['nullable', 'string', 'regex:/^0x[a-fA-F0-9]{40}$/'],
+        ], [
+            'usdt_bep20.regex' => 'Enter a USDT BEP 20 address.',
+        ]);
+
+        $request->user()->update([
+            'usdt_bep20' => $data['usdt_bep20'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('dashboard.section', 'update-wallet-address')
+            ->with('status', 'Wallet address saved.');
     }
 }

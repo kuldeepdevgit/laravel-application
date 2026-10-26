@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Dashboard')</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%2314213d'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23e07a3d'/%3E%3C/svg%3E">
+    <link rel="icon" href="{{ asset('images/green-smart-india.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -24,6 +24,9 @@
                     <button class="btn btn-outline-dark d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#dashMenu" aria-label="Open menu">
                         <i class="bi bi-list"></i>
                     </button>
+                    <a class="dash-mark d-lg-none" href="{{ route('dashboard') }}">
+                        <img src="{{ asset('images/green-smart-india.png') }}" alt="Green Smart India">
+                    </a>
                     <h1>@yield('heading', 'Dashboard')</h1>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
@@ -38,10 +41,9 @@
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-start dash-drawer" tabindex="-1" id="dashMenu" aria-labelledby="dashMenuLabel">
+    <div class="offcanvas offcanvas-start dash-drawer" tabindex="-1" id="dashMenu" aria-label="Menu">
         <div class="offcanvas-header">
-            <h2 class="offcanvas-title h5" id="dashMenuLabel">Menu</h2>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             @include('dashboard.nav')
