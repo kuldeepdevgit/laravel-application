@@ -4,6 +4,7 @@ use App\Http\Controllers\AiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BootstrapController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ShopController;
@@ -25,6 +26,12 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/dashboard/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/dashboard/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::get('/dashboard/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('/dashboard/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::post('/dashboard/edit-profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
     Route::post('/dashboard/change-password', [DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
     Route::post('/dashboard/update-wallet-address', [DashboardController::class, 'updateWallet'])->name('dashboard.wallet.update');

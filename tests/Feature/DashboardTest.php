@@ -31,6 +31,7 @@ class DashboardTest extends TestCase
             ->assertSee('images/green-smart-india.png', false)
             ->assertSee('avery@example.com')
             ->assertSee('Ref Link')
+            ->assertSee('Category')
             ->assertSee('Manage Profile')
             ->assertSee('Edit Profile')
             ->assertSee('Change Password')
