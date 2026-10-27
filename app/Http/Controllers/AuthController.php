@@ -34,7 +34,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        $home = $request->user()->isSuperAdmin()
+            ? route('admin.dashboard')
+            : route('dashboard');
+
+        return redirect()->intended($home);
     }
 
     public function destroy(Request $request): RedirectResponse

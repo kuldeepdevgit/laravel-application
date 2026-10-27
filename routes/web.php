@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BootstrapController;
@@ -25,19 +26,26 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('/dashboard/categories/create', [CategoryController::class, 'create'])->name('categories.create');
-    Route::post('/dashboard/categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::get('/dashboard/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
-    Route::put('/dashboard/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-    Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-    Route::post('/dashboard/edit-profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
-    Route::post('/dashboard/change-password', [DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
-    Route::post('/dashboard/update-wallet-address', [DashboardController::class, 'updateWallet'])->name('dashboard.wallet.update');
-    Route::get('/dashboard/{section}', [DashboardController::class, 'section'])->name('dashboard.section');
-    Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+    Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
+
+    Route::middleware('super-admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    });
+
+    Route::middleware('member')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/dashboard/edit-profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+        Route::post('/dashboard/change-password', [DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
+        Route::post('/dashboard/update-wallet-address', [DashboardController::class, 'updateWallet'])->name('dashboard.wallet.update');
+        Route::get('/dashboard/{section}', [DashboardController::class, 'section'])->name('dashboard.section');
+    });
 });
 
 Route::get('/', [TemplateController::class, 'front'])->name('home');

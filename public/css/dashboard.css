@@ -44,6 +44,15 @@ body.dash-body {
     width: 100%;
 }
 
+.admin-role {
+    color: var(--dash-gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 0.15rem 0.35rem 0.15rem;
+    text-transform: uppercase;
+}
+
 .dash-mark {
     background: #fff;
     border: 2px solid #1b7a34;

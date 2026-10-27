@@ -1,6 +1,6 @@
-@extends('dashboard.layout')
+@extends('admin.layout')
 
-@section('title', ($category->exists ? 'Edit category' : 'Add category').' — Dashboard')
+@section('title', ($category->exists ? 'Edit category' : 'Add category').' — Admin')
 
 @section('heading', $category->exists ? 'Edit category' : 'Add category')
 
@@ -14,9 +14,9 @@
     @endphp
 
     <div class="cat-page">
-        <p class="mb-3"><a class="cat-back" href="{{ route('categories.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Category</a></p>
+        <p class="mb-3"><a class="cat-back" href="{{ route('admin.categories.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Category</a></p>
 
-        <form class="cat-layout" method="POST" action="{{ $category->exists ? route('categories.update', $category) : route('categories.store') }}" enctype="multipart/form-data">
+        <form class="cat-layout" method="POST" action="{{ $category->exists ? route('admin.categories.update', $category) : route('admin.categories.store') }}" enctype="multipart/form-data">
             @csrf
             @if ($category->exists)
                 @method('PUT')
@@ -56,7 +56,7 @@
 
                 <div class="d-flex flex-wrap gap-2">
                     <button class="btn dash-btn" type="submit">Save category</button>
-                    <a class="btn dash-btn-quiet" href="{{ route('categories.index') }}">Cancel</a>
+                    <a class="btn dash-btn-quiet" href="{{ route('admin.categories.index') }}">Cancel</a>
                 </div>
             </section>
 

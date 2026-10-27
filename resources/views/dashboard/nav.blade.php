@@ -65,10 +65,6 @@
         <i class="bi bi-link-45deg" aria-hidden="true"></i>
         <span>Ref Link</span>
     </a>
-    <a class="dash-item @if (request()->routeIs('categories.*')) is-active @endif" href="{{ route('categories.index') }}" @if (request()->routeIs('categories.*')) aria-current="page" @endif>
-        <i class="bi bi-grid" aria-hidden="true"></i>
-        <span>Category</span>
-    </a>
 
     @foreach ($groups as $group)
         @php

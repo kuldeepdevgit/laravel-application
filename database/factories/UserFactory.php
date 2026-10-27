@@ -46,4 +46,19 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * The seeded super admin: id 1, superadmin@software.com, role super_admin.
+     */
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'id' => 1,
+            'name' => 'Super Admin',
+            'sponsor_name' => null,
+            'user_name' => 'GSI1000001',
+            'user_role' => 'super_admin',
+            'email' => 'superadmin@software.com',
+        ]);
+    }
 }

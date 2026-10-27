@@ -1,6 +1,6 @@
-@extends('dashboard.layout')
+@extends('admin.layout')
 
-@section('title', 'Category — Dashboard')
+@section('title', 'Category — Admin')
 
 @section('heading', 'Category')
 
@@ -15,23 +15,23 @@
                 <span class="cat-empty-mark" aria-hidden="true"><i class="bi bi-grid"></i></span>
                 <h2>No categories yet</h2>
                 <p>Add a category with a name, a short description, and a square image.</p>
-                <a class="btn dash-btn" href="{{ route('categories.create') }}">Add category</a>
+                <a class="btn dash-btn" href="{{ route('admin.categories.create') }}">Add category</a>
             </section>
         @else
             <div class="cat-toolbar">
-                <form class="cat-search" method="GET" action="{{ route('categories.index') }}">
+                <form class="cat-search" method="GET" action="{{ route('admin.categories.index') }}">
                     <label class="visually-hidden" for="q">Search categories</label>
                     <input class="form-control" id="q" name="q" type="search" value="{{ $search }}" placeholder="Search categories" autocomplete="off">
                     <button class="btn dash-btn" type="submit">Search</button>
                 </form>
-                <a class="btn dash-btn" href="{{ route('categories.create') }}">Add category</a>
+                <a class="btn dash-btn" href="{{ route('admin.categories.create') }}">Add category</a>
             </div>
 
             @if ($categories->isEmpty())
                 <section class="panel cat-empty">
                     <h2>No matches</h2>
                     <p>Nothing matches “{{ $search }}”.</p>
-                    <a class="btn dash-btn-quiet" href="{{ route('categories.index') }}">Clear search</a>
+                    <a class="btn dash-btn-quiet" href="{{ route('admin.categories.index') }}">Clear search</a>
                 </section>
             @else
                 <div class="row g-3">
@@ -50,13 +50,13 @@
                                     <h3>{{ $category->name }}</h3>
                                     <p>{{ $category->description ?: 'No description' }}</p>
                                     <div class="cat-card-actions">
-                                        <a class="btn cat-action" href="{{ route('categories.edit', $category) }}">Edit</a>
+                                        <a class="btn cat-action" href="{{ route('admin.categories.edit', $category) }}">Edit</a>
                                         <button
                                             class="btn cat-action cat-action-delete"
                                             type="button"
                                             data-bs-toggle="modal"
                                             data-bs-target="#deleteCategory"
-                                            data-delete-action="{{ route('categories.destroy', $category) }}"
+                                            data-delete-action="{{ route('admin.categories.destroy', $category) }}"
                                             data-delete-name="{{ $category->name }}"
                                         >Delete</button>
                                     </div>

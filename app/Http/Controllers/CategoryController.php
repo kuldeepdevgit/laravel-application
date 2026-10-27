@@ -27,7 +27,7 @@ class CategoryController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('dashboard.categories.index', [
+        return view('admin.categories.index', [
             'categories' => $categories,
             'search' => $search,
             'total' => Category::query()->count(),
@@ -36,7 +36,7 @@ class CategoryController extends Controller
 
     public function create(): View
     {
-        return view('dashboard.categories.form', [
+        return view('admin.categories.form', [
             'category' => new Category(['is_active' => true]),
         ]);
     }
@@ -50,13 +50,13 @@ class CategoryController extends Controller
         Category::query()->create($data);
 
         return redirect()
-            ->route('categories.index')
+            ->route('admin.categories.index')
             ->with('status', 'Category added.');
     }
 
     public function edit(Category $category): View
     {
-        return view('dashboard.categories.form', [
+        return view('admin.categories.form', [
             'category' => $category,
         ]);
     }
@@ -79,7 +79,7 @@ class CategoryController extends Controller
         }
 
         return redirect()
-            ->route('categories.index')
+            ->route('admin.categories.index')
             ->with('status', 'Category saved.');
     }
 
@@ -88,7 +88,7 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()
-            ->route('categories.index')
+            ->route('admin.categories.index')
             ->with('status', 'Category deleted.');
     }
 

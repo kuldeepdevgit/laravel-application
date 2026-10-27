@@ -22,33 +22,36 @@ class CategoryTest extends TestCase
 
     public function test_guests_are_sent_to_login(): void
     {
-        $this->get('/dashboard/categories')->assertRedirect('/login');
+        $this->get('/admin/categories')->assertRedirect('/login');
     }
 
-    public function test_a_member_can_open_an_empty_category_page(): void
+    public function test_the_super_admin_can_open_an_empty_category_page(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->get('/dashboard/categories')
+            ->get('/admin/categories')
             ->assertOk()
+            ->assertSee('Super Admin')
             ->assertSee('Category')
             ->assertSee('No categories yet')
-            ->assertSee('Add category');
+            ->assertSee('Add category')
+            ->assertDontSee('Manage Profile')
+            ->assertDontSee('Ref Link');
     }
 
-    public function test_a_member_can_add_a_category_with_an_image(): void
+    public function test_the_super_admin_can_add_a_category_with_an_image(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->post('/dashboard/categories', [
+            ->post('/admin/categories', [
                 'name' => 'Organic Tea',
                 'description' => 'Leaves and blends.',
                 'is_active' => '1',
                 'image' => UploadedFile::fake()->image('tea.jpg', 900, 600),
             ])
-            ->assertRedirect('/dashboard/categories')
+            ->assertRedirect('/admin/categories')
             ->assertSessionHas('status', 'Category added.');
 
         $category = Category::query()->where('name', 'Organic Tea')->first();
@@ -60,7 +63,7 @@ class CategoryTest extends TestCase
         Storage::disk('public')->assertExists($category->image);
 
         $this->actingAs($user)
-            ->get('/dashboard/categories')
+            ->get('/admin/categories')
             ->assertOk()
             ->assertSee('Organic Tea')
             ->assertSee('Leaves and blends.')
@@ -69,16 +72,16 @@ class CategoryTest extends TestCase
 
     public function test_a_category_needs_a_name_and_an_image(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->from('/dashboard/categories/create')
-            ->post('/dashboard/categories', [
+            ->from('/admin/categories/create')
+            ->post('/admin/categories', [
                 'name' => '',
                 'description' => '',
                 'is_active' => '1',
             ])
-            ->assertRedirect('/dashboard/categories/create')
+            ->assertRedirect('/admin/categories/create')
             ->assertSessionHasErrors(['name', 'image']);
 
         $this->assertSame(0, Category::query()->count());
@@ -87,21 +90,21 @@ class CategoryTest extends TestCase
     public function test_a_category_name_must_be_unique(): void
     {
         Category::factory()->create(['name' => 'Organic Tea']);
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->from('/dashboard/categories/create')
-            ->post('/dashboard/categories', [
+            ->from('/admin/categories/create')
+            ->post('/admin/categories', [
                 'name' => 'Organic Tea',
                 'description' => '',
                 'is_active' => '1',
                 'image' => UploadedFile::fake()->image('tea.jpg'),
             ])
-            ->assertRedirect('/dashboard/categories/create')
+            ->assertRedirect('/admin/categories/create')
             ->assertSessionHasErrors('name');
     }
 
-    public function test_a_member_can_edit_a_category_and_replace_its_image(): void
+    public function test_the_super_admin_can_edit_a_category_and_replace_its_image(): void
     {
         Storage::disk('public')->put('categories/old.jpg', 'old-image');
         $category = Category::factory()->create([
@@ -111,10 +114,10 @@ class CategoryTest extends TestCase
             'image' => 'categories/old.jpg',
             'is_active' => true,
         ]);
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->get('/dashboard/categories/'.$category->id.'/edit')
+            ->get('/admin/categories/'.$category->id.'/edit')
             ->assertOk()
             ->assertSee('Edit category')
             ->assertSee('value="Organic Tea"', false)
@@ -122,13 +125,13 @@ class CategoryTest extends TestCase
             ->assertSee('Crop image');
 
         $this->actingAs($user)
-            ->put('/dashboard/categories/'.$category->id, [
+            ->put('/admin/categories/'.$category->id, [
                 'name' => 'Herbal Tea',
                 'description' => 'Updated copy',
                 'is_active' => '0',
                 'image' => UploadedFile::fake()->image('herbal.png', 700, 700),
             ])
-            ->assertRedirect('/dashboard/categories')
+            ->assertRedirect('/admin/categories')
             ->assertSessionHas('status', 'Category saved.');
 
         $category->refresh();
@@ -149,15 +152,15 @@ class CategoryTest extends TestCase
             'name' => 'Spices',
             'image' => 'categories/keep.jpg',
         ]);
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->put('/dashboard/categories/'.$category->id, [
+            ->put('/admin/categories/'.$category->id, [
                 'name' => 'Whole Spices',
                 'description' => '',
                 'is_active' => '1',
             ])
-            ->assertRedirect('/dashboard/categories');
+            ->assertRedirect('/admin/categories');
 
         $category->refresh();
 
@@ -167,18 +170,18 @@ class CategoryTest extends TestCase
         Storage::disk('public')->assertExists('categories/keep.jpg');
     }
 
-    public function test_a_member_can_delete_a_category_and_its_image(): void
+    public function test_the_super_admin_can_delete_a_category_and_its_image(): void
     {
         Storage::disk('public')->put('categories/gone.jpg', 'gone-image');
         $category = Category::factory()->create([
             'name' => 'Honey',
             'image' => 'categories/gone.jpg',
         ]);
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->delete('/dashboard/categories/'.$category->id)
-            ->assertRedirect('/dashboard/categories')
+            ->delete('/admin/categories/'.$category->id)
+            ->assertRedirect('/admin/categories')
             ->assertSessionHas('status', 'Category deleted.');
 
         $this->assertModelMissing($category);
@@ -189,10 +192,10 @@ class CategoryTest extends TestCase
     {
         Category::factory()->create(['name' => 'Organic Tea']);
         Category::factory()->create(['name' => 'Raw Honey']);
-        $user = User::factory()->create();
+        $user = User::factory()->superAdmin()->create();
 
         $this->actingAs($user)
-            ->get('/dashboard/categories?q=Honey')
+            ->get('/admin/categories?q=Honey')
             ->assertOk()
             ->assertSee('Raw Honey')
             ->assertDontSee('Organic Tea');
