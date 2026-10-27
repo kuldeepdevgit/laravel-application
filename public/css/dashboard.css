@@ -433,10 +433,16 @@ a.dash-btn-quiet {
     overflow: hidden;
 }
 
-.cat-card-body .company-contact {
+.cat-card-body .company-contact,
+.cat-card-body .product-meta {
     -webkit-line-clamp: 2;
     font-size: 0.92rem;
     line-clamp: 2;
+}
+
+.cat-card-body .product-meta s {
+    color: #8d8478;
+    margin-left: 0.2rem;
 }
 
 .cat-card-actions {
@@ -537,7 +543,8 @@ a.dash-btn-quiet {
 }
 
 #category-placeholder,
-#company-placeholder {
+#company-placeholder,
+#product-placeholder {
     align-items: center;
     color: #8d8478;
     display: flex;
@@ -549,12 +556,15 @@ a.dash-btn-quiet {
 #category-placeholder[hidden],
 #category-preview[hidden],
 #company-placeholder[hidden],
-#company-preview[hidden] {
+#company-preview[hidden],
+#product-placeholder[hidden],
+#product-preview[hidden] {
     display: none !important;
 }
 
 #category-placeholder .bi,
-#company-placeholder .bi {
+#company-placeholder .bi,
+#product-placeholder .bi {
     font-size: 2rem;
 }
 

@@ -11,6 +11,10 @@
         <i class="bi bi-grid" aria-hidden="true"></i>
         <span>Category</span>
     </a>
+    <a class="dash-item @if (request()->routeIs('admin.products.*')) is-active @endif" href="{{ route('admin.products.index') }}" @if (request()->routeIs('admin.products.*')) aria-current="page" @endif>
+        <i class="bi bi-box-seam" aria-hidden="true"></i>
+        <span>Product</span>
+    </a>
     <a class="dash-item @if (request()->routeIs('admin.companies.*')) is-active @endif" href="{{ route('admin.companies.index') }}" @if (request()->routeIs('admin.companies.*')) aria-current="page" @endif>
         <i class="bi bi-building" aria-hidden="true"></i>
         <span>Company</span>

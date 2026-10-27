@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Category extends Model
@@ -37,6 +38,14 @@ class Category extends Model
         return [
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * @return HasMany<Product, $this>
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 
     public function imageUrl(): ?string
