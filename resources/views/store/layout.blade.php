@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Northbay — Everyday marketplace')</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23123936'/%3E%3Cpath d='M16 6l3.2 8.2L16 16l-3.2-1.8L16 6z' fill='%23e7b15a'/%3E%3Cpath d='M16 26l-3.2-8.2L16 16l3.2 1.8L16 26z' fill='%23f4f0e8'/%3E%3C/svg%3E">
+    <link rel="icon" href="{{ asset('images/green-smart-india.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,16 +26,8 @@
                 <button class="icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#deptDrawer" aria-label="Open menu">
                     <i class="bi bi-list"></i>
                 </button>
-                <a class="brand" href="{{ route('home') }}">
-                    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-                        <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
-                        <path d="M16 5.5l3.4 8.6L16 16.2l-3.4-2.1L16 5.5z" fill="#e7b15a"></path>
-                        <path d="M16 26.5l-3.4-8.6L16 15.8l3.4 2.1L16 26.5z" fill="currentColor"></path>
-                    </svg>
-                    <span class="brand-copy">
-                        <span class="brand-name">northbay</span>
-                        <span class="brand-tag">marketplace</span>
-                    </span>
+                <a class="brand" href="{{ route('home') }}" aria-label="Green Smart India E Services">
+                    @include('partials.logo', ['class' => 'brand-logo', 'size' => 64])
                 </a>
                 <form class="search-bar" action="{{ route('shop') }}" method="GET" role="search">
                     <label class="visually-hidden" for="search-cat">Department</label>

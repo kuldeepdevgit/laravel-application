@@ -278,8 +278,10 @@
 
         const button = form.querySelector('[type="submit"]');
         if (button) {
-            button.disabled = true;
-            button.textContent = 'Saving...';
+            window.setTimeout(function () {
+                button.disabled = true;
+                button.textContent = 'Saving...';
+            }, 0);
         }
     });
 })();

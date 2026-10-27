@@ -433,6 +433,12 @@ a.dash-btn-quiet {
     overflow: hidden;
 }
 
+.cat-card-body .company-contact {
+    -webkit-line-clamp: 2;
+    font-size: 0.92rem;
+    line-clamp: 2;
+}
+
 .cat-card-actions {
     display: flex;
     gap: 0.5rem;
@@ -530,7 +536,8 @@ a.dash-btn-quiet {
     width: 100%;
 }
 
-#category-placeholder {
+#category-placeholder,
+#company-placeholder {
     align-items: center;
     color: #8d8478;
     display: flex;
@@ -540,11 +547,14 @@ a.dash-btn-quiet {
 }
 
 #category-placeholder[hidden],
-#category-preview[hidden] {
+#category-preview[hidden],
+#company-placeholder[hidden],
+#company-preview[hidden] {
     display: none !important;
 }
 
-#category-placeholder .bi {
+#category-placeholder .bi,
+#company-placeholder .bi {
     font-size: 2rem;
 }
 

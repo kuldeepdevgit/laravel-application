@@ -15,8 +15,8 @@ class AuthTest extends TestCase
 
     public function test_login_register_and_forgot_pages_are_available(): void
     {
-        $this->get('/login')->assertOk()->assertSee('Forgot password?')->assertSee('Create an account');
-        $this->get('/register')->assertOk()->assertSee('Create an account')->assertSee('Sponsor name')->assertSee('Phone number')->assertSee('Position')->assertSee('Left')->assertSee('Right')->assertDontSee('Confirm password');
+        $this->get('/login')->assertOk()->assertSee('Forgot password?')->assertSee('Create an account')->assertSee('Green Smart India E Services')->assertSee('images/green-smart-india.png', false);
+        $this->get('/register')->assertOk()->assertSee('Create an account')->assertSee('Sponsor name')->assertSee('Phone number')->assertSee('Position')->assertSee('Left')->assertSee('Right')->assertSee('Green Smart India E Services')->assertSee('images/green-smart-india.png', false)->assertDontSee('Confirm password');
         $this->get('/forgot-password')->assertOk()->assertSee('Forgot password');
     }
 

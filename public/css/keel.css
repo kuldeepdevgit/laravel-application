@@ -164,6 +164,29 @@ button.menu-btn {
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
 }
 
+.brand-logo {
+  display: block;
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.auth-logo {
+  display: block;
+  width: 148px;
+  margin: 0 auto 18px;
+}
+
+.auth-logo-img {
+  width: 148px;
+  height: 148px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #fff;
+}
+
 .auth-card h1 { margin: 0 0 8px; font-size: 2rem; }
 
 .auth-card .lede { margin-bottom: 22px; }

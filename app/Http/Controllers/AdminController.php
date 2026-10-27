@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Company;
 use Illuminate\View\View;
 
 class AdminController extends Controller
@@ -11,6 +12,7 @@ class AdminController extends Controller
     {
         return view('admin.index', [
             'categoryCount' => Category::query()->count(),
+            'companyCount' => Company::query()->count(),
         ]);
     }
 }

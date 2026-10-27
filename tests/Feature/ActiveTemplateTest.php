@@ -14,7 +14,8 @@ class ActiveTemplateTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('northbay')
+            ->assertSee('Green Smart India E Services')
+            ->assertSee('images/green-smart-india.png', false)
             ->assertDontSee('Introducing AI Design Tool');
     }
 

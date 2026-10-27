@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Brightpath — Bootstrap template')</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%2314213d'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23e07a3d'/%3E%3C/svg%3E">
+    <link rel="icon" href="{{ asset('images/green-smart-india.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,9 @@
 <body class="bp-body">
     <nav class="navbar navbar-expand-lg bp-nav sticky-top">
         <div class="container">
-            <a class="navbar-brand bp-brand" href="{{ route('bootstrap.home') }}">Brightpath</a>
+            <a class="navbar-brand bp-brand" href="{{ route('bootstrap.home') }}" aria-label="Green Smart India E Services">
+                @include('partials.logo', ['class' => 'brand-logo', 'size' => 56])
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bpNav" aria-controls="bpNav" aria-expanded="false" aria-label="Open menu">
                 <span class="navbar-toggler-icon"></span>
             </button>

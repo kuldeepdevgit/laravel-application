@@ -113,7 +113,15 @@ a { color: var(--teal-2); }
   border-radius: 12px;
 }
 
-.brand-mark { width: 36px; height: 36px; flex: none; }
+.brand-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #fff;
+  flex: none;
+}
 
 .brand-name {
   font-family: var(--display);

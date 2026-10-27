@@ -10,7 +10,8 @@ class StorefrontTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('northbay')
+            ->assertSee('Green Smart India E Services')
+            ->assertSee('images/green-smart-india.png', false)
             ->assertSee('Aero Quiet Headphones');
     }
 

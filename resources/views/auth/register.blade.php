@@ -1,10 +1,13 @@
 @extends('ai.layout')
 
-@section('title', 'Create an account — Keel')
+@section('title', 'Create an account — Green Smart India')
 
 @section('content')
     <section class="auth-shell">
         <div class="auth-card">
+            <a class="auth-logo" href="{{ route('home') }}" aria-label="Green Smart India E Services">
+                @include('partials.logo', ['class' => 'auth-logo-img', 'size' => 148])
+            </a>
             <h1>Create an account</h1>
             <p class="lede">Register with your sponsor name, name, phone number, email, and a password.</p>
 

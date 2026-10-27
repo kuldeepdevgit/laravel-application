@@ -14,6 +14,7 @@ class AdminTest extends TestCase
     {
         $this->get('/admin')->assertRedirect('/login');
         $this->get('/admin/categories')->assertRedirect('/login');
+        $this->get('/admin/companies')->assertRedirect('/login');
     }
 
     public function test_a_member_cannot_open_the_admin_layout(): void
@@ -26,6 +27,10 @@ class AdminTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin/categories')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/companies')
             ->assertForbidden();
     }
 
@@ -51,7 +56,7 @@ class AdminTest extends TestCase
         $this->assertSame('superadmin@software.com', $wrongRole->email);
         $this->assertFalse($wrongRole->isSuperAdmin());
         $this->actingAs($wrongRole)->get('/admin')->assertForbidden();
-        $this->actingAs($wrongRole)->get('/dashboard')->assertOk()->assertDontSee('Category');
+        $this->actingAs($wrongRole)->get('/dashboard')->assertOk()->assertDontSee('Category')->assertDontSee('Company');
     }
 
     public function test_a_later_account_with_the_same_email_shape_is_not_the_super_admin(): void
@@ -81,7 +86,9 @@ class AdminTest extends TestCase
             ->assertSee('superadmin@software.com')
             ->assertSee('Super Admin')
             ->assertSee('Category')
+            ->assertSee('Company')
             ->assertSee('Open categories')
+            ->assertSee('Open companies')
             ->assertDontSee('Manage Profile')
             ->assertDontSee('Ref Link')
             ->assertDontSee('My Team');

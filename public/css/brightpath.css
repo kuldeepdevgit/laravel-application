@@ -27,6 +27,15 @@ body.bp-body {
     text-decoration: none;
 }
 
+.bp-brand .brand-logo {
+    display: block;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #fff;
+}
+
 .bp-brand:hover {
     color: var(--bp-ink);
 }

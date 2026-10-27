@@ -32,6 +32,7 @@ class DashboardTest extends TestCase
             ->assertSee('avery@example.com')
             ->assertSee('Ref Link')
             ->assertDontSee('Category')
+            ->assertDontSee('Company')
             ->assertSee('Manage Profile')
             ->assertSee('Edit Profile')
             ->assertSee('Change Password')

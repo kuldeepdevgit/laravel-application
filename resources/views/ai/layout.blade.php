@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Keel — AI design tool')</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%2316130f'/%3E%3Cpath d='M8 22c6-2 8-10 16-12' fill='none' stroke='%23e7c27a' stroke-width='2'/%3E%3C/svg%3E">
+    <link rel="icon" href="{{ asset('images/green-smart-india.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,13 +16,8 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-nav">
         <div class="container nav-row">
-            <a class="brand" href="{{ route('ai.home') }}">
-                <span class="brand-mark" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13l0-8z" fill="currentColor"></path>
-                    </svg>
-                </span>
-                Keel
+            <a class="brand" href="{{ route('home') }}" aria-label="Green Smart India E Services">
+                @include('partials.logo', ['class' => 'brand-logo', 'size' => 58])
             </a>
             <nav class="nav-links" aria-label="Primary">
                 <a href="{{ route('ai.home') }}#features">Feature</a>
@@ -79,7 +74,9 @@
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="aiMenu" aria-labelledby="aiMenuLabel">
         <div class="offcanvas-header">
-            <h2 class="offcanvas-title h5" id="aiMenuLabel">Keel</h2>
+            <a href="{{ route('home') }}" id="aiMenuLabel">
+                @include('partials.logo', ['class' => 'brand-logo', 'size' => 48])
+            </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-grid gap-2">

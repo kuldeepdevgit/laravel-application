@@ -7,6 +7,7 @@ use App\Http\Controllers\BootstrapController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\TemplateController;
@@ -37,6 +38,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+        Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
+        Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
+        Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+        Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update');
+        Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy');
     });
 
     Route::middleware('member')->group(function () {
