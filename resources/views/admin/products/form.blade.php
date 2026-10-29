@@ -75,12 +75,21 @@
                     </div>
                 </div>
 
-                <div class="mb-3 mt-3">
-                    <label class="form-label" for="stock">Stock</label>
-                    <input class="form-control" id="stock" name="stock" type="number" inputmode="numeric" min="0" max="1000000" step="1" value="{{ old('stock', $product->stock ?? 0) }}" required>
-                    @error('stock')
-                        <p class="text-danger small mb-0">{{ $message }}</p>
-                    @enderror
+                <div class="row g-3 mt-0 mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="stock">Stock</label>
+                        <input class="form-control" id="stock" name="stock" type="number" inputmode="numeric" min="0" max="1000000" step="1" value="{{ old('stock', $product->stock ?? 0) }}" required>
+                        @error('stock')
+                            <p class="text-danger small mb-0">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="product_bv">Product BV</label>
+                        <input class="form-control" id="product_bv" name="product_bv" type="number" inputmode="decimal" min="0" max="999999.99" step="0.01" value="{{ old('product_bv', $product->product_bv ?? 0) }}" required>
+                        @error('product_bv')
+                            <p class="text-danger small mb-0">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="mb-4">

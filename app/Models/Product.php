@@ -19,6 +19,7 @@ class Product extends Model
         'slug',
         'description',
         'price',
+        'product_bv',
         'compare_price',
         'stock',
         'image',
@@ -41,6 +42,7 @@ class Product extends Model
     {
         return [
             'price' => 'decimal:2',
+            'product_bv' => 'decimal:2',
             'compare_price' => 'decimal:2',
             'stock' => 'integer',
             'is_active' => 'boolean',
@@ -67,6 +69,11 @@ class Product extends Model
     public function formattedPrice(): string
     {
         return '₹'.number_format((float) $this->price, 2);
+    }
+
+    public function formattedBv(): string
+    {
+        return number_format((float) $this->product_bv, 2);
     }
 
     public function formattedComparePrice(): ?string

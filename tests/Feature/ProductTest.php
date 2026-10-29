@@ -61,6 +61,7 @@ class ProductTest extends TestCase
                 'name' => 'Assam Leaf Tin',
                 'description' => 'Loose leaf for a morning pot.',
                 'price' => '129.50',
+                'product_bv' => '40.00',
                 'compare_price' => '168.00',
                 'stock' => '12',
                 'is_active' => '1',
@@ -76,6 +77,7 @@ class ProductTest extends TestCase
         $this->assertSame($category->id, $product->category_id);
         $this->assertSame('Loose leaf for a morning pot.', $product->description);
         $this->assertSame('129.50', $product->price);
+        $this->assertSame('40.00', $product->product_bv);
         $this->assertSame('168.00', $product->compare_price);
         $this->assertSame(12, $product->stock);
         $this->assertTrue($product->is_active);
@@ -89,11 +91,12 @@ class ProductTest extends TestCase
             ->assertSee('Organic Tea')
             ->assertSee('₹129.50')
             ->assertSee('₹168.00')
+            ->assertSee('BV 40.00')
             ->assertSee('12 in stock')
             ->assertSee('Active');
     }
 
-    public function test_a_product_needs_a_name_price_stock_and_image(): void
+    public function test_a_product_needs_a_name_price_bv_stock_and_image(): void
     {
         $user = User::factory()->superAdmin()->create();
 
@@ -103,11 +106,12 @@ class ProductTest extends TestCase
                 'name' => '',
                 'description' => '',
                 'price' => '',
+                'product_bv' => '',
                 'stock' => '',
                 'is_active' => '1',
             ])
             ->assertRedirect('/admin/products/create')
-            ->assertSessionHasErrors(['name', 'price', 'stock', 'image']);
+            ->assertSessionHasErrors(['name', 'price', 'product_bv', 'stock', 'image']);
 
         $this->assertSame(0, Product::query()->count());
     }
@@ -123,6 +127,7 @@ class ProductTest extends TestCase
                 'name' => 'Assam Leaf Tin',
                 'description' => '',
                 'price' => '20',
+                'product_bv' => '5',
                 'stock' => '1',
                 'is_active' => '1',
                 'image' => UploadedFile::fake()->image('tea.jpg'),
@@ -140,6 +145,7 @@ class ProductTest extends TestCase
             ->post('/admin/products', [
                 'name' => 'Assam Leaf Tin',
                 'price' => '20',
+                'product_bv' => '5',
                 'compare_price' => '20',
                 'stock' => '1',
                 'is_active' => '1',
@@ -161,6 +167,7 @@ class ProductTest extends TestCase
                 'category_id' => 999,
                 'name' => 'Assam Leaf Tin',
                 'price' => '20',
+                'product_bv' => '5',
                 'stock' => '1',
                 'is_active' => '1',
                 'image' => UploadedFile::fake()->image('tea.jpg'),
@@ -180,6 +187,7 @@ class ProductTest extends TestCase
             'slug' => 'assam-leaf-tin',
             'description' => 'Old copy',
             'price' => '129.50',
+            'product_bv' => '40.00',
             'compare_price' => '168.00',
             'stock' => 12,
             'image' => 'products/old.jpg',
@@ -192,6 +200,7 @@ class ProductTest extends TestCase
             ->assertOk()
             ->assertSee('Edit product')
             ->assertSee('value="Assam Leaf Tin"', false)
+            ->assertSee('value="40.00"', false)
             ->assertSee('Organic Tea')
             ->assertSee('Current image')
             ->assertSee('Crop image');
@@ -202,6 +211,7 @@ class ProductTest extends TestCase
                 'name' => 'Darjeeling Leaf Tin',
                 'description' => 'Updated copy',
                 'price' => '140',
+                'product_bv' => '55.50',
                 'compare_price' => '',
                 'stock' => '0',
                 'is_active' => '0',
@@ -217,6 +227,7 @@ class ProductTest extends TestCase
         $this->assertSame($next->id, $product->category_id);
         $this->assertSame('Updated copy', $product->description);
         $this->assertSame('140.00', $product->price);
+        $this->assertSame('55.50', $product->product_bv);
         $this->assertNull($product->compare_price);
         $this->assertSame(0, $product->stock);
         $this->assertFalse($product->is_active);
@@ -240,6 +251,7 @@ class ProductTest extends TestCase
                 'name' => 'Whole Spices',
                 'description' => '',
                 'price' => '45.00',
+                'product_bv' => '10',
                 'compare_price' => '',
                 'stock' => '4',
                 'is_active' => '1',
@@ -251,6 +263,7 @@ class ProductTest extends TestCase
         $this->assertSame('Whole Spices', $product->name);
         $this->assertNull($product->category_id);
         $this->assertNull($product->description);
+        $this->assertSame('10.00', $product->product_bv);
         $this->assertNull($product->compare_price);
         $this->assertSame('products/keep.jpg', $product->image);
         Storage::disk('public')->assertExists('products/keep.jpg');

@@ -45,6 +45,7 @@ class ProductController extends Controller
         return $this->formView(new Product([
             'is_active' => true,
             'stock' => 0,
+            'product_bv' => 0,
         ]));
     }
 
@@ -114,7 +115,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @return array{category_id: ?int, name: string, description: ?string, price: string, compare_price: ?string, stock: int, is_active: bool}
+     * @return array{category_id: ?int, name: string, description: ?string, price: string, product_bv: string, compare_price: ?string, stock: int, is_active: bool}
      */
     private function validated(Request $request, ?Product $product = null): array
     {
@@ -128,6 +129,7 @@ class ProductController extends Controller
             ],
             'description' => ['nullable', 'string', 'max:1000'],
             'price' => ['required', 'numeric', 'min:0', 'max:999999.99', 'decimal:0,2'],
+            'product_bv' => ['required', 'numeric', 'min:0', 'max:999999.99', 'decimal:0,2'],
             'compare_price' => ['nullable', 'numeric', 'min:0', 'max:999999.99', 'decimal:0,2', 'gt:price'],
             'stock' => ['required', 'integer', 'min:0', 'max:1000000'],
             'is_active' => ['required', Rule::in(['0', '1'])],
@@ -151,6 +153,7 @@ class ProductController extends Controller
             'name' => $data['name'],
             'description' => $request->filled('description') ? $data['description'] : null,
             'price' => $data['price'],
+            'product_bv' => $data['product_bv'],
             'compare_price' => $request->filled('compare_price') ? $data['compare_price'] : null,
             'stock' => (int) $data['stock'],
             'is_active' => $request->boolean('is_active'),

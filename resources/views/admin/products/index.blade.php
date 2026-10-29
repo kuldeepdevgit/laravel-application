@@ -55,6 +55,7 @@
                                         @if ($product->formattedComparePrice())
                                             <s>{{ $product->formattedComparePrice() }}</s>
                                         @endif
+                                        · BV {{ $product->formattedBv() }}
                                         · {{ $product->stock === 0 ? 'Sold out' : $product->stock.' in stock' }}
                                     </p>
                                     <div class="cat-card-actions">

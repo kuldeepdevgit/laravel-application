@@ -24,6 +24,7 @@ class ProductFactory extends Factory
             'slug' => Str::slug($name).'-'.fake()->unique()->numerify('###'),
             'description' => fake()->sentence(),
             'price' => fake()->randomFloat(2, 10, 500),
+            'product_bv' => fake()->randomFloat(2, 0, 200),
             'compare_price' => null,
             'stock' => fake()->numberBetween(1, 40),
             'image' => null,
