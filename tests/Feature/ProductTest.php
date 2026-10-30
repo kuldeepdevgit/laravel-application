@@ -81,7 +81,12 @@ class ProductTest extends TestCase
         $this->assertSame('168.00', $product->compare_price);
         $this->assertSame(12, $product->stock);
         $this->assertTrue($product->is_active);
-        Storage::disk('public')->assertExists($product->image);
+        $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/product/product-img/', $product->image);
+        $this->assertFileExists(public_path($product->image));
+        $this->assertStringContainsString(
+            'uploads/'.now()->format('Y/m').'/product/product-img/',
+            $product->imageUrl() ?? '',
+        );
 
         $this->actingAs($user)
             ->get('/admin/products')
@@ -94,6 +99,10 @@ class ProductTest extends TestCase
             ->assertSee('BV 40.00')
             ->assertSee('12 in stock')
             ->assertSee('Active');
+
+        $image = $product->image;
+        $product->delete();
+        $this->assertFileDoesNotExist(public_path($image));
     }
 
     public function test_a_product_needs_a_name_price_bv_stock_and_image(): void
@@ -232,8 +241,13 @@ class ProductTest extends TestCase
         $this->assertSame(0, $product->stock);
         $this->assertFalse($product->is_active);
         $this->assertNotSame('products/old.jpg', $product->image);
+        $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/product/product-img/', $product->image);
+        $this->assertFileExists(public_path($product->image));
         Storage::disk('public')->assertMissing('products/old.jpg');
-        Storage::disk('public')->assertExists($product->image);
+
+        $image = $product->image;
+        $product->delete();
+        $this->assertFileDoesNotExist(public_path($image));
     }
 
     public function test_editing_can_keep_the_current_image(): void

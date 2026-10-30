@@ -60,7 +60,12 @@ class CategoryTest extends TestCase
         $this->assertSame('organic-tea', $category->slug);
         $this->assertSame('Leaves and blends.', $category->description);
         $this->assertTrue($category->is_active);
-        Storage::disk('public')->assertExists($category->image);
+        $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/category/category-img/', $category->image);
+        $this->assertFileExists(public_path($category->image));
+        $this->assertStringContainsString(
+            'uploads/'.now()->format('Y/m').'/category/category-img/',
+            $category->imageUrl() ?? '',
+        );
 
         $this->actingAs($user)
             ->get('/admin/categories')
@@ -68,6 +73,10 @@ class CategoryTest extends TestCase
             ->assertSee('Organic Tea')
             ->assertSee('Leaves and blends.')
             ->assertSee('Active');
+
+        $image = $category->image;
+        $category->delete();
+        $this->assertFileDoesNotExist(public_path($image));
     }
 
     public function test_a_category_needs_a_name_and_an_image(): void
@@ -141,8 +150,13 @@ class CategoryTest extends TestCase
         $this->assertSame('Updated copy', $category->description);
         $this->assertFalse($category->is_active);
         $this->assertNotSame('categories/old.jpg', $category->image);
+        $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/category/category-img/', $category->image);
+        $this->assertFileExists(public_path($category->image));
         Storage::disk('public')->assertMissing('categories/old.jpg');
-        Storage::disk('public')->assertExists($category->image);
+
+        $image = $category->image;
+        $category->delete();
+        $this->assertFileDoesNotExist(public_path($image));
     }
 
     public function test_editing_can_keep_the_current_image(): void

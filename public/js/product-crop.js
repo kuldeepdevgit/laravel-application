@@ -262,9 +262,18 @@
         }, 'image/jpeg', 0.92);
     });
 
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function (event) {
         if ((!fileInput.files || fileInput.files.length === 0) && committed) {
             remember(committed);
+        }
+
+        const hasFile = fileInput.files && fileInput.files.length > 0;
+        const hasCurrent = preview && !preview.hidden && preview.getAttribute('src');
+
+        if (!hasFile && !hasCurrent) {
+            event.preventDefault();
+            setError('Choose an image and crop it before saving.');
+            return;
         }
 
         const button = form.querySelector('[type="submit"]');

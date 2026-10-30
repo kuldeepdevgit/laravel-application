@@ -6,6 +6,7 @@ use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
@@ -29,10 +30,54 @@ class Product extends Model
     protected static function booted(): void
     {
         static::deleting(function (Product $product): void {
-            if (filled($product->image)) {
-                Storage::disk('public')->delete($product->image);
-            }
+            static::deleteImageFile($product->image);
         });
+    }
+
+    public static function imageDirectory(): string
+    {
+        return 'uploads/'.now()->format('Y/m').'/product/product-img';
+    }
+
+    public static function storeImage(UploadedFile $file): string
+    {
+        $directory = static::imageDirectory();
+        $absolute = public_path($directory);
+
+        if (! is_dir($absolute)) {
+            mkdir($absolute, 0755, true);
+        }
+
+        $name = $file->hashName();
+        $file->move($absolute, $name);
+
+        return $directory.'/'.$name;
+    }
+
+    public static function deleteImageFile(?string $path): void
+    {
+        if (! filled($path)) {
+            return;
+        }
+
+        $path = str_replace('\\', '/', $path);
+
+        if (str_contains($path, '..') || str_starts_with($path, '/')) {
+            return;
+        }
+
+        $publicFile = public_path($path);
+
+        if (is_file($publicFile)) {
+            $real = realpath($publicFile);
+            $root = realpath(public_path());
+
+            if ($real !== false && $root !== false && str_starts_with($real, $root.DIRECTORY_SEPARATOR)) {
+                unlink($real);
+            }
+        }
+
+        Storage::disk('public')->delete($path);
     }
 
     /**
@@ -63,7 +108,15 @@ class Product extends Model
             return null;
         }
 
-        return Storage::disk('public')->url($this->image);
+        $path = str_replace('\\', '/', $this->image);
+
+        if (! str_contains($path, '..') && is_file(public_path($path))) {
+            $encoded = implode('/', array_map(rawurlencode(...), explode('/', $path)));
+
+            return asset($encoded);
+        }
+
+        return Storage::disk('public')->url($path);
     }
 
     public function formattedPrice(): string

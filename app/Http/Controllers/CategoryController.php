@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -45,7 +44,7 @@ class CategoryController extends Controller
     {
         $data = $this->validated($request);
         $data['slug'] = $this->uniqueSlug($data['name']);
-        $data['image'] = $request->file('image')->store('categories', 'public');
+        $data['image'] = Category::storeImage($request->file('image'));
 
         Category::query()->create($data);
 
@@ -68,12 +67,9 @@ class CategoryController extends Controller
 
         if ($request->hasFile('image')) {
             $previous = $category->image;
-            $data['image'] = $request->file('image')->store('categories', 'public');
+            $data['image'] = Category::storeImage($request->file('image'));
             $category->update($data);
-
-            if (filled($previous)) {
-                Storage::disk('public')->delete($previous);
-            }
+            Category::deleteImageFile($previous);
         } else {
             $category->update($data);
         }

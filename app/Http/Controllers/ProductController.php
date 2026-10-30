@@ -7,7 +7,6 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -53,7 +52,7 @@ class ProductController extends Controller
     {
         $data = $this->validated($request);
         $data['slug'] = $this->uniqueSlug($data['name']);
-        $data['image'] = $request->file('image')->store('products', 'public');
+        $data['image'] = Product::storeImage($request->file('image'));
 
         Product::query()->create($data);
 
@@ -74,12 +73,9 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $previous = $product->image;
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $data['image'] = Product::storeImage($request->file('image'));
             $product->update($data);
-
-            if (filled($previous)) {
-                Storage::disk('public')->delete($previous);
-            }
+            Product::deleteImageFile($previous);
         } else {
             $product->update($data);
         }
