@@ -15,7 +15,7 @@
                     <h2>Department</h2>
                     @foreach (['' => 'All departments'] + $categories as $value => $label)
                         <label class="cat-option">
-                            <input type="radio" form="filters" name="cat" value="{{ $value }}" @checked($filters['cat'] === $value) onchange="document.getElementById('filters').submit()">
+                            <input type="radio" form="filters" name="cat" value="{{ $value }}" @checked($filters['cat'] === $value || $filters['match'] === $value) onchange="document.getElementById('filters').submit()">
                             {{ $label }}
                         </label>
                     @endforeach

@@ -162,7 +162,7 @@
         lastZoom = 0;
         zoom.value = '0';
         cropper = new Cropper(cropImage, {
-            aspectRatio: 1,
+            aspectRatio: 400 / 267,
             viewMode: 1,
             dragMode: 'move',
             autoCropArea: 1,
@@ -233,8 +233,8 @@
         }
 
         const canvas = cropper.getCroppedCanvas({
-            width: 800,
-            height: 800,
+            width: 400,
+            height: 267,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
         });
@@ -256,7 +256,7 @@
             const file = new File([blob], 'category.jpg', { type: 'image/jpeg', lastModified: Date.now() });
             applying = true;
             remember(file);
-            showPreview(URL.createObjectURL(blob), 'Square crop ready to save.');
+            showPreview(URL.createObjectURL(blob), '400 × 267 crop ready to save.');
             setError('');
             modal.hide();
         }, 'image/jpeg', 0.92);

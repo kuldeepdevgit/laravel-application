@@ -62,11 +62,11 @@
 
             <section class="panel">
                 <h2>Image</h2>
-                <p class="text-secondary">Upload a photo, then crop it to a square. JPG, PNG, or WebP, up to 4 MB.</p>
+                <p class="text-secondary">Upload a photo, then crop it to 400 × 267. JPG, PNG, or WebP, up to 4 MB.</p>
 
                 <div class="cat-drop" id="category-drop">
                     <input class="visually-hidden" id="category-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
-                    <div class="cat-preview-frame">
+                    <div class="cat-preview-frame is-banner">
                         <img id="category-preview" alt="" @if ($category->imageUrl()) src="{{ $category->imageUrl() }}" @else hidden @endif>
                         <span id="category-placeholder" @if ($category->imageUrl()) hidden @endif>
                             <i class="bi bi-image" aria-hidden="true"></i>

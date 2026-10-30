@@ -55,30 +55,27 @@
         </button>
     </section>
 
-    <section class="section">
-        <div class="container">
-            <div class="section-head">
-                <h2>Shop by department</h2>
+    @if ($departments->isNotEmpty())
+        <section class="section">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Shop by department</h2>
+                </div>
+                <div class="cat-grid">
+                    @foreach ($departments as $department)
+                        <a class="cat-tile" href="{{ route('shop', ['cat' => $department->slug]) }}">
+                            @if ($department->imageUrl())
+                                <img src="{{ $department->imageUrl() }}" alt="">
+                            @else
+                                <span class="cat-fallback" aria-hidden="true">{{ mb_strtoupper(mb_substr($department->name, 0, 1)) }}</span>
+                            @endif
+                            <span>{{ $department->name }}</span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
-            <div class="cat-grid">
-                @foreach ([
-                    'Electronics' => '1505740420928-5e560c06d30e',
-                    'Home' => '1507473885765-e6ed057f782c',
-                    'Fashion' => '1521572163474-6864f9cf17ab',
-                    'Kitchen' => '1517668808822-9ebb02f2a0e6',
-                    'Outdoors' => '1542291026-7eec264c27ff',
-                    'Grocery' => '1447933601403-0c6688de566e',
-                    'Beauty' => '1556228720-195a672e8a03',
-                    'Stationery' => '1512820790803-83ca734da794',
-                ] as $category => $photo)
-                    <a class="cat-tile" href="{{ route('shop', ['cat' => $category]) }}">
-                        <img src="https://images.unsplash.com/photo-{{ $photo }}?auto=format&fit=crop&w=400&q=70" alt="">
-                        <span>{{ \App\Support\Catalog::label($category) }}</span>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     <section class="band">
         <div class="container">

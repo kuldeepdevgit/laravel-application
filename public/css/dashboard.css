@@ -376,6 +376,10 @@ a.dash-btn-quiet {
     position: relative;
 }
 
+.cat-card-media.is-banner {
+    aspect-ratio: 400 / 267;
+}
+
 .cat-card-media img,
 .cat-card-fallback {
     height: 100%;
@@ -534,6 +538,12 @@ a.dash-btn-quiet {
     overflow: hidden;
     position: relative;
     width: 220px;
+}
+
+.cat-preview-frame.is-banner {
+    aspect-ratio: 400 / 267;
+    height: auto;
+    width: min(100%, 320px);
 }
 
 .cat-preview-frame img {

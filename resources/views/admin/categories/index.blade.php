@@ -14,7 +14,7 @@
             <section class="panel cat-empty">
                 <span class="cat-empty-mark" aria-hidden="true"><i class="bi bi-grid"></i></span>
                 <h2>No categories yet</h2>
-                <p>Add a category with a name, a short description, and a square image.</p>
+                <p>Add a category with a name, a short description, and a 400 × 267 image.</p>
                 <a class="btn dash-btn" href="{{ route('admin.categories.create') }}">Add category</a>
             </section>
         @else
@@ -38,7 +38,7 @@
                     @foreach ($categories as $category)
                         <div class="col-sm-6 col-xl-4">
                             <article class="cat-card">
-                                <div class="cat-card-media">
+                                <div class="cat-card-media is-banner">
                                     @if ($category->imageUrl())
                                         <img src="{{ $category->imageUrl() }}" alt="{{ $category->name }}">
                                     @else
