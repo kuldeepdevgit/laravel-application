@@ -16,6 +16,7 @@ class AdminTest extends TestCase
         $this->get('/admin/categories')->assertRedirect('/login');
         $this->get('/admin/products')->assertRedirect('/login');
         $this->get('/admin/companies')->assertRedirect('/login');
+        $this->get('/admin/banners')->assertRedirect('/login');
     }
 
     public function test_a_member_cannot_open_the_admin_layout(): void
@@ -36,6 +37,10 @@ class AdminTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin/companies')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/banners')
             ->assertForbidden();
     }
 
@@ -93,9 +98,11 @@ class AdminTest extends TestCase
             ->assertSee('Category')
             ->assertSee('Product')
             ->assertSee('Company')
+            ->assertSee('Banner')
             ->assertSee('Open categories')
             ->assertSee('Open products')
             ->assertSee('Open companies')
+            ->assertSee('Open banners')
             ->assertDontSee('Manage Profile')
             ->assertDontSee('Ref Link')
             ->assertDontSee('My Team');

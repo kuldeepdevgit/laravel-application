@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Product;
@@ -15,6 +16,7 @@ class AdminController extends Controller
             'productCount' => Product::query()->count(),
             'categoryCount' => Category::query()->count(),
             'companyCount' => Company::query()->count(),
+            'bannerCount' => Banner::query()->count(),
         ]);
     }
 }

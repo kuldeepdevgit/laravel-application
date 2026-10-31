@@ -19,6 +19,10 @@
         <i class="bi bi-building" aria-hidden="true"></i>
         <span>Company</span>
     </a>
+    <a class="dash-item @if (request()->routeIs('admin.banners.*')) is-active @endif" href="{{ route('admin.banners.index') }}" @if (request()->routeIs('admin.banners.*')) aria-current="page" @endif>
+        <i class="bi bi-image" aria-hidden="true"></i>
+        <span>Banner</span>
+    </a>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf

@@ -34,9 +34,8 @@
                     <a class="btn dash-btn-quiet" href="{{ route('admin.categories.index') }}">Clear search</a>
                 </section>
             @else
-                <div class="row g-3">
+                <div class="cat-board">
                     @foreach ($categories as $category)
-                        <div class="col-sm-6 col-xl-4">
                             <article class="cat-card">
                                 <div class="cat-card-media is-banner">
                                     @if ($category->imageUrl())
@@ -44,12 +43,14 @@
                                     @else
                                         <span class="cat-card-fallback" aria-hidden="true"><i class="bi bi-image"></i></span>
                                     @endif
-                                    <span class="cat-pill @if ($category->is_active) is-live @endif">{{ $category->is_active ? 'Active' : 'Inactive' }}</span>
-                                    @if ($category->is_featured)
-                                        <span class="cat-pill is-feature">Featured</span>
-                                    @endif
                                 </div>
                                 <div class="cat-card-body">
+                                    <div class="cat-card-meta">
+                                        <span class="cat-pill @if ($category->is_active) is-live @endif">{{ $category->is_active ? 'Active' : 'Inactive' }}</span>
+                                        @if ($category->is_featured)
+                                            <span class="cat-pill is-feature">Featured</span>
+                                        @endif
+                                    </div>
                                     <h3>{{ $category->name }}</h3>
                                     <p>{{ $category->description ?: 'No description' }}</p>
                                     <div class="cat-card-actions">
@@ -65,7 +66,6 @@
                                     </div>
                                 </div>
                             </article>
-                        </div>
                     @endforeach
                 </div>
 

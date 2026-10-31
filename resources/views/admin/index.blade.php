@@ -28,6 +28,12 @@
         </div>
         <div class="col-sm-6 col-xl-3">
             <article class="stat-card">
+                <span>Banners</span>
+                <strong>{{ $bannerCount }}</strong>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="stat-card">
                 <span>Signed in as</span>
                 <strong>{{ auth()->user()->email }}</strong>
             </article>
@@ -35,25 +41,32 @@
     </div>
 
     <div class="row g-3">
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <section class="panel h-100">
                 <h2>Product</h2>
                 <p class="text-secondary">Add, edit, and remove products from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.products.index') }}">Open products</a>
             </section>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <section class="panel h-100">
                 <h2>Category</h2>
                 <p class="text-secondary">Add, edit, and remove categories from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.categories.index') }}">Open categories</a>
             </section>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <section class="panel h-100">
                 <h2>Company</h2>
                 <p class="text-secondary">Add, edit, and remove companies from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.companies.index') }}">Open companies</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
+                <h2>Banner</h2>
+                <p class="text-secondary">Add, edit, and remove home page banners from this admin desk.</p>
+                <a class="btn dash-btn" href="{{ route('admin.banners.index') }}">Open banners</a>
             </section>
         </div>
     </div>

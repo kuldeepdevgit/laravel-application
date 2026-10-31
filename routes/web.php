@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BootstrapController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -51,6 +52,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
         Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update');
         Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy');
+        Route::get('/banners', [BannerController::class, 'index'])->name('banners.index');
+        Route::get('/banners/create', [BannerController::class, 'create'])->name('banners.create');
+        Route::post('/banners', [BannerController::class, 'store'])->name('banners.store');
+        Route::get('/banners/{banner}/edit', [BannerController::class, 'edit'])->name('banners.edit');
+        Route::put('/banners/{banner}', [BannerController::class, 'update'])->name('banners.update');
+        Route::delete('/banners/{banner}', [BannerController::class, 'destroy'])->name('banners.destroy');
     });
 
     Route::middleware('member')->group(function () {

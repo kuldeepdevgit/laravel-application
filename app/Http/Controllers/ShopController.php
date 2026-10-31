@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Services\CartService;
 use App\Support\Catalog;
@@ -16,6 +17,8 @@ class ShopController extends Controller
     public function home(CartService $cart): View
     {
         return view('store.home', [
+            'banners' => $this->banners(),
+            'showDefaultBanners' => $this->showDefaultBanners(),
             'departments' => $this->departments(),
             'deals' => Catalog::deals(),
             'popular' => Catalog::popular(),
@@ -60,6 +63,31 @@ class ShopController extends Controller
             'related' => Catalog::related($item),
             'reviews' => Catalog::reviews(),
         ]);
+    }
+
+    /**
+     * @return Collection<int, Banner>
+     */
+    private function banners(): Collection
+    {
+        if (! Schema::hasTable('banners')) {
+            return new Collection;
+        }
+
+        return Banner::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+    }
+
+    private function showDefaultBanners(): bool
+    {
+        if (! Schema::hasTable('banners')) {
+            return true;
+        }
+
+        return Banner::query()->doesntExist();
     }
 
     /**

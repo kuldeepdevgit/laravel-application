@@ -304,7 +304,7 @@ a.dash-btn-quiet {
 }
 
 .cat-page {
-    max-width: 1080px;
+    max-width: none;
 }
 
 .cat-note {
@@ -360,6 +360,12 @@ a.dash-btn-quiet {
     width: 4rem;
 }
 
+.cat-board {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
 .cat-card {
     background: #fff;
     border: 1px solid #e6e0d6;
@@ -367,6 +373,7 @@ a.dash-btn-quiet {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-width: 0;
     overflow: hidden;
 }
 
@@ -377,7 +384,24 @@ a.dash-btn-quiet {
 }
 
 .cat-card-media.is-banner {
-    aspect-ratio: 400 / 267;
+    align-items: center;
+    aspect-ratio: auto;
+    background: #f7f4ee;
+    display: flex;
+    justify-content: center;
+    min-height: 180px;
+}
+
+.cat-card-media.is-banner img {
+    display: block;
+    height: auto;
+    max-height: 460px;
+    object-fit: contain;
+    width: 100%;
+}
+
+.cat-card-media.is-hero {
+    aspect-ratio: 1800 / 1201;
 }
 
 .cat-card-media img,
@@ -427,10 +451,25 @@ a.dash-btn-quiet {
     padding: 1rem 1.05rem 1.1rem;
 }
 
+.cat-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.cat-card-meta .cat-pill {
+    left: auto;
+    position: static;
+    right: auto;
+    top: auto;
+}
+
 .cat-card-body h3 {
     font-family: Fraunces, Georgia, serif;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+    line-height: 1.3;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .cat-card-body p {
@@ -552,6 +591,12 @@ a.dash-btn-quiet {
     width: min(100%, 320px);
 }
 
+.cat-preview-frame.is-hero {
+    aspect-ratio: 1800 / 1201;
+    height: auto;
+    width: min(100%, 360px);
+}
+
 .cat-preview-frame img {
     height: 100%;
     object-fit: cover;
@@ -560,7 +605,8 @@ a.dash-btn-quiet {
 
 #category-placeholder,
 #company-placeholder,
-#product-placeholder {
+#product-placeholder,
+#banner-placeholder {
     align-items: center;
     color: #8d8478;
     display: flex;
@@ -574,13 +620,16 @@ a.dash-btn-quiet {
 #company-placeholder[hidden],
 #company-preview[hidden],
 #product-placeholder[hidden],
-#product-preview[hidden] {
+#product-preview[hidden],
+#banner-placeholder[hidden],
+#banner-preview[hidden] {
     display: none !important;
 }
 
 #category-placeholder .bi,
 #company-placeholder .bi,
-#product-placeholder .bi {
+#product-placeholder .bi,
+#banner-placeholder .bi {
     font-size: 2rem;
 }
 

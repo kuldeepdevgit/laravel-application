@@ -1,59 +1,103 @@
 @extends('store.layout')
 
 @section('content')
-    <section id="hero" class="carousel slide hero" data-bs-ride="carousel" data-bs-interval="6500">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#hero" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#hero" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#hero" data-bs-slide-to="2" aria-label="Slide 3"></button>
-        </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=80')">
-                    <div class="container">
-                        <div class="hero-copy">
-                            <p class="eyebrow">New this week</p>
-                            <h1>The weekend edit</h1>
-                            <p>Throws, kettles, and lamps for a slower morning at home.</p>
-                            <a class="btn btn-accent btn-lg" href="{{ route('shop', ['cat' => 'Home']) }}">Shop home goods</a>
+    @if ($banners->isNotEmpty())
+        <section id="hero" class="carousel slide hero" @if ($banners->count() > 1) data-bs-ride="carousel" data-bs-interval="6500" @endif>
+            @if ($banners->count() > 1)
+                <div class="carousel-indicators">
+                    @foreach ($banners as $banner)
+                        <button type="button" data-bs-target="#hero" data-bs-slide-to="{{ $loop->index }}" @class(['active' => $loop->first]) @if ($loop->first) aria-current="true" @endif aria-label="Slide {{ $loop->iteration }}"></button>
+                    @endforeach
+                </div>
+            @endif
+            <div class="carousel-inner">
+                @foreach ($banners as $banner)
+                    <div @class(['carousel-item', 'active' => $loop->first])>
+                        <div class="hero-slide" @if ($banner->imageUrl()) style="background-image: url('{{ $banner->imageUrl() }}')" @endif>
+                            <div class="container">
+                                <div class="hero-copy">
+                                    @if ($banner->eyebrow)
+                                        <p class="eyebrow">{{ $banner->eyebrow }}</p>
+                                    @endif
+                                    <h1>{{ $banner->title }}</h1>
+                                    @if ($banner->description)
+                                        <p>{{ $banner->description }}</p>
+                                    @endif
+                                    @if ($banner->button_label && $banner->button_url)
+                                        <a class="btn btn-accent btn-lg" href="{{ $banner->button_url }}">{{ $banner->button_label }}</a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            @if ($banners->count() > 1)
+                <button class="carousel-control-prev" type="button" data-bs-target="#hero" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#hero" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            @endif
+        </section>
+    @elseif ($showDefaultBanners)
+        <section id="hero" class="carousel slide hero" data-bs-ride="carousel" data-bs-interval="6500">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#hero" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#hero" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#hero" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=80')">
+                        <div class="container">
+                            <div class="hero-copy">
+                                <p class="eyebrow">New this week</p>
+                                <h1>The weekend edit</h1>
+                                <p>Throws, kettles, and lamps for a slower morning at home.</p>
+                                <a class="btn btn-accent btn-lg" href="{{ route('shop', ['cat' => 'Home']) }}">Shop home goods</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1800&q=80')">
+                        <div class="container">
+                            <div class="hero-copy">
+                                <p class="eyebrow">Out the door</p>
+                                <h1>Gear that travels</h1>
+                                <p>Shoes, bottles, and a bag that fits under the seat.</p>
+                                <a class="btn btn-accent btn-lg" href="{{ route('shop', ['cat' => 'Outdoors']) }}">Shop outdoors</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1800&q=80')">
+                        <div class="container">
+                            <div class="hero-copy">
+                                <p class="eyebrow">Sound and keys</p>
+                                <h1>Quieter desks</h1>
+                                <p>Headphones, a compact keyboard, and a speaker for the counter.</p>
+                                <a class="btn btn-accent btn-lg" href="{{ route('shop', ['cat' => 'Electronics']) }}">Shop electronics</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="carousel-item">
-                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1800&q=80')">
-                    <div class="container">
-                        <div class="hero-copy">
-                            <p class="eyebrow">Out the door</p>
-                            <h1>Gear that travels</h1>
-                            <p>Shoes, bottles, and a bag that fits under the seat.</p>
-                            <a class="btn btn-accent btn-lg" href="{{ route('shop', ['cat' => 'Outdoors']) }}">Shop outdoors</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1800&q=80')">
-                    <div class="container">
-                        <div class="hero-copy">
-                            <p class="eyebrow">Sound and keys</p>
-                            <h1>Quieter desks</h1>
-                            <p>Headphones, a compact keyboard, and a speaker for the counter.</p>
-                            <a class="btn btn-accent btn-lg" href="{{ route('shop', ['cat' => 'Electronics']) }}">Shop electronics</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#hero" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#hero" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </section>
+            <button class="carousel-control-prev" type="button" data-bs-target="#hero" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#hero" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </section>
+    @endif
 
     @if ($departments->isNotEmpty())
         <section class="section">
