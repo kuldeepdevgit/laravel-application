@@ -250,6 +250,39 @@ class ProductTest extends TestCase
         $this->assertFileDoesNotExist(public_path($image));
     }
 
+    public function test_replacing_a_product_image_deletes_the_previous_upload(): void
+    {
+        $previous = Product::storeImage(UploadedFile::fake()->image('old.jpg', 800, 800));
+        $product = Product::factory()->create([
+            'name' => 'Assam Leaf Tin',
+            'image' => $previous,
+        ]);
+        $user = User::factory()->superAdmin()->create();
+
+        $this->actingAs($user)
+            ->put('/admin/products/'.$product->id, [
+                'category_id' => '',
+                'name' => 'Assam Leaf Tin',
+                'description' => '',
+                'price' => '20',
+                'product_bv' => '5',
+                'compare_price' => '',
+                'stock' => '1',
+                'is_active' => '1',
+                'image' => UploadedFile::fake()->image('new.jpg', 900, 900),
+            ])
+            ->assertRedirect('/admin/products');
+
+        $product->refresh();
+
+        $this->assertNotSame($previous, $product->image);
+        $this->assertFileDoesNotExist(public_path($previous));
+        $this->assertFileExists(public_path($product->image));
+
+        $product->delete();
+        $this->assertFileDoesNotExist(public_path($product->image));
+    }
+
     public function test_editing_can_keep_the_current_image(): void
     {
         Storage::disk('public')->put('products/keep.jpg', 'keep-image');

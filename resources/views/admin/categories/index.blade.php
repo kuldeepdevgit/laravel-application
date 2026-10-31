@@ -45,6 +45,9 @@
                                         <span class="cat-card-fallback" aria-hidden="true"><i class="bi bi-image"></i></span>
                                     @endif
                                     <span class="cat-pill @if ($category->is_active) is-live @endif">{{ $category->is_active ? 'Active' : 'Inactive' }}</span>
+                                    @if ($category->is_featured)
+                                        <span class="cat-pill is-feature">Featured</span>
+                                    @endif
                                 </div>
                                 <div class="cat-card-body">
                                     <h3>{{ $category->name }}</h3>

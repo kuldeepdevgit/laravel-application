@@ -36,7 +36,7 @@ class CategoryController extends Controller
     public function create(): View
     {
         return view('admin.categories.form', [
-            'category' => new Category(['is_active' => true]),
+            'category' => new Category(['is_active' => true, 'is_featured' => false]),
         ]);
     }
 
@@ -66,13 +66,10 @@ class CategoryController extends Controller
         $data['slug'] = $this->uniqueSlug($data['name'], $category);
 
         if ($request->hasFile('image')) {
-            $previous = $category->image;
             $data['image'] = Category::storeImage($request->file('image'));
-            $category->update($data);
-            Category::deleteImageFile($previous);
-        } else {
-            $category->update($data);
         }
+
+        $category->update($data);
 
         return redirect()
             ->route('admin.categories.index')
@@ -89,7 +86,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * @return array{name: string, description: ?string, is_active: bool}
+     * @return array{name: string, description: ?string, is_active: bool, is_featured: bool}
      */
     private function validated(Request $request, ?Category $category = null): array
     {
@@ -102,6 +99,7 @@ class CategoryController extends Controller
             ],
             'description' => ['nullable', 'string', 'max:400'],
             'is_active' => ['required', Rule::in(['0', '1'])],
+            'is_featured' => ['required', Rule::in(['0', '1'])],
             'image' => [
                 $category?->image ? 'nullable' : 'required',
                 'image',
@@ -120,6 +118,7 @@ class CategoryController extends Controller
             'name' => $data['name'],
             'description' => $request->filled('description') ? $data['description'] : null,
             'is_active' => $request->boolean('is_active'),
+            'is_featured' => $request->boolean('is_featured'),
         ];
     }
 

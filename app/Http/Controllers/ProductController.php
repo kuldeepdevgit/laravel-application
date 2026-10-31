@@ -72,13 +72,10 @@ class ProductController extends Controller
         $data['slug'] = $this->uniqueSlug($data['name'], $product);
 
         if ($request->hasFile('image')) {
-            $previous = $product->image;
             $data['image'] = Product::storeImage($request->file('image'));
-            $product->update($data);
-            Product::deleteImageFile($previous);
-        } else {
-            $product->update($data);
         }
+
+        $product->update($data);
 
         return redirect()
             ->route('admin.products.index')

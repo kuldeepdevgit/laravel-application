@@ -24,6 +24,7 @@ class CategoryFactory extends Factory
             'description' => fake()->sentence(),
             'image' => null,
             'is_active' => true,
+            'is_featured' => false,
         ];
     }
 }

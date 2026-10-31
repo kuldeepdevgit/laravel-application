@@ -11,6 +11,7 @@
 @section('content')
     @php
         $active = (string) old('is_active', $category->exists ? ($category->is_active ? '1' : '0') : '1');
+        $featured = (string) old('is_featured', $category->is_featured ? '1' : '0');
     @endphp
 
     <div class="cat-page">
@@ -43,13 +44,25 @@
                     @enderror
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label class="form-label" for="is_active">Status</label>
                     <select class="form-select" id="is_active" name="is_active">
                         <option value="1" @selected($active === '1')>Active</option>
                         <option value="0" @selected($active === '0')>Inactive</option>
                     </select>
                     @error('is_active')
+                        <p class="text-danger small mb-0">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="is_featured">Feature</label>
+                    <select class="form-select" id="is_featured" name="is_featured">
+                        <option value="1" @selected($featured === '1')>Yes</option>
+                        <option value="0" @selected($featured === '0')>No</option>
+                    </select>
+                    <p class="form-text mb-0">Featured categories are shown on the home page.</p>
+                    @error('is_featured')
                         <p class="text-danger small mb-0">{{ $message }}</p>
                     @enderror
                 </div>

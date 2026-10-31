@@ -49,6 +49,7 @@ class CategoryTest extends TestCase
                 'name' => 'Organic Tea',
                 'description' => 'Leaves and blends.',
                 'is_active' => '1',
+                'is_featured' => '1',
                 'image' => UploadedFile::fake()->image('tea.jpg', 900, 600),
             ])
             ->assertRedirect('/admin/categories')
@@ -60,6 +61,7 @@ class CategoryTest extends TestCase
         $this->assertSame('organic-tea', $category->slug);
         $this->assertSame('Leaves and blends.', $category->description);
         $this->assertTrue($category->is_active);
+        $this->assertTrue($category->is_featured);
         $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/category/category-img/', $category->image);
         $this->assertFileExists(public_path($category->image));
         $this->assertStringContainsString(
@@ -89,6 +91,7 @@ class CategoryTest extends TestCase
                 'name' => '',
                 'description' => '',
                 'is_active' => '1',
+                'is_featured' => '1',
             ])
             ->assertRedirect('/admin/categories/create')
             ->assertSessionHasErrors(['name', 'image']);
@@ -107,6 +110,7 @@ class CategoryTest extends TestCase
                 'name' => 'Organic Tea',
                 'description' => '',
                 'is_active' => '1',
+                'is_featured' => '1',
                 'image' => UploadedFile::fake()->image('tea.jpg'),
             ])
             ->assertRedirect('/admin/categories/create')
@@ -129,6 +133,7 @@ class CategoryTest extends TestCase
             ->get('/admin/categories/'.$category->id.'/edit')
             ->assertOk()
             ->assertSee('Edit category')
+            ->assertSee('Feature')
             ->assertSee('value="Organic Tea"', false)
             ->assertSee('Current image')
             ->assertSee('Crop image');
@@ -138,6 +143,7 @@ class CategoryTest extends TestCase
                 'name' => 'Herbal Tea',
                 'description' => 'Updated copy',
                 'is_active' => '0',
+                'is_featured' => '0',
                 'image' => UploadedFile::fake()->image('herbal.png', 700, 700),
             ])
             ->assertRedirect('/admin/categories')
@@ -149,6 +155,7 @@ class CategoryTest extends TestCase
         $this->assertSame('herbal-tea', $category->slug);
         $this->assertSame('Updated copy', $category->description);
         $this->assertFalse($category->is_active);
+        $this->assertFalse($category->is_featured);
         $this->assertNotSame('categories/old.jpg', $category->image);
         $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/category/category-img/', $category->image);
         $this->assertFileExists(public_path($category->image));
@@ -157,6 +164,35 @@ class CategoryTest extends TestCase
         $image = $category->image;
         $category->delete();
         $this->assertFileDoesNotExist(public_path($image));
+    }
+
+    public function test_replacing_a_category_image_deletes_the_previous_upload(): void
+    {
+        $previous = Category::storeImage(UploadedFile::fake()->image('old.jpg', 400, 267));
+        $category = Category::factory()->create([
+            'name' => 'Organic Tea',
+            'image' => $previous,
+        ]);
+        $user = User::factory()->superAdmin()->create();
+
+        $this->actingAs($user)
+            ->put('/admin/categories/'.$category->id, [
+                'name' => 'Herbal Tea',
+                'description' => '',
+                'is_active' => '1',
+                'is_featured' => '1',
+                'image' => UploadedFile::fake()->image('new.jpg', 800, 500),
+            ])
+            ->assertRedirect('/admin/categories');
+
+        $category->refresh();
+
+        $this->assertNotSame($previous, $category->image);
+        $this->assertFileDoesNotExist(public_path($previous));
+        $this->assertFileExists(public_path($category->image));
+
+        $category->delete();
+        $this->assertFileDoesNotExist(public_path($category->image));
     }
 
     public function test_editing_can_keep_the_current_image(): void
@@ -173,6 +209,7 @@ class CategoryTest extends TestCase
                 'name' => 'Whole Spices',
                 'description' => '',
                 'is_active' => '1',
+                'is_featured' => '1',
             ])
             ->assertRedirect('/admin/categories');
 

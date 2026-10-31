@@ -413,6 +413,12 @@ a.dash-btn-quiet {
     background: #1b7a34;
 }
 
+.cat-pill.is-feature {
+    background: #c48a12;
+    left: auto;
+    right: 0.75rem;
+}
+
 .cat-card-body {
     display: flex;
     flex: 1;

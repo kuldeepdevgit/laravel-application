@@ -16,11 +16,19 @@ class StoreDepartmentTest extends TestCase
             'name' => 'Organic Tea',
             'slug' => 'organic-tea',
             'is_active' => true,
+            'is_featured' => true,
+        ]);
+        Category::factory()->create([
+            'name' => 'Plain Spices',
+            'slug' => 'plain-spices',
+            'is_active' => true,
+            'is_featured' => false,
         ]);
         Category::factory()->create([
             'name' => 'Hidden Honey',
             'slug' => 'hidden-honey',
             'is_active' => false,
+            'is_featured' => true,
         ]);
 
         $this->get('/')
@@ -28,6 +36,7 @@ class StoreDepartmentTest extends TestCase
             ->assertSee('Shop by department')
             ->assertSee('Organic Tea')
             ->assertSee(route('shop', ['cat' => 'organic-tea']), false)
+            ->assertDontSee('Plain Spices')
             ->assertDontSee('Hidden Honey');
     }
 

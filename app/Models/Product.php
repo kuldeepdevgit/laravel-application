@@ -29,6 +29,20 @@ class Product extends Model
 
     protected static function booted(): void
     {
+        static::updated(function (Product $product): void {
+            if (! $product->wasChanged('image')) {
+                return;
+            }
+
+            $previous = $product->getOriginal('image');
+
+            if (! is_string($previous) || $previous === $product->image) {
+                return;
+            }
+
+            static::deleteImageFile($previous);
+        });
+
         static::deleting(function (Product $product): void {
             static::deleteImageFile($product->image);
         });

@@ -73,6 +73,7 @@ class ShopController extends Controller
 
         return Category::query()
             ->where('is_active', true)
+            ->where('is_featured', true)
             ->orderBy('name')
             ->get();
     }

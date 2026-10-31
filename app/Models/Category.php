@@ -20,10 +20,25 @@ class Category extends Model
         'description',
         'image',
         'is_active',
+        'is_featured',
     ];
 
     protected static function booted(): void
     {
+        static::updated(function (Category $category): void {
+            if (! $category->wasChanged('image')) {
+                return;
+            }
+
+            $previous = $category->getOriginal('image');
+
+            if (! is_string($previous) || $previous === $category->image) {
+                return;
+            }
+
+            static::deleteImageFile($previous);
+        });
+
         static::deleting(function (Category $category): void {
             static::deleteImageFile($category->image);
         });
@@ -82,6 +97,7 @@ class Category extends Model
     {
         return [
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
         ];
     }
 
