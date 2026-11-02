@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmailTemplate;
 use App\Models\User;
+use App\Services\TemplateMailer;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -69,7 +71,7 @@ class AuthController extends Controller
         return response()->json(['name' => $name]);
     }
 
-    public function storeRegister(Request $request): RedirectResponse
+    public function storeRegister(Request $request, TemplateMailer $mailer): RedirectResponse
     {
         $data = $request->validate([
             'sponsor_name' => [
@@ -97,10 +99,16 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        $delivery = $mailer->send($user, EmailTemplate::WELCOME, [
+            '{password}' => $data['password'],
+        ]);
+
         return redirect()
             ->route('registered')
             ->with('signup_user_name', $user->user_name)
-            ->with('signup_password', $data['password']);
+            ->with('signup_password', $data['password'])
+            ->with('signup_email_sent', $delivery === 'sent')
+            ->with('signup_email_failed', $delivery === 'failed');
     }
 
     public function registered(Request $request): View|RedirectResponse
@@ -145,7 +153,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function storeReset(Request $request): RedirectResponse
+    public function storeReset(Request $request, TemplateMailer $mailer): RedirectResponse
     {
         $request->validate([
             'token' => ['required', 'string'],
@@ -155,10 +163,12 @@ class AuthController extends Controller
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password): void {
+            function (User $user, string $password) use ($mailer): void {
                 $user->forceFill(['password' => $password])->save();
 
                 event(new PasswordReset($user));
+
+                $mailer->send($user, EmailTemplate::PASSWORD_RESET);
             }
         );
 

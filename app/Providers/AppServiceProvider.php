@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\SmtpSetting;
 use App\Services\CartService;
 use App\Support\Catalog;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        $this->applyStoredMailConfig();
 
         View::composer('store.*', function ($view) {
             $requested = request()->string('cat')->toString();
@@ -46,5 +50,22 @@ class AppServiceProvider extends ServiceProvider
                 'navCategory' => $navCategory,
             ]);
         });
+    }
+
+    private function applyStoredMailConfig(): void
+    {
+        if ($this->app->runningUnitTests()) {
+            return;
+        }
+
+        try {
+            if (! Schema::hasTable('smtp_settings')) {
+                return;
+            }
+
+            SmtpSetting::query()->first()?->applyMailConfig();
+        } catch (Throwable $exception) {
+            report($exception);
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\Category;
-use App\Services\CartService;
+use App\Models\Product;
 use App\Support\Catalog;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,16 +14,13 @@ use Illuminate\View\View;
 
 class ShopController extends Controller
 {
-    public function home(CartService $cart): View
+    public function home(): View
     {
         return view('store.home', [
             'banners' => $this->banners(),
             'showDefaultBanners' => $this->showDefaultBanners(),
             'departments' => $this->departments(),
-            'deals' => Catalog::deals(),
-            'popular' => Catalog::popular(),
-            'more' => Catalog::more(),
-            'dealEndsAt' => $cart->dealEndsAt(),
+            'products' => $this->products(),
         ]);
     }
 
@@ -88,6 +85,22 @@ class ShopController extends Controller
         }
 
         return Banner::query()->doesntExist();
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    private function products(): Collection
+    {
+        if (! Schema::hasTable('products')) {
+            return new Collection;
+        }
+
+        return Product::query()
+            ->with('category')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
     }
 
     /**

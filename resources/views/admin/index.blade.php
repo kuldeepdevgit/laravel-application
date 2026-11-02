@@ -69,5 +69,19 @@
                 <a class="btn dash-btn" href="{{ route('admin.banners.index') }}">Open banners</a>
             </section>
         </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
+                <h2>Email template</h2>
+                <p class="text-secondary">Change the welcome, forget password, and reset password messages.</p>
+                <a class="btn dash-btn" href="{{ route('admin.email.index') }}">Open email template</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
+                <h2>SMTP</h2>
+                <p class="text-secondary">Change the account that sends outgoing mail.</p>
+                <a class="btn dash-btn" href="{{ route('admin.smtp.edit') }}">Open SMTP</a>
+            </section>
+        </div>
     </div>
 @endsection

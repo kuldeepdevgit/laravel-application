@@ -10,8 +10,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\SmtpSettingController;
 use App\Http\Controllers\TemplateController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +60,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/banners/{banner}/edit', [BannerController::class, 'edit'])->name('banners.edit');
         Route::put('/banners/{banner}', [BannerController::class, 'update'])->name('banners.update');
         Route::delete('/banners/{banner}', [BannerController::class, 'destroy'])->name('banners.destroy');
+        Route::get('/email', [EmailTemplateController::class, 'index'])->name('email.index');
+        Route::get('/email/{emailTemplate}/edit', [EmailTemplateController::class, 'edit'])->name('email.edit');
+        Route::put('/email/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email.update');
+        Route::delete('/email/{emailTemplate}', [EmailTemplateController::class, 'destroy'])->name('email.destroy');
+        Route::post('/email/{emailTemplate}/resend', [EmailTemplateController::class, 'resend'])->name('email.resend');
+        Route::get('/smtp', [SmtpSettingController::class, 'edit'])->name('smtp.edit');
+        Route::put('/smtp', [SmtpSettingController::class, 'update'])->name('smtp.update');
     });
 
     Route::middleware('member')->group(function () {

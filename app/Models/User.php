@@ -3,8 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\TemplateMailer;
 use Database\Factories\UserFactory;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
@@ -115,13 +115,17 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token): void
     {
+        $url = url(route('password.reset', [
+            'token' => $token,
+            'email' => $this->getEmailForPasswordReset(),
+        ], false));
+
         if (config('mail.default') === 'log') {
-            session()->flash('reset_url', url(route('password.reset', [
-                'token' => $token,
-                'email' => $this->getEmailForPasswordReset(),
-            ], false)));
+            session()->flash('reset_url', $url);
         }
 
-        $this->notify(new ResetPassword($token));
+        app(TemplateMailer::class)->send($this, EmailTemplate::FORGOT_PASSWORD, [
+            '{reset_url}' => $url,
+        ]);
     }
 }

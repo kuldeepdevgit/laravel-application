@@ -100,53 +100,52 @@
     @endif
 
     @if ($departments->isNotEmpty())
-        <section class="section">
+        <section class="section" aria-labelledby="shop-departments">
             <div class="container">
                 <div class="section-head">
-                    <h2>Shop by department</h2>
+                    <h2 id="shop-departments">Shop by department</h2>
                 </div>
-                <div class="cat-grid">
-                    @foreach ($departments as $department)
-                        <a class="cat-tile" href="{{ route('shop', ['cat' => $department->slug]) }}">
-                            @if ($department->imageUrl())
-                                <img src="{{ $department->imageUrl() }}" alt="">
-                            @else
-                                <span class="cat-fallback" aria-hidden="true">{{ mb_strtoupper(mb_substr($department->name, 0, 1)) }}</span>
-                            @endif
-                            <span>{{ $department->name }}</span>
-                        </a>
-                    @endforeach
+                <div class="dept-slider" data-dept-slider data-per-view="8" data-loop="true" data-clone="true">
+                    <button class="dept-slider-btn dept-slider-prev" type="button" aria-label="Previous departments">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <div class="dept-slider-window">
+                        <div class="dept-slider-track">
+                            @foreach ($departments as $department)
+                                <a class="cat-tile" href="{{ route('shop', ['cat' => $department->slug]) }}">
+                                    @if ($department->imageUrl())
+                                        <img src="{{ $department->imageUrl() }}" alt="">
+                                    @else
+                                        <span class="cat-fallback" aria-hidden="true">{{ mb_strtoupper(mb_substr($department->name, 0, 1)) }}</span>
+                                    @endif
+                                    <span>{{ $department->name }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    <button class="dept-slider-btn dept-slider-next" type="button" aria-label="Next departments">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </button>
                 </div>
             </div>
         </section>
     @endif
 
-    <section class="band">
+    <section class="section" aria-labelledby="all-products">
         <div class="container">
             <div class="section-head">
-                <h2>Today's picks</h2>
-                <p class="deal-clock">Ends in <span id="deal-clock" data-end="{{ $dealEndsAt * 1000 }}">08:00:00</span></p>
-                <a href="{{ route('shop') }}">See all</a>
+                <h2 id="all-products">All products</h2>
+                <a href="{{ route('shop') }}">See the shop</a>
             </div>
-            <div class="product-grid">
-                @foreach ($deals as $product)
-                    @include('store.partials.card', ['product' => $product])
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <div class="section-head">
-                <h2>Popular right now</h2>
-                <a href="{{ route('shop', ['sort' => 'reviews']) }}">Most rated</a>
-            </div>
-            <div class="product-grid">
-                @foreach ($popular as $product)
-                    @include('store.partials.card', ['product' => $product])
-                @endforeach
-            </div>
+            @if ($products->isEmpty())
+                <p class="product-blurb">No products yet.</p>
+            @else
+                <div class="product-grid">
+                    @foreach ($products as $product)
+                        @include('store.partials.product-card', ['product' => $product])
+                    @endforeach
+                </div>
+            @endif
         </div>
     </section>
 
@@ -166,22 +165,6 @@
             </div>
         </div>
     </section>
-
-    @if (count($more))
-        <section class="section">
-            <div class="container">
-                <div class="section-head">
-                    <h2>More to explore</h2>
-                    <a href="{{ route('shop') }}">Browse the catalog</a>
-                </div>
-                <div class="product-grid">
-                    @foreach ($more as $product)
-                        @include('store.partials.card', ['product' => $product])
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
 
     <section class="note-band">
         <div class="container">

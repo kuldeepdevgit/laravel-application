@@ -2,17 +2,57 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class StorefrontTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_the_home_page_lists_products(): void
     {
         $this->get('/')
             ->assertOk()
             ->assertSee('Green Smart India E Services')
             ->assertSee('images/green-smart-india.png', false)
-            ->assertSee('Aero Quiet Headphones');
+            ->assertSee('All products')
+            ->assertSee('No products yet')
+            ->assertDontSee('Aero Quiet Headphones')
+            ->assertDontSee('Fieldcloth Journal');
+    }
+
+    public function test_the_home_page_lists_every_active_saved_product(): void
+    {
+        $category = Category::factory()->create([
+            'name' => 'Pantry',
+            'slug' => 'pantry',
+            'is_active' => true,
+        ]);
+        Product::factory()->create([
+            'category_id' => $category->id,
+            'name' => 'Assam Honey',
+            'slug' => 'assam-honey',
+            'price' => 120.50,
+            'product_bv' => 12,
+            'is_active' => true,
+        ]);
+        Product::factory()->create([
+            'name' => 'Hidden Soap',
+            'slug' => 'hidden-soap',
+            'is_active' => false,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Assam Honey')
+            ->assertSee('Pantry')
+            ->assertSee('₹120.50')
+            ->assertSee('BV 12.00')
+            ->assertSee(route('shop', ['cat' => 'pantry']), false)
+            ->assertDontSee('Hidden Soap')
+            ->assertDontSee('Aero Quiet Headphones');
     }
 
     public function test_search_filters_the_catalog(): void

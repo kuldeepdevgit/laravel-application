@@ -23,6 +23,14 @@
         <i class="bi bi-image" aria-hidden="true"></i>
         <span>Banner</span>
     </a>
+    <a class="dash-item @if (request()->routeIs('admin.email.*')) is-active @endif" href="{{ route('admin.email.index') }}" @if (request()->routeIs('admin.email.*')) aria-current="page" @endif>
+        <i class="bi bi-envelope" aria-hidden="true"></i>
+        <span>Email template</span>
+    </a>
+    <a class="dash-item @if (request()->routeIs('admin.smtp.*')) is-active @endif" href="{{ route('admin.smtp.edit') }}" @if (request()->routeIs('admin.smtp.*')) aria-current="page" @endif>
+        <i class="bi bi-hdd-network" aria-hidden="true"></i>
+        <span>SMTP</span>
+    </a>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf

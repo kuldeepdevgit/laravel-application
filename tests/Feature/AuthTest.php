@@ -2,11 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Mail\TemplateMessage;
+use App\Models\EmailTemplate;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -142,7 +143,7 @@ class AuthTest extends TestCase
 
     public function test_a_user_can_reset_a_forgotten_password(): void
     {
-        Notification::fake();
+        Mail::fake();
 
         $user = User::factory()->create([
             'email' => 'avery@example.com',
@@ -156,11 +157,15 @@ class AuthTest extends TestCase
             'email' => $user->email,
         ])->assertSessionHas('status');
 
-        $token = null;
-        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use (&$token) {
-            $token = $notification->token;
+        $token = '';
+        Mail::assertSent(TemplateMessage::class, function (TemplateMessage $mail) use (&$token): bool {
+            if ($mail->template->key !== EmailTemplate::FORGOT_PASSWORD) {
+                return false;
+            }
 
-            return true;
+            $token = basename((string) parse_url($mail->tokens['{reset_url}'], PHP_URL_PATH));
+
+            return $token !== '';
         });
 
         $this->get('/reset-password/'.$token.'?email='.urlencode($user->email))

@@ -256,6 +256,23 @@ body.dash-body {
     font-weight: 700;
 }
 
+.email-table td.email-wrap,
+.email-table th {
+    white-space: normal;
+}
+
+.email-table th:last-child,
+.email-table td:last-child {
+    width: 18rem;
+    white-space: nowrap;
+}
+
+.email-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
 .dash-btn {
     background: var(--dash-accent);
     border: 0;

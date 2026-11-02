@@ -7,6 +7,12 @@
         <div class="auth-card">
             <h1>Create an account</h1>
             <p class="lede">Save your username and password. Your password is shown only this once.</p>
+            @if (session('signup_email_sent'))
+                <p class="lede">We also sent these details to your email.</p>
+            @endif
+            @if (session('signup_email_failed'))
+                <p class="lede">The welcome email could not be sent. Keep the username and password on this page.</p>
+            @endif
 
             <div class="field">
                 <label>Username</label>
