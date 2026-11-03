@@ -10,6 +10,12 @@
     <div class="row g-3 mb-3">
         <div class="col-sm-6 col-xl-3">
             <article class="stat-card">
+                <span>Customers</span>
+                <strong>{{ $customerCount }}</strong>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="stat-card">
                 <span>Products</span>
                 <strong>{{ $productCount }}</strong>
             </article>
@@ -41,6 +47,13 @@
     </div>
 
     <div class="row g-3">
+        <div class="col-lg-3">
+            <section class="panel h-100">
+                <h2>Customer Management</h2>
+                <p class="text-secondary">See every account, edit details, or sign in as that customer.</p>
+                <a class="btn dash-btn" href="{{ route('admin.customers.index') }}">Open customers</a>
+            </section>
+        </div>
         <div class="col-lg-3">
             <section class="panel h-100">
                 <h2>Product</h2>

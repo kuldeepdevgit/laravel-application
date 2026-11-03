@@ -7,6 +7,10 @@
         <i class="bi bi-speedometer2" aria-hidden="true"></i>
         <span>Dashboard</span>
     </a>
+    <a class="dash-item @if (request()->routeIs('admin.customers.*')) is-active @endif" href="{{ route('admin.customers.index') }}" @if (request()->routeIs('admin.customers.*')) aria-current="page" @endif>
+        <i class="bi bi-people" aria-hidden="true"></i>
+        <span>Customer Management</span>
+    </a>
     <a class="dash-item @if (request()->routeIs('admin.categories.*')) is-active @endif" href="{{ route('admin.categories.index') }}" @if (request()->routeIs('admin.categories.*')) aria-current="page" @endif>
         <i class="bi bi-grid" aria-hidden="true"></i>
         <span>Category</span>

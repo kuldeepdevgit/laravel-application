@@ -89,12 +89,129 @@ class StorefrontTest extends TestCase
             ->assertSee('Aero Quiet Headphones');
     }
 
-    public function test_search_filters_the_catalog(): void
+    public function test_search_filters_the_shop(): void
     {
+        Product::factory()->create([
+            'name' => 'Cedar Candle Trio',
+            'slug' => 'cedar-candle-trio',
+            'description' => 'Three soy candles.',
+            'is_active' => true,
+        ]);
+        Product::factory()->create([
+            'name' => 'Trailform Runners',
+            'slug' => 'trailform-runners',
+            'description' => 'Everyday shoes.',
+            'is_active' => true,
+        ]);
+
         $this->get('/shop?q=candle')
             ->assertOk()
+            ->assertSee('Results for “candle”')
             ->assertSee('Cedar Candle Trio')
             ->assertDontSee('Trailform Runners');
+    }
+
+    public function test_the_shop_paginates_active_products(): void
+    {
+        Product::factory()->create([
+            'name' => 'Hidden Soap',
+            'slug' => 'hidden-soap',
+            'is_active' => false,
+        ]);
+
+        foreach (range(1, 10) as $number) {
+            Product::factory()->create([
+                'name' => sprintf('Shelf Item %02d', $number),
+                'slug' => sprintf('shelf-item-%02d', $number),
+                'is_active' => true,
+            ]);
+        }
+
+        $this->get('/shop')
+            ->assertOk()
+            ->assertSee('All products')
+            ->assertSee('Shelf Item 01')
+            ->assertDontSee('Shelf Item 10')
+            ->assertDontSee('Hidden Soap')
+            ->assertSee('aria-label="Pages"', false);
+
+        $this->get('/shop?page=2')
+            ->assertOk()
+            ->assertSee('Shelf Item 10')
+            ->assertDontSee('Shelf Item 01');
+    }
+
+    public function test_the_shop_filters_by_department_price_and_stock(): void
+    {
+        $tea = Category::factory()->create([
+            'name' => 'Organic Tea',
+            'slug' => 'organic-tea',
+            'is_active' => true,
+        ]);
+        $spice = Category::factory()->create([
+            'name' => 'Spices',
+            'slug' => 'spices',
+            'is_active' => true,
+        ]);
+        Category::factory()->create([
+            'name' => 'Hidden Honey',
+            'slug' => 'hidden-honey',
+            'is_active' => false,
+        ]);
+
+        Product::factory()->create([
+            'category_id' => $tea->id,
+            'name' => 'Assam Honey',
+            'slug' => 'assam-honey',
+            'price' => 80,
+            'stock' => 4,
+        ]);
+        Product::factory()->create([
+            'category_id' => $spice->id,
+            'name' => 'Red Chilli',
+            'slug' => 'red-chilli',
+            'price' => 40,
+            'stock' => 3,
+        ]);
+        Product::factory()->create([
+            'category_id' => $tea->id,
+            'name' => 'Costly Tea',
+            'slug' => 'costly-tea',
+            'price' => 500,
+            'stock' => 2,
+        ]);
+        Product::factory()->create([
+            'category_id' => $tea->id,
+            'name' => 'Empty Tin',
+            'slug' => 'empty-tin',
+            'price' => 30,
+            'stock' => 0,
+        ]);
+
+        $this->get('/shop?cat=organic-tea')
+            ->assertOk()
+            ->assertSee('Organic Tea')
+            ->assertSee('Assam Honey')
+            ->assertSee('Costly Tea')
+            ->assertSee('Empty Tin')
+            ->assertDontSee('Red Chilli')
+            ->assertDontSee('Hidden Honey');
+
+        $this->get('/shop?max=100')
+            ->assertOk()
+            ->assertSee('Assam Honey')
+            ->assertSee('Red Chilli')
+            ->assertSee('Empty Tin')
+            ->assertDontSee('Costly Tea');
+
+        $this->get('/shop?stock=1')
+            ->assertOk()
+            ->assertSee('Assam Honey')
+            ->assertDontSee('Empty Tin');
+
+        $this->get('/shop?sort=price-desc')
+            ->assertOk()
+            ->assertSeeInOrder(['Costly Tea', 'Assam Honey', 'Red Chilli', 'Empty Tin']);
     }
 
     public function test_a_sold_out_product_stays_out_of_the_cart(): void

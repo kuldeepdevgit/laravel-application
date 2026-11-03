@@ -6,6 +6,7 @@ use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\View\View;
 
 class AdminController extends Controller
@@ -17,6 +18,7 @@ class AdminController extends Controller
             'categoryCount' => Category::query()->count(),
             'companyCount' => Company::query()->count(),
             'bannerCount' => Banner::query()->count(),
+            'customerCount' => User::query()->count(),
         ]);
     }
 }

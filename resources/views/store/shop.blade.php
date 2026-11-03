@@ -13,19 +13,19 @@
             <aside class="col-lg-3">
                 <div class="filter-card">
                     <h2>Department</h2>
-                    @foreach (['' => 'All departments'] + $categories as $value => $label)
+                    <label class="cat-option">
+                        <input type="radio" form="filters" name="cat" value="" @checked($filters['cat'] === '') onchange="document.getElementById('filters').submit()">
+                        All departments
+                    </label>
+                    @foreach ($departments as $department)
                         <label class="cat-option">
-                            <input type="radio" form="filters" name="cat" value="{{ $value }}" @checked($filters['cat'] === $value || $filters['match'] === $value) onchange="document.getElementById('filters').submit()">
-                            {{ $label }}
+                            <input type="radio" form="filters" name="cat" value="{{ $department->slug }}" @checked($filters['cat'] === $department->slug) onchange="document.getElementById('filters').submit()">
+                            {{ $department->name }}
                         </label>
                     @endforeach
-                    <h2>Highest price <output id="price-label">{{ \App\Support\Catalog::money($filters['max']) }}</output></h2>
-                    <input class="form-range" form="filters" type="range" name="max" min="10" max="200" step="1" value="{{ $filters['max'] }}" oninput="document.getElementById('price-label').textContent = '$' + Number(this.value).toFixed(2)" onchange="document.getElementById('filters').submit()">
+                    <h2>Highest price <output id="price-label">₹{{ number_format($filters['max'], 2) }}</output></h2>
+                    <input class="form-range" form="filters" type="range" name="max" min="1" max="{{ $filters['ceiling'] }}" step="1" value="{{ $filters['max'] }}" oninput="document.getElementById('price-label').textContent = '₹' + Number(this.value).toFixed(2)" onchange="document.getElementById('filters').submit()">
                     <div class="form-check mt-3">
-                        <input class="form-check-input" form="filters" type="checkbox" id="rated" name="rated" value="1" @checked($filters['rated']) onchange="document.getElementById('filters').submit()">
-                        <label class="form-check-label" for="rated">4 stars and up</label>
-                    </div>
-                    <div class="form-check">
                         <input class="form-check-input" form="filters" type="checkbox" id="instock" name="stock" value="1" @checked($filters['stock']) onchange="document.getElementById('filters').submit()">
                         <label class="form-check-label" for="instock">In stock only</label>
                     </div>
@@ -40,7 +40,7 @@
                     </div>
                     <label class="visually-hidden" for="sort">Sort</label>
                     <select id="sort" class="form-select" name="sort" form="filters" onchange="document.getElementById('filters').submit()">
-                        @foreach (['featured' => 'Featured', 'price-asc' => 'Price: low to high', 'price-desc' => 'Price: high to low', 'rating' => 'Top rated', 'reviews' => 'Most rated'] as $value => $label)
+                        @foreach (['featured' => 'Featured', 'price-asc' => 'Price: low to high', 'price-desc' => 'Price: high to low'] as $value => $label)
                             <option value="{{ $value }}" @selected($filters['sort'] === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
@@ -55,7 +55,7 @@
                 @else
                     <div class="product-grid compact">
                         @foreach ($products as $product)
-                            @include('store.partials.card', ['product' => $product])
+                            @include('store.partials.product-card', ['product' => $product])
                         @endforeach
                     </div>
                     @if ($products->lastPage() > 1)

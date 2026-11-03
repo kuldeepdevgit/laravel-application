@@ -13,6 +13,7 @@ class AdminTest extends TestCase
     public function test_guests_are_sent_to_login(): void
     {
         $this->get('/admin')->assertRedirect('/login');
+        $this->get('/admin/customers')->assertRedirect('/login');
         $this->get('/admin/categories')->assertRedirect('/login');
         $this->get('/admin/products')->assertRedirect('/login');
         $this->get('/admin/companies')->assertRedirect('/login');
@@ -27,6 +28,10 @@ class AdminTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/customers')
             ->assertForbidden();
 
         $this->actingAs($member)
@@ -105,12 +110,14 @@ class AdminTest extends TestCase
             ->assertSee('Welcome back, Super Admin')
             ->assertSee('superadmin@software.com')
             ->assertSee('Super Admin')
+            ->assertSee('Customer Management')
             ->assertSee('Category')
             ->assertSee('Product')
             ->assertSee('Company')
             ->assertSee('Banner')
             ->assertSee('Email template')
             ->assertSee('SMTP')
+            ->assertSee('Open customers')
             ->assertSee('Open categories')
             ->assertSee('Open products')
             ->assertSee('Open companies')

@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\ProductController;
@@ -32,10 +33,15 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+    Route::post('/impersonation/stop', [CustomerController::class, 'stop'])->name('impersonation.stop');
     Route::get('/registered', [AuthController::class, 'registered'])->name('registered');
 
     Route::middleware('super-admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/customers/{user}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+        Route::put('/customers/{user}', [CustomerController::class, 'update'])->name('customers.update');
+        Route::post('/customers/{user}/login', [CustomerController::class, 'login'])->name('customers.login');
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');

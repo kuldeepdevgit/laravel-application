@@ -273,6 +273,29 @@ body.dash-body {
     gap: 0.4rem;
 }
 
+.customer-table th:last-child,
+.customer-table td:last-child {
+    width: 14rem;
+}
+
+.impersonation-bar {
+    align-items: center;
+    background: #fff6e8;
+    border: 1px solid #f0d7b0;
+    border-radius: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.impersonation-bar p {
+    font-weight: 700;
+    margin: 0;
+}
+
 .dash-btn {
     background: var(--dash-accent);
     border: 0;
