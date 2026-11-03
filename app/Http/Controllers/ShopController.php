@@ -51,6 +51,15 @@ class ShopController extends Controller
 
     public function show(string $product): View
     {
+        $saved = $this->savedProduct($product);
+
+        if ($saved) {
+            return view('store.saved-product', [
+                'product' => $saved,
+                'related' => $this->relatedProducts($saved),
+            ]);
+        }
+
         $item = Catalog::find($product);
 
         abort_unless($item, 404);
@@ -85,6 +94,37 @@ class ShopController extends Controller
         }
 
         return Banner::query()->doesntExist();
+    }
+
+    private function savedProduct(string $slug): ?Product
+    {
+        if (! Schema::hasTable('products')) {
+            return null;
+        }
+
+        return Product::query()
+            ->with('category')
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->first();
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    private function relatedProducts(Product $product): Collection
+    {
+        return Product::query()
+            ->with('category')
+            ->where('is_active', true)
+            ->whereKeyNot($product->id)
+            ->when(
+                $product->category_id,
+                fn ($query) => $query->where('category_id', $product->category_id),
+            )
+            ->orderBy('name')
+            ->limit(4)
+            ->get();
     }
 
     /**

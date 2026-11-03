@@ -1,10 +1,8 @@
 @php
-    $categoryUrl = $product->category
-        ? route('shop', ['cat' => $product->category->slug])
-        : route('shop');
+    $productUrl = route('products.show', $product->slug);
 @endphp
 <article class="product-card">
-    <a class="product-media" href="{{ $categoryUrl }}">
+    <a class="product-media" href="{{ $productUrl }}">
         @if ($product->imageUrl())
             <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}">
         @else
@@ -18,7 +16,7 @@
         @if ($product->category)
             <p class="product-cat">{{ $product->category->name }}</p>
         @endif
-        <h3><a href="{{ $categoryUrl }}">{{ $product->name }}</a></h3>
+        <h3><a href="{{ $productUrl }}">{{ $product->name }}</a></h3>
         @if ($product->description)
             <p class="product-blurb">{{ $product->description }}</p>
         @endif

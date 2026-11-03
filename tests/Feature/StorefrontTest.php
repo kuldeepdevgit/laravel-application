@@ -50,9 +50,43 @@ class StorefrontTest extends TestCase
             ->assertSee('Pantry')
             ->assertSee('₹120.50')
             ->assertSee('BV 12.00')
-            ->assertSee(route('shop', ['cat' => 'pantry']), false)
+            ->assertSee(route('products.show', 'assam-honey'), false)
+            ->assertDontSee(route('shop', ['cat' => 'pantry']), false)
             ->assertDontSee('Hidden Soap')
             ->assertDontSee('Aero Quiet Headphones');
+    }
+
+    public function test_an_admin_product_page_opens_from_its_slug(): void
+    {
+        $category = Category::factory()->create([
+            'name' => 'Pantry',
+            'slug' => 'pantry',
+        ]);
+        Product::factory()->create([
+            'category_id' => $category->id,
+            'name' => 'Assam Honey',
+            'slug' => 'assam-honey',
+            'description' => 'A small jar of honey.',
+            'price' => 120.50,
+            'is_active' => true,
+        ]);
+        Product::factory()->create([
+            'name' => 'Hidden Soap',
+            'slug' => 'hidden-soap',
+            'is_active' => false,
+        ]);
+
+        $this->get(route('products.show', 'assam-honey'))
+            ->assertOk()
+            ->assertSee('Assam Honey')
+            ->assertSee('A small jar of honey.')
+            ->assertSee('₹120.50')
+            ->assertSee('Pantry');
+
+        $this->get(route('products.show', 'hidden-soap'))->assertNotFound();
+        $this->get(route('products.show', 'nb-headphones'))
+            ->assertOk()
+            ->assertSee('Aero Quiet Headphones');
     }
 
     public function test_search_filters_the_catalog(): void
