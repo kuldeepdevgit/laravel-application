@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::table('companies', function (Blueprint $table) {
             $table->string('website_role', 120)->nullable()->after('website');
             $table->string('shortcode', 10)->nullable()->unique()->after('website_role');
-            $table->unsignedInteger('signup_sequence')->default(0)->after('shortcode');
         });
     }
 
@@ -25,7 +24,7 @@ return new class extends Migration
     {
         Schema::table('companies', function (Blueprint $table) {
             $table->dropUnique(['shortcode']);
-            $table->dropColumn(['website_role', 'shortcode', 'signup_sequence']);
+            $table->dropColumn(['website_role', 'shortcode']);
         });
     }
 };

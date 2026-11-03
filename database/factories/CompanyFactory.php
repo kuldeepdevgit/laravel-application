@@ -28,7 +28,6 @@ class CompanyFactory extends Factory
             'website' => fake()->url(),
             'website_role' => 'Member',
             'shortcode' => strtoupper(fake()->unique()->lexify('???')),
-            'signup_sequence' => 0,
             'logo' => null,
             'is_active' => true,
         ];

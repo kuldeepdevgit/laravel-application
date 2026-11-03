@@ -87,7 +87,7 @@
                 <div class="mb-3">
                     <label class="form-label" for="shortcode">Shortcode</label>
                     <input class="form-control" id="shortcode" name="shortcode" type="text" value="{{ old('shortcode', $company->shortcode) }}" maxlength="10" required autocapitalize="characters" autocomplete="off" spellcheck="false">
-                    <p class="form-text mb-0">2 to 10 letters and numbers. The first active company supplies this code at signup, such as GSI0001.</p>
+                    <p class="form-text mb-0">2 to 10 letters and numbers. The first active company supplies this code at signup, then a random 6-digit number is added, such as GS787656.</p>
                     @error('shortcode')
                         <p class="text-danger small mb-0">{{ $message }}</p>
                     @enderror

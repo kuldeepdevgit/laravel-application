@@ -87,7 +87,7 @@ class AuthTest extends TestCase
             'user_role' => 'users',
         ]);
         $userName = User::query()->where('email', 'avery@example.com')->value('user_name');
-        $this->assertSame('GSI0001', $userName);
+        $this->assertMatchesRegularExpression('/^GS\d{6}$/', $userName);
 
         $this->get('/registered')
             ->assertOk()
@@ -115,12 +115,15 @@ class AuthTest extends TestCase
             'password' => 'password1',
         ])->assertRedirect('/registered');
 
+        $secondName = User::query()->where('email', 'second@example.com')->value('user_name');
+
         $this->assertDatabaseHas('users', [
             'email' => 'second@example.com',
             'sponsor_name' => 'gsi1000001',
             'position' => 'right',
-            'user_name' => 'GSI0002',
         ]);
+        $this->assertMatchesRegularExpression('/^GS\d{6}$/', $secondName);
+        $this->assertNotSame($userName, $secondName);
     }
 
     public function test_registration_uses_the_active_company_shortcode(): void
@@ -130,11 +133,10 @@ class AuthTest extends TestCase
             'shortcode' => 'ZZZ',
             'is_active' => false,
         ]);
-        $company = Company::factory()->create([
+        Company::factory()->create([
             'name' => 'Green Smart India',
-            'shortcode' => 'GSI',
+            'shortcode' => 'GS',
             'is_active' => true,
-            'signup_sequence' => 0,
         ]);
         User::factory()->create([
             'name' => 'Jordan Lee',
@@ -150,28 +152,23 @@ class AuthTest extends TestCase
             'password' => 'password1',
         ])->assertRedirect('/registered');
 
-        $this->assertDatabaseHas('users', [
-            'email' => 'avery@example.com',
-            'user_name' => 'GSI0001',
-        ]);
-        $this->assertSame(1, $company->refresh()->signup_sequence);
+        $userName = User::query()->where('email', 'avery@example.com')->value('user_name');
+        $this->assertMatchesRegularExpression('/^GS\d{6}$/', $userName);
 
         $this->post('/logout');
 
         $this->post('/register', [
             'name' => 'Second User',
-            'sponsor_name' => 'GSI0001',
+            'sponsor_name' => $userName,
             'position' => 'right',
             'phone_number' => '9123456789',
             'email' => 'second@example.com',
             'password' => 'password1',
         ])->assertRedirect('/registered');
 
-        $this->assertDatabaseHas('users', [
-            'email' => 'second@example.com',
-            'user_name' => 'GSI0002',
-        ]);
-        $this->assertSame(2, $company->refresh()->signup_sequence);
+        $secondName = User::query()->where('email', 'second@example.com')->value('user_name');
+        $this->assertMatchesRegularExpression('/^GS\d{6}$/', $secondName);
+        $this->assertNotSame($userName, $secondName);
     }
 
     public function test_a_user_can_log_in(): void
