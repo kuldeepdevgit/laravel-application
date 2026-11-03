@@ -26,6 +26,9 @@ class CompanyFactory extends Factory
             'phone' => fake()->numerify('98########'),
             'address' => fake()->streetAddress(),
             'website' => fake()->url(),
+            'website_role' => 'Member',
+            'shortcode' => strtoupper(fake()->unique()->lexify('???')),
+            'signup_sequence' => 0,
             'logo' => null,
             'is_active' => true,
         ];

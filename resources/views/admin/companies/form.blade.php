@@ -76,6 +76,23 @@
                     @enderror
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label" for="website_role">Website role</label>
+                    <input class="form-control" id="website_role" name="website_role" type="text" value="{{ old('website_role', $company->website_role) }}" maxlength="120" required autocomplete="off">
+                    @error('website_role')
+                        <p class="text-danger small mb-0">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="shortcode">Shortcode</label>
+                    <input class="form-control" id="shortcode" name="shortcode" type="text" value="{{ old('shortcode', $company->shortcode) }}" maxlength="10" required autocapitalize="characters" autocomplete="off" spellcheck="false">
+                    <p class="form-text mb-0">2 to 10 letters and numbers. The first active company supplies this code at signup, such as GSI0001.</p>
+                    @error('shortcode')
+                        <p class="text-danger small mb-0">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="mb-4">
                     <label class="form-label" for="is_active">Status</label>
                     <select class="form-select" id="is_active" name="is_active">

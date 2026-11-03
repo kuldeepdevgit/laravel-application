@@ -55,6 +55,12 @@
                                     @if ($contact !== '')
                                         <p class="company-contact">{{ $contact }}</p>
                                     @endif
+                                    @php
+                                        $identity = collect([$company->shortcode, $company->website_role])->filter()->join(' · ');
+                                    @endphp
+                                    @if ($identity !== '')
+                                        <p class="company-contact">{{ $identity }}</p>
+                                    @endif
                                     <div class="cat-card-actions">
                                         <a class="btn cat-action" href="{{ route('admin.companies.edit', $company) }}">Edit</a>
                                         <button

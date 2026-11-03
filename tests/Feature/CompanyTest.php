@@ -61,6 +61,8 @@ class CompanyTest extends TestCase
                 'phone' => '9876543210',
                 'address' => '12 Market Road',
                 'website' => 'https://northwind.test',
+                'website_role' => 'Member',
+                'shortcode' => 'gsi',
                 'is_active' => '1',
                 'logo' => UploadedFile::fake()->image('logo.jpg', 900, 600),
             ])
@@ -76,6 +78,8 @@ class CompanyTest extends TestCase
         $this->assertSame('9876543210', $company->phone);
         $this->assertSame('12 Market Road', $company->address);
         $this->assertSame('https://northwind.test', $company->website);
+        $this->assertSame('Member', $company->website_role);
+        $this->assertSame('GSI', $company->shortcode);
         $this->assertTrue($company->is_active);
         Storage::disk('public')->assertExists($company->logo);
 
@@ -86,6 +90,8 @@ class CompanyTest extends TestCase
             ->assertSee('Regional supplies.')
             ->assertSee('hello@northwind.test')
             ->assertSee('9876543210')
+            ->assertSee('GSI')
+            ->assertSee('Member')
             ->assertSee('Active');
     }
 
@@ -101,6 +107,8 @@ class CompanyTest extends TestCase
                 'phone' => '',
                 'address' => '',
                 'website' => '',
+                'website_role' => 'Partner',
+                'shortcode' => 'CTS',
                 'is_active' => '0',
             ])
             ->assertRedirect('/admin/companies')
@@ -112,6 +120,8 @@ class CompanyTest extends TestCase
         $this->assertNull($company->description);
         $this->assertNull($company->email);
         $this->assertNull($company->logo);
+        $this->assertSame('Partner', $company->website_role);
+        $this->assertSame('CTS', $company->shortcode);
         $this->assertFalse($company->is_active);
     }
 
@@ -145,7 +155,7 @@ class CompanyTest extends TestCase
                 'is_active' => '1',
             ])
             ->assertRedirect('/admin/companies/create')
-            ->assertSessionHasErrors(['email', 'website']);
+            ->assertSessionHasErrors(['email', 'website', 'shortcode']);
 
         $this->assertSame(0, Company::query()->count());
     }
@@ -174,6 +184,8 @@ class CompanyTest extends TestCase
             'description' => 'Old copy',
             'email' => 'old@northwind.test',
             'logo' => 'companies/old.jpg',
+            'website_role' => 'Member',
+            'shortcode' => 'GSI',
             'is_active' => true,
         ]);
         $user = User::factory()->superAdmin()->create();
@@ -183,6 +195,9 @@ class CompanyTest extends TestCase
             ->assertOk()
             ->assertSee('Edit company')
             ->assertSee('value="Northwind Traders"', false)
+            ->assertSee('Website role')
+            ->assertSee('Shortcode')
+            ->assertSee('value="GSI"', false)
             ->assertSee('Current logo')
             ->assertSee('Crop logo');
 
@@ -194,6 +209,8 @@ class CompanyTest extends TestCase
                 'phone' => '9123456780',
                 'address' => '8 Harbor Lane',
                 'website' => 'https://goods.northwind.test',
+                'website_role' => 'Distributor',
+                'shortcode' => 'nwg',
                 'is_active' => '0',
                 'logo' => UploadedFile::fake()->image('logo.png', 700, 700),
             ])
@@ -209,6 +226,8 @@ class CompanyTest extends TestCase
         $this->assertSame('9123456780', $company->phone);
         $this->assertSame('8 Harbor Lane', $company->address);
         $this->assertSame('https://goods.northwind.test', $company->website);
+        $this->assertSame('Distributor', $company->website_role);
+        $this->assertSame('NWG', $company->shortcode);
         $this->assertFalse($company->is_active);
         $this->assertNotSame('companies/old.jpg', $company->logo);
         Storage::disk('public')->assertMissing('companies/old.jpg');
@@ -232,6 +251,8 @@ class CompanyTest extends TestCase
                 'phone' => '',
                 'address' => '',
                 'website' => '',
+                'website_role' => 'Member',
+                'shortcode' => 'CTS',
                 'is_active' => '1',
             ])
             ->assertRedirect('/admin/companies');
@@ -268,10 +289,12 @@ class CompanyTest extends TestCase
         Company::factory()->create([
             'name' => 'Northwind Traders',
             'email' => 'hello@northwind.test',
+            'shortcode' => 'GSI',
         ]);
         Company::factory()->create([
             'name' => 'Contoso',
             'email' => 'hi@contoso.test',
+            'shortcode' => 'CTS',
         ]);
         $user = User::factory()->superAdmin()->create();
 
@@ -286,5 +309,41 @@ class CompanyTest extends TestCase
             ->assertOk()
             ->assertSee('Northwind Traders')
             ->assertDontSee('Contoso');
+
+        $this->actingAs($user)
+            ->get('/admin/companies?q=GSI')
+            ->assertOk()
+            ->assertSee('Northwind Traders')
+            ->assertDontSee('Contoso');
+    }
+
+    public function test_a_shortcode_must_be_unique_and_use_letters_and_numbers(): void
+    {
+        Company::factory()->create(['shortcode' => 'GSI']);
+        $user = User::factory()->superAdmin()->create();
+
+        $this->actingAs($user)
+            ->from('/admin/companies/create')
+            ->post('/admin/companies', [
+                'name' => 'Second Company',
+                'website_role' => 'Member',
+                'shortcode' => 'GSI',
+                'is_active' => '1',
+            ])
+            ->assertRedirect('/admin/companies/create')
+            ->assertSessionHasErrors('shortcode');
+
+        $this->actingAs($user)
+            ->from('/admin/companies/create')
+            ->post('/admin/companies', [
+                'name' => 'Second Company',
+                'website_role' => 'Member',
+                'shortcode' => '1GS',
+                'is_active' => '1',
+            ])
+            ->assertRedirect('/admin/companies/create')
+            ->assertSessionHasErrors('shortcode');
+
+        $this->assertSame(1, Company::query()->count());
     }
 }

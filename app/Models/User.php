@@ -78,8 +78,22 @@ class User extends Authenticatable
 
     public static function generateUserName(): string
     {
+        $company = Company::query()
+            ->where('is_active', true)
+            ->whereNotNull('shortcode')
+            ->where('shortcode', '!=', '')
+            ->orderBy('id')
+            ->first();
+
+        if ($company instanceof Company) {
+            return $company->nextUserName();
+        }
+
+        $number = 0;
+
         do {
-            $userName = 'GSI'.random_int(1000000, 9999999);
+            $number++;
+            $userName = 'GSI'.str_pad((string) $number, 4, '0', STR_PAD_LEFT);
         } while (static::query()->where('user_name', $userName)->exists());
 
         return $userName;

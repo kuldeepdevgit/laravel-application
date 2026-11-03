@@ -22,7 +22,9 @@ class CompanyController extends Controller
                     $inner->where('name', 'like', $like)
                         ->orWhere('description', 'like', $like)
                         ->orWhere('email', 'like', $like)
-                        ->orWhere('phone', 'like', $like);
+                        ->orWhere('phone', 'like', $like)
+                        ->orWhere('website_role', 'like', $like)
+                        ->orWhere('shortcode', 'like', $like);
                 });
             })
             ->orderBy('name')
@@ -98,10 +100,15 @@ class CompanyController extends Controller
     }
 
     /**
-     * @return array{name: string, description: ?string, email: ?string, phone: ?string, address: ?string, website: ?string, is_active: bool}
+     * @return array{name: string, description: ?string, email: ?string, phone: ?string, address: ?string, website: ?string, website_role: string, shortcode: string, is_active: bool}
      */
     private function validated(Request $request, ?Company $company = null): array
     {
+        $request->merge([
+            'shortcode' => strtoupper(trim($request->string('shortcode')->toString())),
+            'website_role' => trim($request->string('website_role')->toString()),
+        ]);
+
         $data = $request->validate([
             'name' => [
                 'required',
@@ -114,11 +121,24 @@ class CompanyController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
+            'website_role' => ['required', 'string', 'max:120'],
+            'shortcode' => [
+                'required',
+                'string',
+                'min:2',
+                'max:10',
+                'regex:/^[A-Z][A-Z0-9]{1,9}$/',
+                Rule::unique('companies', 'shortcode')->ignore($company?->id),
+            ],
             'is_active' => ['required', Rule::in(['0', '1'])],
             'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ], [
             'name.unique' => 'A company with this name already exists.',
             'website.url' => 'Enter a full website address, including https://.',
+            'website_role.required' => 'Enter a website role.',
+            'shortcode.required' => 'Enter a shortcode.',
+            'shortcode.regex' => 'Use 2 to 10 letters and numbers, starting with a letter.',
+            'shortcode.unique' => 'This shortcode is already used.',
             'logo.image' => 'Upload a JPG, PNG, or WebP image.',
             'logo.mimes' => 'Upload a JPG, PNG, or WebP image.',
             'logo.max' => 'The logo must be 4 MB or smaller.',
@@ -131,6 +151,8 @@ class CompanyController extends Controller
             'phone' => $request->filled('phone') ? $data['phone'] : null,
             'address' => $request->filled('address') ? $data['address'] : null,
             'website' => $request->filled('website') ? $data['website'] : null,
+            'website_role' => $data['website_role'],
+            'shortcode' => $data['shortcode'],
             'is_active' => $request->boolean('is_active'),
         ];
     }
