@@ -23,6 +23,23 @@
         <i class="bi bi-building" aria-hidden="true"></i>
         <span>Company</span>
     </a>
+    <details class="dash-group" @if (request()->routeIs('admin.packages.*')) open @endif>
+        <summary class="dash-item">
+            <i class="bi bi-layers" aria-hidden="true"></i>
+            <span>Package Management</span>
+            <i class="bi bi-chevron-right dash-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="dash-sub">
+            <a class="dash-subitem @if (request()->routeIs('admin.packages.*') && ! request()->routeIs('admin.packages.history')) is-active @endif" href="{{ route('admin.packages.index') }}" @if (request()->routeIs('admin.packages.*') && ! request()->routeIs('admin.packages.history')) aria-current="page" @endif>
+                <i class="bi bi-card-list" aria-hidden="true"></i>
+                <span>List package</span>
+            </a>
+            <a class="dash-subitem @if (request()->routeIs('admin.packages.history')) is-active @endif" href="{{ route('admin.packages.history') }}" @if (request()->routeIs('admin.packages.history')) aria-current="page" @endif>
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Upgrade History</span>
+            </a>
+        </div>
+    </details>
     <a class="dash-item @if (request()->routeIs('admin.banners.*')) is-active @endif" href="{{ route('admin.banners.index') }}" @if (request()->routeIs('admin.banners.*')) aria-current="page" @endif>
         <i class="bi bi-image" aria-hidden="true"></i>
         <span>Banner</span>

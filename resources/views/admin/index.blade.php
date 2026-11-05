@@ -77,6 +77,13 @@
         </div>
         <div class="col-lg-3">
             <section class="panel h-100">
+                <h2>Package Management</h2>
+                <p class="text-secondary">List packages and review member upgrade history.</p>
+                <a class="btn dash-btn" href="{{ route('admin.packages.index') }}">Open packages</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
                 <h2>Banner</h2>
                 <p class="text-secondary">Add, edit, and remove home page banners from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.banners.index') }}">Open banners</a>

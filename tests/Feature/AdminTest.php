@@ -17,6 +17,8 @@ class AdminTest extends TestCase
         $this->get('/admin/categories')->assertRedirect('/login');
         $this->get('/admin/products')->assertRedirect('/login');
         $this->get('/admin/companies')->assertRedirect('/login');
+        $this->get('/admin/packages')->assertRedirect('/login');
+        $this->get('/admin/packages/upgrades')->assertRedirect('/login');
         $this->get('/admin/banners')->assertRedirect('/login');
         $this->get('/admin/email')->assertRedirect('/login');
         $this->get('/admin/smtp')->assertRedirect('/login');
@@ -44,6 +46,14 @@ class AdminTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin/companies')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/packages')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/packages/upgrades')
             ->assertForbidden();
 
         $this->actingAs($member)
@@ -114,6 +124,9 @@ class AdminTest extends TestCase
             ->assertSee('Category')
             ->assertSee('Product')
             ->assertSee('Company')
+            ->assertSee('Package Management')
+            ->assertSee('List package')
+            ->assertSee('Upgrade History')
             ->assertSee('Banner')
             ->assertSee('Email template')
             ->assertSee('SMTP')
@@ -121,6 +134,7 @@ class AdminTest extends TestCase
             ->assertSee('Open categories')
             ->assertSee('Open products')
             ->assertSee('Open companies')
+            ->assertSee('Open packages')
             ->assertSee('Open banners')
             ->assertSee('Open email template')
             ->assertSee('Open SMTP')
