@@ -84,6 +84,13 @@
         </div>
         <div class="col-lg-3">
             <section class="panel h-100">
+                <h2>Fund Management</h2>
+                <p class="text-secondary">Review fund requests, update the fund address, and send funds.</p>
+                <a class="btn dash-btn" href="{{ route('admin.funds.requests') }}">Open funds</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
                 <h2>Banner</h2>
                 <p class="text-secondary">Add, edit, and remove home page banners from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.banners.index') }}">Open banners</a>

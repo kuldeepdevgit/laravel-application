@@ -40,6 +40,31 @@
             </a>
         </div>
     </details>
+    <details class="dash-group" @if (request()->routeIs('admin.funds.*')) open @endif>
+        <summary class="dash-item">
+            <i class="bi bi-wallet2" aria-hidden="true"></i>
+            <span>Fund Management</span>
+            <i class="bi bi-chevron-right dash-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="dash-sub">
+            <a class="dash-subitem @if (request()->routeIs('admin.funds.requests')) is-active @endif" href="{{ route('admin.funds.requests') }}" @if (request()->routeIs('admin.funds.requests')) aria-current="page" @endif>
+                <i class="bi bi-card-list" aria-hidden="true"></i>
+                <span>Fund Request List</span>
+            </a>
+            <a class="dash-subitem @if (request()->routeIs('admin.funds.address')) is-active @endif" href="{{ route('admin.funds.address') }}" @if (request()->routeIs('admin.funds.address')) aria-current="page" @endif>
+                <i class="bi bi-wallet" aria-hidden="true"></i>
+                <span>Update Fund Address</span>
+            </a>
+            <a class="dash-subitem @if (request()->routeIs('admin.funds.send')) is-active @endif" href="{{ route('admin.funds.send') }}" @if (request()->routeIs('admin.funds.send')) aria-current="page" @endif>
+                <i class="bi bi-send" aria-hidden="true"></i>
+                <span>Send Fund</span>
+            </a>
+            <a class="dash-subitem @if (request()->routeIs('admin.funds.history')) is-active @endif" href="{{ route('admin.funds.history') }}" @if (request()->routeIs('admin.funds.history')) aria-current="page" @endif>
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Fund Transfer History</span>
+            </a>
+        </div>
+    </details>
     <a class="dash-item @if (request()->routeIs('admin.banners.*')) is-active @endif" href="{{ route('admin.banners.index') }}" @if (request()->routeIs('admin.banners.*')) aria-current="page" @endif>
         <i class="bi bi-image" aria-hidden="true"></i>
         <span>Banner</span>

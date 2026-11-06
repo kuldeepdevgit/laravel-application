@@ -19,6 +19,10 @@ class AdminTest extends TestCase
         $this->get('/admin/companies')->assertRedirect('/login');
         $this->get('/admin/packages')->assertRedirect('/login');
         $this->get('/admin/packages/upgrades')->assertRedirect('/login');
+        $this->get('/admin/funds/requests')->assertRedirect('/login');
+        $this->get('/admin/funds/address')->assertRedirect('/login');
+        $this->get('/admin/funds/send')->assertRedirect('/login');
+        $this->get('/admin/funds/history')->assertRedirect('/login');
         $this->get('/admin/banners')->assertRedirect('/login');
         $this->get('/admin/email')->assertRedirect('/login');
         $this->get('/admin/smtp')->assertRedirect('/login');
@@ -54,6 +58,22 @@ class AdminTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin/packages/upgrades')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/funds/requests')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/funds/address')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/funds/send')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/funds/history')
             ->assertForbidden();
 
         $this->actingAs($member)
@@ -127,6 +147,12 @@ class AdminTest extends TestCase
             ->assertSee('Package Management')
             ->assertSee('List package')
             ->assertSee('Upgrade History')
+            ->assertSee('Fund Management')
+            ->assertSee('Fund Request List')
+            ->assertSee('Update Fund Address')
+            ->assertSee('Send Fund')
+            ->assertSee('Fund Transfer History')
+            ->assertSee('Open funds')
             ->assertSee('Banner')
             ->assertSee('Email template')
             ->assertSee('SMTP')
