@@ -71,7 +71,11 @@ Route::middleware('auth')->group(function () {
         Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
         Route::get('/funds/requests', [FundController::class, 'requests'])->name('funds.requests');
         Route::get('/funds/address', [FundController::class, 'address'])->name('funds.address');
-        Route::put('/funds/address', [FundController::class, 'updateAddress'])->name('funds.address.update');
+        Route::get('/funds/address/create', [FundController::class, 'createAddress'])->name('funds.address.create');
+        Route::post('/funds/address', [FundController::class, 'storeAddress'])->name('funds.address.store');
+        Route::get('/funds/address/{fundAddress}/edit', [FundController::class, 'editAddress'])->name('funds.address.edit');
+        Route::put('/funds/address/{fundAddress}', [FundController::class, 'updateAddress'])->name('funds.address.update');
+        Route::delete('/funds/address/{fundAddress}', [FundController::class, 'destroyAddress'])->name('funds.address.destroy');
         Route::get('/funds/send', [FundController::class, 'send'])->name('funds.send');
         Route::post('/funds/send', [FundController::class, 'storeSend'])->name('funds.send.store');
         Route::get('/funds/history', [FundController::class, 'history'])->name('funds.history');
