@@ -151,4 +151,34 @@ class Product extends Model
 
         return '₹'.number_format((float) $this->compare_price, 2);
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toCartItem(): array
+    {
+        $image = $this->imageUrl();
+
+        return [
+            'id' => $this->slug,
+            'name' => $this->name,
+            'category' => $this->category?->name ?? '',
+            'price' => (float) $this->price,
+            'compare' => $this->compare_price !== null ? (float) $this->compare_price : null,
+            'rating' => 0.0,
+            'reviews' => 0,
+            'badge' => null,
+            'stock' => (int) $this->stock,
+            'ship' => (int) $this->stock > 0 ? 'Ships in 2–4 business days' : 'Sold out',
+            'images' => $image ? [$image] : [],
+            'colors' => [],
+            'sizes' => [],
+            'blurb' => (string) ($this->description ?? ''),
+            'details' => '',
+            'specs' => [],
+            'source' => 'store',
+            'product_id' => $this->id,
+            'currency' => 'INR',
+        ];
+    }
 }

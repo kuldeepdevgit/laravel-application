@@ -67,20 +67,13 @@
                 @endif
                 <div class="buy-box">
                     <p class="product-ship {{ $availability['class'] }} mb-2"><i class="bi bi-truck"></i> {{ $availability['text'] }}</p>
-                    @if ($cap === 0)
-                        <button class="btn btn-accent w-100" type="button" disabled>Sold out</button>
-                    @else
-                        <form method="POST" action="{{ route('cart.store') }}">
-                            @csrf
-                            <input type="hidden" name="product" value="{{ $product['id'] }}">
-                            <label class="fw-semibold mb-2" for="qty">Quantity</label>
-                            <input id="qty" class="form-control qty-input mb-3" type="number" name="qty" min="1" max="{{ $cap }}" value="1">
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-accent flex-grow-1" type="submit">Add to cart</button>
-                                <button class="btn btn-ghost" type="submit" name="buy_now" value="1">Buy now</button>
-                            </div>
-                        </form>
-                    @endif
+                    @include('store.partials.add-to-cart', [
+                        'sku' => $product['id'],
+                        'stock' => $cap,
+                        'cap' => $cap,
+                        'showQty' => true,
+                        'buyNow' => true,
+                    ])
                     <div class="ship-box">
                         <i class="bi bi-box-seam"></i>
                         <div>

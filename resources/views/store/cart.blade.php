@@ -9,7 +9,7 @@
             <div class="empty-state">
                 <i class="bi bi-bag"></i>
                 <h2>Your cart is empty</h2>
-                <p>Add a kettle, a throw, or whatever the week needs.</p>
+                <p>Browse the shop and add something you need.</p>
                 <a class="btn btn-accent" href="{{ route('shop') }}">Browse products</a>
             </div>
         @else
@@ -19,11 +19,15 @@
                         @foreach ($lines as $line)
                             <article class="cart-line">
                                 <a href="{{ route('products.show', $line['product']['id']) }}">
-                                    <img src="{{ $line['product']['images'][0] }}" alt="">
+                                    @if (! empty($line['product']['images'][0]))
+                                        <img src="{{ $line['product']['images'][0] }}" alt="">
+                                    @else
+                                        <span class="product-fallback" aria-hidden="true">{{ mb_strtoupper(mb_substr($line['product']['name'], 0, 1)) }}</span>
+                                    @endif
                                 </a>
                                 <div>
                                     <h2><a href="{{ route('products.show', $line['product']['id']) }}">{{ $line['product']['name'] }}</a></h2>
-                                    <p class="fine mb-2">{{ \App\Support\Catalog::money($line['product']['price']) }} each</p>
+                                    <p class="fine mb-2">{{ app(\App\Services\CartService::class)->money($line['product']['price']) }} each</p>
                                     <div class="d-flex flex-wrap align-items-center gap-2">
                                         <form method="POST" action="{{ route('cart.update', $line['product']['id']) }}">
                                             @csrf
@@ -45,7 +49,7 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div class="line-total">{{ \App\Support\Catalog::money($line['product']['price'] * $line['qty']) }}</div>
+                                <div class="line-total">{{ app(\App\Services\CartService::class)->money($line['product']['price'] * $line['qty']) }}</div>
                             </article>
                         @endforeach
                     </div>

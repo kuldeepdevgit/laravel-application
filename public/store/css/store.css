@@ -616,7 +616,8 @@ a { color: var(--teal-2); }
 
 .product-ship.out { color: var(--sale); }
 
-.product-card .btn { margin-top: auto; }
+.product-card .btn,
+.product-card .add-to-cart { margin-top: auto; }
 
 .btn-accent {
   background: var(--accent);
@@ -962,12 +963,15 @@ a { color: var(--teal-2); }
 
 .cart-line:first-child { padding-top: 0; }
 
-.cart-line img {
+.cart-line img,
+.cart-line .product-fallback {
   width: 96px;
   height: 96px;
   border-radius: 12px;
   background: #efeae2;
 }
+
+.cart-line .product-fallback { font-size: 1.6rem; }
 
 .cart-line h2 { font-size: 1.05rem; margin: 0 0 4px; }
 

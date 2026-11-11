@@ -36,10 +36,26 @@
                 @if ($product->description)
                     <p class="mt-3 mb-3">{{ $product->description }}</p>
                 @endif
-                <p class="product-ship {{ $product->stock === 0 ? 'out' : '' }}">
-                    <i class="bi bi-box-seam"></i>
-                    {{ $product->stock === 0 ? 'Sold out' : $product->stock.' in stock' }}
-                </p>
+                <div class="buy-box">
+                    <p class="product-ship {{ $product->stock === 0 ? 'out' : '' }} mb-2">
+                        <i class="bi bi-box-seam"></i>
+                        {{ $product->stock === 0 ? 'Sold out' : $product->stock.' in stock' }}
+                    </p>
+                    @include('store.partials.add-to-cart', [
+                        'sku' => $product->slug,
+                        'stock' => $product->stock,
+                        'cap' => min(99, max(1, (int) $product->stock)),
+                        'showQty' => true,
+                        'buyNow' => true,
+                    ])
+                    <div class="ship-box">
+                        <i class="bi bi-box-seam"></i>
+                        <div>
+                            <strong>Arrives in 2–4 business days</strong>
+                            <p>Standard shipping is free on orders of ₹49 or more.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

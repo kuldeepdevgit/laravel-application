@@ -10,8 +10,8 @@
             <section class="confirm">
                 <i class="bi bi-check-circle"></i>
                 <h2>Order placed</h2>
-                <p>Your demo order number is <strong>{{ $order }}</strong>.</p>
-                <p>No payment was processed and nothing will be delivered.</p>
+                <p>Your order number is <strong>{{ $order }}</strong>.</p>
+                <p>We saved the order in this shop. Card details are not stored and nothing is charged.</p>
                 <a class="btn btn-accent" href="{{ route('home') }}">Back to the shop</a>
             </section>
         @elseif ($lines->isEmpty())
@@ -49,7 +49,7 @@
                                     <label class="form-label" for="country">Country</label>
                                     <select class="form-select @error('country') is-invalid @enderror" id="country" name="country" autocomplete="country-name" required>
                                         <option value="">Choose</option>
-                                        @foreach (['United States', 'Canada', 'United Kingdom'] as $country)
+                                        @foreach (['India', 'United States', 'Canada', 'United Kingdom'] as $country)
                                             <option value="{{ $country }}" @selected(old('country') === $country)>{{ $country }}</option>
                                         @endforeach
                                     </select>

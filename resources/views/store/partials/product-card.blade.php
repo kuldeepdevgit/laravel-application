@@ -31,5 +31,12 @@
             <i class="bi bi-box-seam"></i>
             {{ $product->stock === 0 ? 'Sold out' : $product->stock.' in stock' }}
         </p>
+        @include('store.partials.add-to-cart', [
+            'sku' => $product->slug,
+            'stock' => $product->stock,
+            'cap' => min(99, max(1, (int) $product->stock)),
+            'showQty' => false,
+            'buyNow' => false,
+        ])
     </div>
 </article>

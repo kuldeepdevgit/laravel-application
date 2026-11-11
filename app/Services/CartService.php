@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Product;
 use App\Support\Catalog;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class CartService
 {
@@ -16,7 +18,23 @@ class CartService
     {
         $items = session(self::CART, []);
 
-        return is_array($items) ? $items : [];
+        if (! is_array($items)) {
+            return [];
+        }
+
+        $clean = [];
+
+        foreach ($items as $id => $qty) {
+            $quantity = (int) $qty;
+
+            if (! is_string($id) || $id === '' || $quantity < 1) {
+                continue;
+            }
+
+            $clean[$id] = $quantity;
+        }
+
+        return $clean;
     }
 
     /**
@@ -25,14 +43,21 @@ class CartService
     public function lines(): Collection
     {
         return collect($this->items())
-            ->map(function ($qty, $id) {
-                $product = Catalog::find((string) $id);
+            ->map(function (int $qty, string $id) {
+                $product = $this->find($id);
 
-                if (! $product || (int) $qty < 1) {
+                if (! $product) {
                     return null;
                 }
 
-                return ['product' => $product, 'qty' => (int) $qty];
+                $cap = Catalog::maxQty($product);
+                $quantity = min($qty, max(1, $cap));
+
+                if ($cap < 1) {
+                    return null;
+                }
+
+                return ['product' => $product, 'qty' => $quantity];
             })
             ->filter()
             ->values();
@@ -40,15 +65,57 @@ class CartService
 
     public function count(): int
     {
-        return (int) collect($this->items())->sum();
+        return (int) $this->lines()->sum('qty');
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function find(string $id): ?array
+    {
+        $catalog = Catalog::find($id);
+
+        if ($catalog) {
+            $catalog['source'] = 'catalog';
+            $catalog['product_id'] = null;
+            $catalog['currency'] = 'USD';
+
+            return $catalog;
+        }
+
+        if (! Schema::hasTable('products')) {
+            return null;
+        }
+
+        $product = Product::query()
+            ->with('category')
+            ->where('slug', $id)
+            ->where('is_active', true)
+            ->first();
+
+        return $product?->toCartItem();
+    }
+
+    public function currency(): string
+    {
+        return $this->lines()->contains(
+            fn (array $line) => ($line['product']['currency'] ?? 'USD') === 'INR'
+        ) ? 'INR' : 'USD';
+    }
+
+    public function money(float $amount): string
+    {
+        $symbol = $this->currency() === 'INR' ? '₹' : '$';
+
+        return $symbol.number_format($amount, 2);
     }
 
     public function add(string $id, int $qty): ?string
     {
-        $product = Catalog::find($id);
+        $product = $this->find($id);
 
         if (! $product) {
-            return 'That product is not in the catalog.';
+            return 'That product is not available.';
         }
 
         $cap = Catalog::maxQty($product);
@@ -67,7 +134,7 @@ class CartService
     public function set(string $id, int $qty): void
     {
         $items = $this->items();
-        $product = Catalog::find($id);
+        $product = $this->find($id);
 
         if (! $product || $qty < 1 || Catalog::maxQty($product) === 0) {
             unset($items[$id]);

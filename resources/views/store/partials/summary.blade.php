@@ -2,7 +2,7 @@
     $summaryCart = app(\App\Services\CartService::class);
     $totals = $summaryCart->totals();
     $lines = $summaryCart->lines();
-    $standardLabel = $totals['subtotal'] == 0 || $totals['discounted'] >= 49 ? 'Free' : '$5.99';
+    $standardLabel = $totals['subtotal'] == 0 || $totals['discounted'] >= 49 ? 'Free' : $summaryCart->money(5.99);
     $remaining = round(49 - $totals['discounted'], 2);
 @endphp
 <aside class="summary-card">
@@ -11,17 +11,17 @@
         @foreach ($lines as $line)
             <li>
                 <span>{{ $line['product']['name'] }} × {{ $line['qty'] }}</span>
-                <span>{{ \App\Support\Catalog::money($line['product']['price'] * $line['qty']) }}</span>
+                <span>{{ $summaryCart->money($line['product']['price'] * $line['qty']) }}</span>
             </li>
         @endforeach
     </ul>
-    <div class="sum-row"><span>Subtotal</span><span>{{ \App\Support\Catalog::money($totals['subtotal']) }}</span></div>
-    <div class="sum-row"><span>Discount</span><span>−{{ \App\Support\Catalog::money($totals['off']) }}</span></div>
-    <div class="sum-row"><span>Shipping</span><span>{{ $totals['ship'] == 0 ? 'Free' : \App\Support\Catalog::money($totals['ship']) }}</span></div>
+    <div class="sum-row"><span>Subtotal</span><span>{{ $summaryCart->money($totals['subtotal']) }}</span></div>
+    <div class="sum-row"><span>Discount</span><span>−{{ $summaryCart->money($totals['off']) }}</span></div>
+    <div class="sum-row"><span>Shipping</span><span>{{ $totals['ship'] == 0 ? 'Free' : $summaryCart->money($totals['ship']) }}</span></div>
     @if ($totals['subtotal'] > 0 && $summaryCart->shipping() !== 'express' && $remaining > 0)
-        <p class="fine">Add {{ \App\Support\Catalog::money($remaining) }} for free standard shipping.</p>
+        <p class="fine">Add {{ $summaryCart->money($remaining) }} for free standard shipping.</p>
     @endif
-    <div class="sum-row total"><span>Total</span><span>{{ \App\Support\Catalog::money($totals['total']) }}</span></div>
+    <div class="sum-row total"><span>Total</span><span>{{ $summaryCart->money($totals['total']) }}</span></div>
 
     <form method="POST" action="{{ route('cart.shipping') }}" class="ship-options">
         @csrf
@@ -31,7 +31,7 @@
         </label>
         <label>
             <span><input type="radio" name="shipping" value="express" @checked($summaryCart->shipping() === 'express') onchange="this.form.submit()"> Express</span>
-            <small>$12.99</small>
+            <small>{{ $summaryCart->money(12.99) }}</small>
         </label>
     </form>
 
@@ -62,5 +62,5 @@
     @else
         <a class="btn btn-accent w-100 mt-3" href="{{ route('checkout.create') }}" @if ($lines->isEmpty()) aria-disabled="true" tabindex="-1" @endif>Checkout</a>
     @endif
-    <p class="fine">Demo checkout. No payment is processed.</p>
+    <p class="fine">Card details are validated, then discarded. Nothing is charged.</p>
 </aside>

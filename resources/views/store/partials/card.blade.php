@@ -27,14 +27,12 @@
             @endif
         </div>
         <p class="product-ship {{ $availability['class'] }}"><i class="bi bi-truck"></i> {{ $availability['text'] }}</p>
-        @if ($product['stock'] === 0)
-            <button class="btn btn-accent w-100" type="button" disabled>Sold out</button>
-        @else
-            <form method="POST" action="{{ route('cart.store') }}">
-                @csrf
-                <input type="hidden" name="product" value="{{ $product['id'] }}">
-                <button class="btn btn-accent w-100" type="submit">Add to cart</button>
-            </form>
-        @endif
+        @include('store.partials.add-to-cart', [
+            'sku' => $product['id'],
+            'stock' => $product['stock'] === 0 ? 0 : ($product['stock'] ?? 12),
+            'cap' => \App\Support\Catalog::maxQty($product),
+            'showQty' => false,
+            'buyNow' => false,
+        ])
     </div>
 </article>

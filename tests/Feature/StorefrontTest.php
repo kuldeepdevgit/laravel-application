@@ -252,6 +252,11 @@ class StorefrontTest extends TestCase
             ->assertSee('Order placed')
             ->assertSee('NB-');
 
+        $this->assertDatabaseHas('order_items', [
+            'sku' => 'nb-headphones',
+            'name' => 'Aero Quiet Headphones',
+            'qty' => 1,
+        ]);
         $this->get('/cart')->assertSee('Your cart is empty');
     }
 
@@ -261,5 +266,78 @@ class StorefrontTest extends TestCase
 
         $this->post('/checkout', [])
             ->assertSessionHasErrors(['name', 'email', 'address', 'city', 'region', 'postal', 'country']);
+    }
+
+    public function test_a_saved_product_can_be_added_to_the_cart_and_checked_out(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Assam Honey',
+            'slug' => 'assam-honey',
+            'price' => 120.50,
+            'stock' => 5,
+            'is_active' => true,
+        ]);
+
+        $this->get(route('products.show', 'assam-honey'))
+            ->assertOk()
+            ->assertSee('Add to cart')
+            ->assertSee('Buy now');
+
+        $this->from(route('products.show', 'assam-honey'))
+            ->post('/cart', ['product' => 'assam-honey', 'qty' => 2])
+            ->assertRedirect()
+            ->assertSessionHas('added', 'Assam Honey');
+
+        $this->get('/cart')
+            ->assertOk()
+            ->assertSee('Assam Honey')
+            ->assertSee('₹120.50')
+            ->assertSee('₹241.00');
+
+        $this->post('/checkout', [
+            'name' => 'Test Shopper',
+            'email' => 'shopper@example.com',
+            'address' => '18 Harbor Lane',
+            'city' => 'Guwahati',
+            'region' => 'Assam',
+            'postal' => '781001',
+            'country' => 'India',
+            'pay' => 'delivery',
+        ])->assertRedirect(route('checkout.create'));
+
+        $this->get('/checkout')
+            ->assertOk()
+            ->assertSee('Order placed')
+            ->assertSee('NB-');
+
+        $this->assertDatabaseHas('orders', [
+            'email' => 'shopper@example.com',
+            'country' => 'India',
+            'pay_method' => 'delivery',
+        ]);
+        $this->assertDatabaseHas('order_items', [
+            'sku' => 'assam-honey',
+            'name' => 'Assam Honey',
+            'qty' => 2,
+        ]);
+        $this->assertSame(3, $product->fresh()->stock);
+        $this->get('/cart')->assertSee('Your cart is empty');
+    }
+
+    public function test_a_saved_sold_out_product_cannot_be_added_to_the_cart(): void
+    {
+        Product::factory()->create([
+            'name' => 'Empty Tin',
+            'slug' => 'empty-tin',
+            'stock' => 0,
+            'is_active' => true,
+        ]);
+
+        $this->from(route('shop'))
+            ->post('/cart', ['product' => 'empty-tin'])
+            ->assertRedirect()
+            ->assertSessionHas('status', 'Empty Tin is sold out.');
+
+        $this->get('/cart')->assertSee('Your cart is empty');
     }
 }

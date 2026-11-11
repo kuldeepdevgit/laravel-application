@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\CartService;
-use App\Support\Catalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,8 +22,8 @@ class CartController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'product' => ['required', 'string'],
-            'qty' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'product' => ['required', 'string', 'max:160'],
+            'qty' => ['nullable', 'integer', 'min:1', 'max:99'],
         ]);
 
         $error = $this->cart->add($data['product'], (int) ($data['qty'] ?? 1));
@@ -37,7 +36,7 @@ class CartController extends Controller
             return redirect()->route('checkout.create');
         }
 
-        $product = Catalog::find($data['product']);
+        $product = $this->cart->find($data['product']);
 
         return back()->with('added', $product['name'] ?? 'Item');
     }
@@ -45,7 +44,7 @@ class CartController extends Controller
     public function update(Request $request, string $product): RedirectResponse
     {
         $data = $request->validate([
-            'qty' => ['required', 'integer', 'min:0', 'max:12'],
+            'qty' => ['required', 'integer', 'min:0', 'max:99'],
         ]);
 
         $this->cart->set($product, $data['qty']);

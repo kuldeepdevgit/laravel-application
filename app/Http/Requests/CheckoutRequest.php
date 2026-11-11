@@ -23,7 +23,7 @@ class CheckoutRequest extends FormRequest
             'city' => ['required', 'string', 'max:80'],
             'region' => ['required', 'string', 'max:80'],
             'postal' => ['required', 'string', 'max:20'],
-            'country' => ['required', 'in:United States,Canada,United Kingdom'],
+            'country' => ['required', 'in:India,United States,Canada,United Kingdom'],
             'phone' => ['nullable', 'string', 'max:30'],
             'pay' => ['required', 'in:card,delivery'],
             'card_name' => ['required_if:pay,card', 'nullable', 'string', 'max:120'],
