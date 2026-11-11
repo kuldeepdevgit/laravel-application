@@ -2,6 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +18,8 @@ class DashboardTest extends TestCase
     public function test_guests_are_sent_to_login(): void
     {
         $this->get('/dashboard')->assertRedirect('/login');
+        $this->get('/dashboard/order-history')->assertRedirect('/login');
+        $this->get('/dashboard/orders/1')->assertRedirect('/login');
     }
 
     public function test_a_member_sees_their_dashboard(): void
@@ -31,6 +37,7 @@ class DashboardTest extends TestCase
             ->assertSee('images/green-smart-india.png', false)
             ->assertSee('avery@example.com')
             ->assertSee('Ref Link')
+            ->assertSee('Order History')
             ->assertDontSee('Category')
             ->assertDontSee('Company')
             ->assertSee('Manage Profile')
@@ -333,5 +340,111 @@ class DashboardTest extends TestCase
             ->assertSessionHasErrors('usdt_bep20');
 
         $this->assertSame('0x3333333333333333333333333333333333333333', $user->fresh()->usdt_bep20);
+    }
+
+    public function test_a_member_sees_only_their_own_order_history(): void
+    {
+        $member = User::factory()->create(['name' => 'Asha Rao']);
+        $other = User::factory()->create();
+        $category = Category::factory()->create(['name' => 'Personal care']);
+        $product = Product::factory()->for($category)->create([
+            'name' => 'Neem Soap',
+            'description' => 'A gentle neem bar.',
+        ]);
+
+        $order = Order::factory()->for($member)->create([
+            'number' => 'NB-100001',
+            'name' => 'Asha Rao',
+            'email' => 'asha@example.com',
+            'phone' => '9876543210',
+            'address' => '12 Market Road',
+            'city' => 'Pune',
+            'region' => 'Maharashtra',
+            'postal' => '411001',
+            'country' => 'India',
+            'pay_method' => 'cash',
+            'promo' => 'SAVE10',
+            'subtotal' => 200,
+            'discount' => 20,
+            'shipping' => 40,
+            'total' => 220,
+        ]);
+
+        OrderItem::factory()->for($order)->for($product)->create([
+            'sku' => 'neem-soap',
+            'name' => 'Neem Soap',
+            'qty' => 2,
+            'price' => 100,
+        ]);
+
+        $hidden = Order::factory()->for($other)->create([
+            'number' => 'NB-200002',
+            'name' => 'Other Buyer',
+        ]);
+
+        OrderItem::factory()->for($hidden)->create([
+            'sku' => 'hidden-oil',
+            'name' => 'Hidden Oil',
+            'qty' => 1,
+            'price' => 50,
+        ]);
+
+        $this->actingAs($member)
+            ->get('/dashboard/order-history')
+            ->assertOk()
+            ->assertSee('Order History')
+            ->assertSee('NB-100001')
+            ->assertSee('Neem Soap')
+            ->assertSee('neem-soap')
+            ->assertSee('Qty 2')
+            ->assertSee('₹100.00')
+            ->assertSee('₹200.00')
+            ->assertSee('₹220.00')
+            ->assertDontSee('NB-200002')
+            ->assertDontSee('Hidden Oil');
+
+        $this->actingAs($member)
+            ->get('/dashboard/order-history?q=missing')
+            ->assertOk()
+            ->assertSee('No matches')
+            ->assertDontSee('Neem Soap');
+
+        $this->actingAs($member)
+            ->get('/dashboard/orders/'.$order->id)
+            ->assertOk()
+            ->assertSee('NB-100001')
+            ->assertSee('12 Market Road')
+            ->assertSee('Pune')
+            ->assertSee('Cash')
+            ->assertSee('SAVE10')
+            ->assertSee('Personal care')
+            ->assertSee('A gentle neem bar.')
+            ->assertSee('₹20.00')
+            ->assertSee('₹40.00')
+            ->assertDontSee('Hidden Oil');
+
+        $this->actingAs($member)
+            ->get('/dashboard/orders/'.$hidden->id)
+            ->assertNotFound();
+    }
+
+    public function test_order_history_is_empty_until_the_member_checks_out(): void
+    {
+        $member = User::factory()->create();
+
+        $this->actingAs($member)
+            ->get('/dashboard/order-history')
+            ->assertOk()
+            ->assertSee('No orders yet')
+            ->assertSee('Orders appear here after you check out.');
+    }
+
+    public function test_the_super_admin_is_sent_away_from_order_history(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+
+        $this->actingAs($admin)
+            ->get('/dashboard/order-history')
+            ->assertRedirect('/admin');
     }
 }

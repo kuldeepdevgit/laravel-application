@@ -65,6 +65,10 @@
         <i class="bi bi-link-45deg" aria-hidden="true"></i>
         <span>Ref Link</span>
     </a>
+    <a class="dash-item @if ($section === 'order-history' || request()->routeIs('dashboard.orders.show')) is-active @endif" href="{{ route('dashboard.section', 'order-history') }}" @if ($section === 'order-history' || request()->routeIs('dashboard.orders.show')) aria-current="page" @endif>
+        <i class="bi bi-bag-check" aria-hidden="true"></i>
+        <span>Order History</span>
+    </a>
 
     @foreach ($groups as $group)
         @php

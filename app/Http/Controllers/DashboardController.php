@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Template;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +25,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function section(string $section): View
+    public function section(Request $request, string $section): View
     {
         $pages = [
             'ref-link' => ['Ref Link', 'Share this link so new members join under your account.'],
@@ -52,15 +55,20 @@ class DashboardController extends Controller
             'withdrawal-now' => ['Withdrawal Now', 'Request a withdrawal from your account.'],
             'support' => ['Support', 'Support requests for your account will be listed here.'],
             'document-list' => ['Document List', 'Documents shared with your account will be listed here.'],
+            'order-history' => ['Order History', 'Orders you have placed in the shop are listed here.'],
         ];
 
         abort_unless(isset($pages[$section]), 404);
 
         [$heading, $intro] = $pages[$section];
-        $user = auth()->user();
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
         $referral = $section === 'ref-link' && filled($user->user_name)
             ? route('register', ['ref' => $user->user_name])
             : null;
+        $history = $section === 'order-history'
+            ? $this->orderHistory($request, $user)
+            : ['orders' => null, 'orderSearch' => '', 'orderTotal' => 0];
 
         return view('dashboard.section', [
             'heading' => $heading,
@@ -69,6 +77,23 @@ class DashboardController extends Controller
             'referral' => $referral,
             'user' => $user,
             'members' => $section === 'my-team' ? $user->directMembers() : null,
+            'orders' => $history['orders'],
+            'orderSearch' => $history['orderSearch'],
+            'orderTotal' => $history['orderTotal'],
+        ]);
+    }
+
+    public function order(Request $request, Order $order): View
+    {
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+        abort_unless((int) $order->user_id === (int) $user->id, 404);
+
+        $order->load(['items.product.category']);
+
+        return view('dashboard.order', [
+            'order' => $order,
+            'user' => $user,
         ]);
     }
 
@@ -123,5 +148,34 @@ class DashboardController extends Controller
         return redirect()
             ->route('dashboard.section', 'update-wallet-address')
             ->with('status', 'Wallet address saved.');
+    }
+
+    /**
+     * @return array{orders: LengthAwarePaginator<int, Order>, orderSearch: string, orderTotal: int}
+     */
+    private function orderHistory(Request $request, User $user): array
+    {
+        $search = trim($request->string('q')->toString());
+        $orders = $user->orders()
+            ->with(['items.product.category'])
+            ->when($search !== '', function ($query) use ($search): void {
+                $like = '%'.addcslashes($search, '%_\\').'%';
+                $query->where(function ($inner) use ($like): void {
+                    $inner->where('number', 'like', $like)
+                        ->orWhereHas('items', function ($items) use ($like): void {
+                            $items->where('name', 'like', $like)
+                                ->orWhere('sku', 'like', $like);
+                        });
+                });
+            })
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return [
+            'orders' => $orders,
+            'orderSearch' => $search,
+            'orderTotal' => $user->orders()->count(),
+        ];
     }
 }
