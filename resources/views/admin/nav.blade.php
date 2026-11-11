@@ -19,6 +19,19 @@
         <i class="bi bi-box-seam" aria-hidden="true"></i>
         <span>Product</span>
     </a>
+    <details class="dash-group" @if (request()->routeIs('admin.orders.*')) open @endif>
+        <summary class="dash-item">
+            <i class="bi bi-bag-check" aria-hidden="true"></i>
+            <span>Order Management</span>
+            <i class="bi bi-chevron-right dash-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="dash-sub">
+            <a class="dash-subitem @if (request()->routeIs('admin.orders.*')) is-active @endif" href="{{ route('admin.orders.index') }}" @if (request()->routeIs('admin.orders.*')) aria-current="page" @endif>
+                <i class="bi bi-card-list" aria-hidden="true"></i>
+                <span>Show all orders</span>
+            </a>
+        </div>
+    </details>
     <a class="dash-item @if (request()->routeIs('admin.companies.*')) is-active @endif" href="{{ route('admin.companies.index') }}" @if (request()->routeIs('admin.companies.*')) aria-current="page" @endif>
         <i class="bi bi-building" aria-hidden="true"></i>
         <span>Company</span>

@@ -175,7 +175,7 @@
     <section class="section trust">
         <div class="container">
             <ul>
-                <li><i class="bi bi-shield-check"></i><strong>Secure checkout</strong><span>Card fields are validated, then discarded. Nothing is charged.</span></li>
+                <li><i class="bi bi-shield-check"></i><strong>Cash checkout</strong><span>Pay in cash. Nothing is charged online.</span></li>
                 <li><i class="bi bi-arrow-counterclockwise"></i><strong>30-day returns</strong><span>A sample policy line you can replace with your own.</span></li>
                 <li><i class="bi bi-truck"></i><strong>Tracked delivery</strong><span>Standard shipping is free from $49.</span></li>
                 <li><i class="bi bi-chat-dots"></i><strong>A real help link</strong><span>Point the footer at your own support page.</span></li>

@@ -62,5 +62,5 @@
     @else
         <a class="btn btn-accent w-100 mt-3" href="{{ route('checkout.create') }}" @if ($lines->isEmpty()) aria-disabled="true" tabindex="-1" @endif>Checkout</a>
     @endif
-    <p class="fine">Card details are validated, then discarded. Nothing is charged.</p>
+    <p class="fine">Payment is cash. Nothing is charged online.</p>
 </aside>

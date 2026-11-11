@@ -244,7 +244,7 @@ class StorefrontTest extends TestCase
             'region' => 'OR',
             'postal' => '97201',
             'country' => 'United States',
-            'pay' => 'delivery',
+            'pay' => 'cash',
         ])->assertRedirect(route('checkout.create'));
 
         $this->get('/checkout')
@@ -294,6 +294,12 @@ class StorefrontTest extends TestCase
             ->assertSee('₹120.50')
             ->assertSee('₹241.00');
 
+        $this->get('/checkout')
+            ->assertOk()
+            ->assertSee('Cash')
+            ->assertDontSee('Card number')
+            ->assertDontSee('Pay on delivery');
+
         $this->post('/checkout', [
             'name' => 'Test Shopper',
             'email' => 'shopper@example.com',
@@ -302,7 +308,7 @@ class StorefrontTest extends TestCase
             'region' => 'Assam',
             'postal' => '781001',
             'country' => 'India',
-            'pay' => 'delivery',
+            'pay' => 'cash',
         ])->assertRedirect(route('checkout.create'));
 
         $this->get('/checkout')
@@ -313,7 +319,7 @@ class StorefrontTest extends TestCase
         $this->assertDatabaseHas('orders', [
             'email' => 'shopper@example.com',
             'country' => 'India',
-            'pay_method' => 'delivery',
+            'pay_method' => 'cash',
         ]);
         $this->assertDatabaseHas('order_items', [
             'sku' => 'assam-honey',

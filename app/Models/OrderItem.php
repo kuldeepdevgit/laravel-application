@@ -48,4 +48,38 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function lineTotal(): float
+    {
+        return round((float) $this->price * $this->qty, 2);
+    }
+
+    public function formattedPrice(): string
+    {
+        return '₹'.number_format((float) $this->price, 2);
+    }
+
+    public function formattedLineTotal(): string
+    {
+        return '₹'.number_format($this->lineTotal(), 2);
+    }
+
+    public function imageUrl(): ?string
+    {
+        if (! filled($this->image)) {
+            return null;
+        }
+
+        $image = str_replace('\\', '/', $this->image);
+
+        if (str_starts_with($image, 'https://') || str_starts_with($image, 'http://')) {
+            return $image;
+        }
+
+        if (str_contains($image, '..') || str_starts_with($image, '/')) {
+            return null;
+        }
+
+        return asset($image);
+    }
 }

@@ -16,6 +16,7 @@ class AdminTest extends TestCase
         $this->get('/admin/customers')->assertRedirect('/login');
         $this->get('/admin/categories')->assertRedirect('/login');
         $this->get('/admin/products')->assertRedirect('/login');
+        $this->get('/admin/orders')->assertRedirect('/login');
         $this->get('/admin/companies')->assertRedirect('/login');
         $this->get('/admin/packages')->assertRedirect('/login');
         $this->get('/admin/packages/upgrades')->assertRedirect('/login');
@@ -46,6 +47,10 @@ class AdminTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin/products')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/orders')
             ->assertForbidden();
 
         $this->actingAs($member)
@@ -143,6 +148,8 @@ class AdminTest extends TestCase
             ->assertSee('Customer Management')
             ->assertSee('Category')
             ->assertSee('Product')
+            ->assertSee('Order Management')
+            ->assertSee('Show all orders')
             ->assertSee('Company')
             ->assertSee('Package Management')
             ->assertSee('List package')
@@ -159,6 +166,7 @@ class AdminTest extends TestCase
             ->assertSee('Open customers')
             ->assertSee('Open categories')
             ->assertSee('Open products')
+            ->assertSee('Open orders')
             ->assertSee('Open companies')
             ->assertSee('Open packages')
             ->assertSee('Open banners')

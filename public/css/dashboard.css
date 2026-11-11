@@ -278,6 +278,76 @@ body.dash-body {
     width: 14rem;
 }
 
+.order-table th.order-wrap,
+.order-table td.order-wrap {
+    white-space: normal;
+}
+
+.order-lines {
+    display: grid;
+    gap: 0.65rem;
+    list-style: none;
+    margin: 0;
+    min-width: 16rem;
+    padding: 0;
+}
+
+.order-line {
+    align-items: center;
+    display: flex;
+    gap: 0.65rem;
+}
+
+.order-line img,
+.order-line-fallback {
+    border-radius: 0.4rem;
+    flex: 0 0 2.5rem;
+    height: 2.5rem;
+    object-fit: cover;
+    width: 2.5rem;
+}
+
+.order-line-fallback {
+    align-items: center;
+    background: #f7f4ee;
+    color: #6b645b;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.order-line p,
+.order-line small {
+    display: block;
+    margin: 0;
+}
+
+.order-line small {
+    color: #6c757d;
+}
+
+.order-totals {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.order-totals div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.order-totals dt,
+.order-totals dd {
+    margin: 0;
+}
+
+.order-totals div:last-child {
+    border-top: 1px solid #e6e0d6;
+    font-weight: 700;
+    margin-top: 0.25rem;
+    padding-top: 0.45rem;
+}
+
 .impersonation-bar {
     align-items: center;
     background: #fff6e8;

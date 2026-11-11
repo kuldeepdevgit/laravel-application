@@ -35,23 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const syncPay = () => {
-        const delivery = document.getElementById('pay-delivery')?.checked;
-        const fields = document.getElementById('card-fields');
-        if (!fields) {
-            return;
-        }
-        fields.hidden = Boolean(delivery);
-        fields.querySelectorAll('input').forEach((input) => {
-            input.required = !delivery;
-        });
-    };
-
-    document.querySelectorAll('input[name="pay"]').forEach((input) => {
-        input.addEventListener('change', syncPay);
-    });
-    syncPay();
-
     document.querySelectorAll('.toast').forEach((el) => {
         if (window.bootstrap) {
             window.bootstrap.Toast.getOrCreateInstance(el, { delay: 2600 }).show();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Company;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\View\View;
@@ -19,6 +20,7 @@ class AdminController extends Controller
             'companyCount' => Company::query()->count(),
             'bannerCount' => Banner::query()->count(),
             'customerCount' => User::query()->count(),
+            'orderCount' => Order::query()->count(),
         ]);
     }
 }

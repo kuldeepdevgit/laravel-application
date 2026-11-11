@@ -34,6 +34,12 @@
         </div>
         <div class="col-sm-6 col-xl-3">
             <article class="stat-card">
+                <span>Orders</span>
+                <strong>{{ $orderCount }}</strong>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="stat-card">
                 <span>Banners</span>
                 <strong>{{ $bannerCount }}</strong>
             </article>
@@ -59,6 +65,13 @@
                 <h2>Product</h2>
                 <p class="text-secondary">Add, edit, and remove products from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.products.index') }}">Open products</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
+                <h2>Order Management</h2>
+                <p class="text-secondary">See every order and the products, customer, and totals on it.</p>
+                <a class="btn dash-btn" href="{{ route('admin.orders.index') }}">Open orders</a>
             </section>
         </div>
         <div class="col-lg-3">
