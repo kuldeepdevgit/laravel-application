@@ -390,6 +390,12 @@ class DashboardTest extends TestCase
     {
         $user = User::factory()->create([
             'usdt_bep20' => '0x1111111111111111111111111111111111111111',
+            'bank_name' => 'State Bank of India',
+            'account_name' => 'Asha Rao',
+            'account_number' => '123456789012',
+            'ifsc_code' => 'SBIN0001234',
+            'google_pay' => 'asha@okaxis',
+            'phonepe' => 'asha@ybl',
         ]);
 
         $this->actingAs($user)
@@ -397,8 +403,20 @@ class DashboardTest extends TestCase
             ->assertOk()
             ->assertSee('Update Wallet Address')
             ->assertSee('USDT BEP 20 :')
+            ->assertSee('Bank name :')
+            ->assertSee('Account name :')
+            ->assertSee('Account number :')
+            ->assertSee('IFSC code :')
+            ->assertSee('Google Pay :')
+            ->assertSee('PhonePe :')
             ->assertSee('Submit')
-            ->assertSee('value="0x1111111111111111111111111111111111111111"', false);
+            ->assertSee('value="0x1111111111111111111111111111111111111111"', false)
+            ->assertSee('value="State Bank of India"', false)
+            ->assertSee('value="Asha Rao"', false)
+            ->assertSee('value="123456789012"', false)
+            ->assertSee('value="SBIN0001234"', false)
+            ->assertSee('value="asha@okaxis"', false)
+            ->assertSee('value="asha@ybl"', false);
     }
 
     public function test_a_member_can_save_a_usdt_bep20_address(): void
@@ -410,9 +428,39 @@ class DashboardTest extends TestCase
                 'usdt_bep20' => '0x2222222222222222222222222222222222222222',
             ])
             ->assertRedirect('/dashboard/update-wallet-address')
-            ->assertSessionHas('status', 'Wallet address saved.');
+            ->assertSessionHas('status', 'Wallet and bank details saved.');
 
         $this->assertSame('0x2222222222222222222222222222222222222222', $user->fresh()->usdt_bep20);
+    }
+
+    public function test_a_member_can_save_bank_google_pay_and_phonepe_details(): void
+    {
+        $user = User::factory()->create([
+            'usdt_bep20' => '0x2222222222222222222222222222222222222222',
+        ]);
+
+        $this->actingAs($user)
+            ->post('/dashboard/update-wallet-address', [
+                'usdt_bep20' => '0x2222222222222222222222222222222222222222',
+                'bank_name' => 'HDFC Bank',
+                'account_name' => 'Asha Rao',
+                'account_number' => '50100123456789',
+                'ifsc_code' => 'hdfc0001234',
+                'google_pay' => '+91 98765 43210',
+                'phonepe' => 'asha.rao@ybl',
+            ])
+            ->assertRedirect('/dashboard/update-wallet-address')
+            ->assertSessionHas('status', 'Wallet and bank details saved.');
+
+        $user->refresh();
+
+        $this->assertSame('0x2222222222222222222222222222222222222222', $user->usdt_bep20);
+        $this->assertSame('HDFC Bank', $user->bank_name);
+        $this->assertSame('Asha Rao', $user->account_name);
+        $this->assertSame('50100123456789', $user->account_number);
+        $this->assertSame('HDFC0001234', $user->ifsc_code);
+        $this->assertSame('9876543210', $user->google_pay);
+        $this->assertSame('asha.rao@ybl', $user->phonepe);
     }
 
     public function test_a_wallet_address_must_be_a_bep20_address(): void
@@ -430,6 +478,41 @@ class DashboardTest extends TestCase
             ->assertSessionHasErrors('usdt_bep20');
 
         $this->assertSame('0x3333333333333333333333333333333333333333', $user->fresh()->usdt_bep20);
+    }
+
+    public function test_bank_and_upi_details_must_be_complete_and_valid(): void
+    {
+        $user = User::factory()->create([
+            'usdt_bep20' => '0x3333333333333333333333333333333333333333',
+            'bank_name' => 'HDFC Bank',
+            'account_name' => 'Asha Rao',
+            'account_number' => '50100123456789',
+            'ifsc_code' => 'HDFC0001234',
+            'google_pay' => 'asha@okaxis',
+            'phonepe' => '9876543210',
+        ]);
+
+        $this->actingAs($user)
+            ->from('/dashboard/update-wallet-address')
+            ->post('/dashboard/update-wallet-address', [
+                'usdt_bep20' => '0x3333333333333333333333333333333333333333',
+                'bank_name' => 'HDFC Bank',
+                'account_number' => '12AB',
+                'ifsc_code' => 'not-ifsc',
+                'google_pay' => 'not an upi',
+                'phonepe' => '12345',
+            ])
+            ->assertRedirect('/dashboard/update-wallet-address')
+            ->assertSessionHasErrors(['account_name', 'account_number', 'ifsc_code', 'google_pay', 'phonepe']);
+
+        $user->refresh();
+
+        $this->assertSame('HDFC Bank', $user->bank_name);
+        $this->assertSame('Asha Rao', $user->account_name);
+        $this->assertSame('50100123456789', $user->account_number);
+        $this->assertSame('HDFC0001234', $user->ifsc_code);
+        $this->assertSame('asha@okaxis', $user->google_pay);
+        $this->assertSame('9876543210', $user->phonepe);
     }
 
     public function test_a_member_sees_only_their_own_order_history(): void

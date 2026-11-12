@@ -33,7 +33,7 @@ class DashboardController extends Controller
             'manage-profile' => ['Manage Profile', 'Your account details are listed below.'],
             'edit-profile' => ['Edit Profile', 'Your account details are listed below.'],
             'change-password' => ['Change Password', 'Choose a new password for your account.'],
-            'update-wallet-address' => ['Update Wallet Address', 'The wallet address on your account will be saved here.'],
+            'update-wallet-address' => ['Update Wallet Address', 'Save a USDT wallet, bank account, Google Pay, or PhonePe for your account.'],
             'team-report' => ['Team Report', 'Members who joined through your account will be listed here.'],
             'my-team' => ['My Team', 'Members who joined directly under your account will be listed here.'],
             'my-downline-team' => ['My Downline Team', 'Members in your downline are counted through '.User::DOWNLINE_DEPTH.' levels.'],
@@ -144,19 +144,80 @@ class DashboardController extends Controller
 
     public function updateWallet(Request $request): RedirectResponse
     {
+        $request->merge([
+            'usdt_bep20' => $this->nullableText($request, 'usdt_bep20'),
+            'bank_name' => $this->nullableText($request, 'bank_name'),
+            'account_name' => $this->nullableText($request, 'account_name'),
+            'account_number' => $this->nullableText($request, 'account_number'),
+            'ifsc_code' => $this->nullableIfsc($request),
+            'google_pay' => $this->nullableUpiOrMobile($request, 'google_pay'),
+            'phonepe' => $this->nullableUpiOrMobile($request, 'phonepe'),
+        ]);
+
         $data = $request->validate([
             'usdt_bep20' => ['nullable', 'string', 'regex:/^0x[a-fA-F0-9]{40}$/'],
+            'bank_name' => ['nullable', 'string', 'max:120', 'required_with:account_name,account_number,ifsc_code'],
+            'account_name' => ['nullable', 'string', 'max:120', 'required_with:bank_name,account_number,ifsc_code'],
+            'account_number' => ['nullable', 'string', 'regex:/^[0-9]{6,20}$/', 'required_with:bank_name,account_name,ifsc_code'],
+            'ifsc_code' => ['nullable', 'string', 'regex:/^[A-Z]{4}0[A-Z0-9]{6}$/', 'required_with:bank_name,account_name,account_number'],
+            'google_pay' => ['nullable', 'string', 'max:255', 'regex:/^(?:[6-9]\d{9}|[A-Za-z0-9.\-_]{2,256}@[A-Za-z][A-Za-z0-9]{1,63})$/'],
+            'phonepe' => ['nullable', 'string', 'max:255', 'regex:/^(?:[6-9]\d{9}|[A-Za-z0-9.\-_]{2,256}@[A-Za-z][A-Za-z0-9]{1,63})$/'],
         ], [
             'usdt_bep20.regex' => 'Enter a USDT BEP 20 address.',
+            'bank_name.required_with' => 'Enter a bank name.',
+            'account_name.required_with' => 'Enter an account name.',
+            'account_number.required_with' => 'Enter an account number.',
+            'account_number.regex' => 'Enter 6 to 20 digits.',
+            'ifsc_code.required_with' => 'Enter an IFSC code.',
+            'ifsc_code.regex' => 'Enter a valid IFSC code.',
+            'google_pay.regex' => 'Enter a Google Pay UPI ID or a 10-digit mobile number.',
+            'phonepe.regex' => 'Enter a PhonePe UPI ID or a 10-digit mobile number.',
         ]);
 
         $request->user()->update([
             'usdt_bep20' => $data['usdt_bep20'] ?? null,
+            'bank_name' => $data['bank_name'] ?? null,
+            'account_name' => $data['account_name'] ?? null,
+            'account_number' => $data['account_number'] ?? null,
+            'ifsc_code' => $data['ifsc_code'] ?? null,
+            'google_pay' => $data['google_pay'] ?? null,
+            'phonepe' => $data['phonepe'] ?? null,
         ]);
 
         return redirect()
             ->route('dashboard.section', 'update-wallet-address')
-            ->with('status', 'Wallet address saved.');
+            ->with('status', 'Wallet and bank details saved.');
+    }
+
+    private function nullableText(Request $request, string $key): ?string
+    {
+        $value = trim($request->string($key)->toString());
+
+        return $value === '' ? null : $value;
+    }
+
+    private function nullableIfsc(Request $request): ?string
+    {
+        $value = strtoupper(trim($request->string('ifsc_code')->toString()));
+
+        return $value === '' ? null : $value;
+    }
+
+    private function nullableUpiOrMobile(Request $request, string $key): ?string
+    {
+        $value = trim($request->string($key)->toString());
+
+        if ($value === '') {
+            return null;
+        }
+
+        $compact = preg_replace('/[\s\-]/', '', $value) ?? $value;
+
+        if (preg_match('/^(?:\+91|91)?([6-9]\d{9})$/', $compact, $matches) === 1) {
+            return $matches[1];
+        }
+
+        return $value;
     }
 
     /**
