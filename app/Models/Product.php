@@ -164,6 +164,7 @@ class Product extends Model
             'name' => $this->name,
             'category' => $this->category?->name ?? '',
             'price' => (float) $this->price,
+            'bv' => (float) $this->product_bv,
             'compare' => $this->compare_price !== null ? (float) $this->compare_price : null,
             'rating' => 0.0,
             'reviews' => 0,

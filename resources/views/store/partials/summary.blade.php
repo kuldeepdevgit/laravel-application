@@ -22,6 +22,7 @@
         <p class="fine">Add {{ $summaryCart->money($remaining) }} for free standard shipping.</p>
     @endif
     <div class="sum-row total"><span>Total</span><span>{{ $summaryCart->money($totals['total']) }}</span></div>
+    <div class="sum-row total-bv"><span>Total BV</span><span>{{ $summaryCart->formattedBv($totals['bv']) }}</span></div>
 
     <form method="POST" action="{{ route('cart.shipping') }}" class="ship-options">
         @csrf

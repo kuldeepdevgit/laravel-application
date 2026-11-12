@@ -1024,6 +1024,11 @@ a { color: var(--teal-2); }
   padding-top: 10px;
 }
 
+.sum-row.total-bv {
+  font-weight: 700;
+  padding-top: 0;
+}
+
 .ship-options { display: grid; gap: 8px; margin: 12px 0; }
 
 .ship-options label,

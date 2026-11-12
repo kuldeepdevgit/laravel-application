@@ -274,6 +274,7 @@ class StorefrontTest extends TestCase
             'name' => 'Assam Honey',
             'slug' => 'assam-honey',
             'price' => 120.50,
+            'product_bv' => 15,
             'stock' => 5,
             'is_active' => true,
         ]);
@@ -292,7 +293,9 @@ class StorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('Assam Honey')
             ->assertSee('₹120.50')
-            ->assertSee('₹241.00');
+            ->assertSee('₹241.00')
+            ->assertSee('Total BV')
+            ->assertSee('30.00');
 
         $this->get('/checkout')
             ->assertOk()

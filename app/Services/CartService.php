@@ -79,6 +79,7 @@ class CartService
             $catalog['source'] = 'catalog';
             $catalog['product_id'] = null;
             $catalog['currency'] = 'USD';
+            $catalog['bv'] = 0.0;
 
             return $catalog;
         }
@@ -108,6 +109,11 @@ class CartService
         $symbol = $this->currency() === 'INR' ? '₹' : '$';
 
         return $symbol.number_format($amount, 2);
+    }
+
+    public function formattedBv(float $amount): string
+    {
+        return number_format($amount, 2);
     }
 
     public function add(string $id, int $qty): ?string
@@ -205,12 +211,15 @@ class CartService
     }
 
     /**
-     * @return array{subtotal: float, off: float, ship: float, total: float, discounted: float}
+     * @return array{subtotal: float, off: float, ship: float, total: float, discounted: float, bv: float}
      */
     public function totals(): array
     {
         $subtotal = round($this->lines()->sum(
             fn (array $line) => $line['product']['price'] * $line['qty']
+        ), 2);
+        $bv = round($this->lines()->sum(
+            fn (array $line): float => (float) ($line['product']['bv'] ?? 0) * $line['qty']
         ), 2);
         $off = $this->promo() === 'WELCOME10' ? round($subtotal * 0.1, 2) : 0.0;
         $discounted = round($subtotal - $off, 2);
@@ -224,6 +233,7 @@ class CartService
             'ship' => $ship,
             'discounted' => $discounted,
             'total' => round($discounted + $ship, 2),
+            'bv' => $bv,
         ];
     }
 
