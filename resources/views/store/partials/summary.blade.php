@@ -23,6 +23,9 @@
     @endif
     <div class="sum-row total"><span>Total</span><span>{{ $summaryCart->money($totals['total']) }}</span></div>
     <div class="sum-row total-bv"><span>Total BV</span><span>{{ $summaryCart->formattedBv($totals['bv']) }}</span></div>
+    @if ($lines->isNotEmpty() && ! $summaryCart->checkoutBvMet())
+        <p class="fine" role="status">{{ $summaryCart->checkoutBvMessage() }}</p>
+    @endif
 
     <form method="POST" action="{{ route('cart.shipping') }}" class="ship-options">
         @csrf
@@ -59,9 +62,11 @@
     @endif
 
     @if (($mode ?? 'cart') === 'checkout')
-        <button class="btn btn-accent w-100 mt-3" type="submit" form="checkout-form">Place order</button>
+        <button class="btn btn-accent w-100 mt-3" type="submit" form="checkout-form" @disabled(! $summaryCart->checkoutBvMet())>Place order</button>
+    @elseif ($summaryCart->checkoutBvMet())
+        <a class="btn btn-accent w-100 mt-3" href="{{ route('checkout.create') }}">Checkout</a>
     @else
-        <a class="btn btn-accent w-100 mt-3" href="{{ route('checkout.create') }}" @if ($lines->isEmpty()) aria-disabled="true" tabindex="-1" @endif>Checkout</a>
+        <a class="btn btn-accent w-100 mt-3 disabled" aria-disabled="true" tabindex="-1">Checkout</a>
     @endif
     <p class="fine">Payment is cash. Nothing is charged online.</p>
 </aside>

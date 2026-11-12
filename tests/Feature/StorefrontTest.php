@@ -223,7 +223,7 @@ class StorefrontTest extends TestCase
         $this->get('/cart')->assertSee('Your cart is empty');
     }
 
-    public function test_a_shopper_can_add_an_item_and_place_a_demo_order(): void
+    public function test_a_catalog_item_cannot_be_checked_out_below_the_bv_minimum(): void
     {
         $this->post('/cart', ['product' => 'nb-headphones', 'qty' => 1])
             ->assertRedirect()
@@ -236,6 +236,8 @@ class StorefrontTest extends TestCase
 
         $this->post('/cart/promo', ['code' => 'WELCOME10'])->assertRedirect();
 
+        $this->get('/checkout')->assertRedirect(route('cart.index'));
+
         $this->post('/checkout', [
             'name' => 'Test Shopper',
             'email' => 'shopper@example.com',
@@ -245,19 +247,14 @@ class StorefrontTest extends TestCase
             'postal' => '97201',
             'country' => 'United States',
             'pay' => 'cash',
-        ])->assertRedirect(route('checkout.create'));
+        ])->assertRedirect(route('cart.index'));
 
-        $this->get('/checkout')
+        $this->get('/cart')
             ->assertOk()
-            ->assertSee('Order placed')
-            ->assertSee('NB-');
+            ->assertSee('Checkout needs a total BV of 1,500.00 or more. Your total BV is 0.00.')
+            ->assertSee('Aero Quiet Headphones');
 
-        $this->assertDatabaseHas('order_items', [
-            'sku' => 'nb-headphones',
-            'name' => 'Aero Quiet Headphones',
-            'qty' => 1,
-        ]);
-        $this->get('/cart')->assertSee('Your cart is empty');
+        $this->assertDatabaseCount('orders', 0);
     }
 
     public function test_checkout_requires_a_shipping_address(): void
@@ -274,7 +271,7 @@ class StorefrontTest extends TestCase
             'name' => 'Assam Honey',
             'slug' => 'assam-honey',
             'price' => 120.50,
-            'product_bv' => 15,
+            'product_bv' => 750,
             'stock' => 5,
             'is_active' => true,
         ]);
@@ -295,7 +292,8 @@ class StorefrontTest extends TestCase
             ->assertSee('₹120.50')
             ->assertSee('₹241.00')
             ->assertSee('Total BV')
-            ->assertSee('30.00');
+            ->assertSee('1,500.00')
+            ->assertDontSee('Checkout needs a total BV');
 
         $this->get('/checkout')
             ->assertOk()
@@ -331,6 +329,43 @@ class StorefrontTest extends TestCase
         ]);
         $this->assertSame(3, $product->fresh()->stock);
         $this->get('/cart')->assertSee('Your cart is empty');
+    }
+
+    public function test_checkout_requires_a_total_bv_of_at_least_1500(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Neem Soap',
+            'slug' => 'neem-soap',
+            'price' => 40,
+            'product_bv' => 1499,
+            'stock' => 4,
+            'is_active' => true,
+        ]);
+
+        $this->post('/cart', ['product' => 'neem-soap', 'qty' => 1])->assertRedirect();
+
+        $this->get('/cart')
+            ->assertOk()
+            ->assertSee('Total BV')
+            ->assertSee('1,499.00')
+            ->assertSee('Checkout needs a total BV of 1,500.00 or more. Your total BV is 1,499.00.');
+
+        $this->get('/checkout')->assertRedirect(route('cart.index'));
+
+        $this->post('/checkout', [
+            'name' => 'Test Shopper',
+            'email' => 'shopper@example.com',
+            'address' => '18 Harbor Lane',
+            'city' => 'Guwahati',
+            'region' => 'Assam',
+            'postal' => '781001',
+            'country' => 'India',
+            'pay' => 'cash',
+        ])->assertRedirect(route('cart.index'))
+            ->assertSessionHas('status', 'Checkout needs a total BV of 1,500.00 or more. Your total BV is 1,499.00.');
+
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertSame(4, $product->fresh()->stock);
     }
 
     public function test_a_saved_sold_out_product_cannot_be_added_to_the_cart(): void

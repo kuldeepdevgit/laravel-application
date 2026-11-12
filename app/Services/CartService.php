@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Schema;
 
 class CartService
 {
+    public const float MINIMUM_CHECKOUT_BV = 1500.0;
+
     private const CART = 'store.cart';
 
     /**
@@ -114,6 +116,16 @@ class CartService
     public function formattedBv(float $amount): string
     {
         return number_format($amount, 2);
+    }
+
+    public function checkoutBvMet(): bool
+    {
+        return $this->totals()['bv'] >= self::MINIMUM_CHECKOUT_BV;
+    }
+
+    public function checkoutBvMessage(): string
+    {
+        return 'Checkout needs a total BV of '.$this->formattedBv(self::MINIMUM_CHECKOUT_BV).' or more. Your total BV is '.$this->formattedBv($this->totals()['bv']).'.';
     }
 
     public function add(string $id, int $qty): ?string

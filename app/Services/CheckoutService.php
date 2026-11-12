@@ -26,6 +26,12 @@ class CheckoutService
                 ]);
             }
 
+            if (! $this->cart->checkoutBvMet()) {
+                throw ValidationException::withMessages([
+                    'cart' => $this->cart->checkoutBvMessage(),
+                ]);
+            }
+
             $totals = $this->cart->totals();
 
             $order = Order::query()->create([

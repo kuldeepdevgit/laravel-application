@@ -16,8 +16,14 @@ class CheckoutController extends Controller
         private CheckoutService $checkout,
     ) {}
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        if ($this->cart->lines()->isNotEmpty() && ! $this->cart->checkoutBvMet()) {
+            return redirect()
+                ->route('cart.index')
+                ->with('status', $this->cart->checkoutBvMessage());
+        }
+
         return view('store.checkout', [
             'lines' => $this->cart->lines(),
             'totals' => $this->cart->totals(),
