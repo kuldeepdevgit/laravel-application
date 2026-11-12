@@ -326,6 +326,7 @@ class StorefrontTest extends TestCase
             'sku' => 'assam-honey',
             'name' => 'Assam Honey',
             'qty' => 2,
+            'bv' => 750,
         ]);
         $this->assertSame(3, $product->fresh()->stock);
         $this->get('/cart')->assertSee('Your cart is empty');

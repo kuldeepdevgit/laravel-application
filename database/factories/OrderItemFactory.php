@@ -23,6 +23,7 @@ class OrderItemFactory extends Factory
             'name' => fake()->words(3, true),
             'qty' => fake()->numberBetween(1, 4),
             'price' => fake()->randomFloat(2, 10, 200),
+            'bv' => 0,
             'image' => null,
         ];
     }

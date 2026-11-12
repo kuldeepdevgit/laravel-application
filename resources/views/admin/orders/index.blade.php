@@ -41,6 +41,7 @@
                                     <th scope="col">Customer</th>
                                     <th scope="col" class="order-wrap">Products</th>
                                     <th scope="col">Total</th>
+                                    <th scope="col">Total BV</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -71,7 +72,7 @@
                                                             @endif
                                                             <div>
                                                                 <p>{{ $item->name }}</p>
-                                                                <small>{{ $item->sku }} · Qty {{ $item->qty }} · {{ $item->formattedPrice() }} each · {{ $item->formattedLineTotal() }}</small>
+                                                                <small>{{ $item->sku }} · Qty {{ $item->qty }} · {{ $item->formattedPrice() }} each · {{ $item->formattedLineTotal() }} · BV {{ $item->formattedBv() }} each · Line BV {{ $item->formattedLineBv() }}</small>
                                                             </div>
                                                         </li>
                                                     @endforeach
@@ -79,6 +80,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $order->formattedTotal() }}</td>
+                                        <td>{{ $order->formattedTotalBv() }}</td>
                                         <td>
                                             <a class="btn cat-action" href="{{ route('admin.orders.show', $order) }}">Details</a>
                                         </td>

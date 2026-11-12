@@ -82,6 +82,7 @@ class OrderManagementTest extends TestCase
             'name' => 'Neem Soap',
             'qty' => 2,
             'price' => 100,
+            'bv' => 80,
         ]);
 
         $other = Order::factory()->create([
@@ -110,6 +111,9 @@ class OrderManagementTest extends TestCase
             ->assertSee('₹100.00')
             ->assertSee('₹200.00')
             ->assertSee('₹220.00')
+            ->assertSee('BV 80.00')
+            ->assertSee('Line BV 160.00')
+            ->assertSee('Total BV')
             ->assertSee('NB-200002')
             ->assertSee('Hidden Oil')
             ->assertSee('Details');
@@ -146,6 +150,11 @@ class OrderManagementTest extends TestCase
             ->assertSee('neem-soap')
             ->assertSee('Personal care')
             ->assertSee('₹100.00')
+            ->assertSee('Unit BV')
+            ->assertSee('80.00')
+            ->assertSee('Line BV')
+            ->assertSee('160.00')
+            ->assertSee('Total BV')
             ->assertDontSee('Hidden Oil');
     }
 }

@@ -63,6 +63,7 @@ class CheckoutService
                     'name' => $line['product']['name'],
                     'qty' => $line['qty'],
                     'price' => $line['product']['price'],
+                    'bv' => $line['product']['bv'] ?? 0,
                     'image' => $line['product']['images'][0] ?? null,
                 ]);
             }

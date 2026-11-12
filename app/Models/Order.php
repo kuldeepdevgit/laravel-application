@@ -81,6 +81,18 @@ class Order extends Model
         return $this->rupees($this->total);
     }
 
+    public function totalBv(): float
+    {
+        return round((float) $this->items->sum(
+            fn (OrderItem $item): float => (float) $item->bv * $item->qty
+        ), 2);
+    }
+
+    public function formattedTotalBv(): string
+    {
+        return number_format($this->totalBv(), 2);
+    }
+
     public function paymentLabel(): string
     {
         return match ($this->pay_method) {

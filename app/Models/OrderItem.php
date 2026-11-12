@@ -19,6 +19,7 @@ class OrderItem extends Model
         'name',
         'qty',
         'price',
+        'bv',
         'image',
     ];
 
@@ -30,6 +31,7 @@ class OrderItem extends Model
         return [
             'qty' => 'integer',
             'price' => 'decimal:2',
+            'bv' => 'decimal:2',
         ];
     }
 
@@ -62,6 +64,21 @@ class OrderItem extends Model
     public function formattedLineTotal(): string
     {
         return '₹'.number_format($this->lineTotal(), 2);
+    }
+
+    public function lineBv(): float
+    {
+        return round((float) $this->bv * $this->qty, 2);
+    }
+
+    public function formattedBv(): string
+    {
+        return number_format((float) $this->bv, 2);
+    }
+
+    public function formattedLineBv(): string
+    {
+        return number_format($this->lineBv(), 2);
     }
 
     public function imageUrl(): ?string

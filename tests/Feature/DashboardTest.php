@@ -548,6 +548,7 @@ class DashboardTest extends TestCase
             'name' => 'Neem Soap',
             'qty' => 2,
             'price' => 100,
+            'bv' => 80,
         ]);
 
         $hidden = Order::factory()->for($other)->create([
@@ -573,6 +574,9 @@ class DashboardTest extends TestCase
             ->assertSee('₹100.00')
             ->assertSee('₹200.00')
             ->assertSee('₹220.00')
+            ->assertSee('BV 80.00')
+            ->assertSee('Line BV 160.00')
+            ->assertSee('Total BV')
             ->assertDontSee('NB-200002')
             ->assertDontSee('Hidden Oil');
 
@@ -594,6 +598,11 @@ class DashboardTest extends TestCase
             ->assertSee('A gentle neem bar.')
             ->assertSee('₹20.00')
             ->assertSee('₹40.00')
+            ->assertSee('Unit BV')
+            ->assertSee('80.00')
+            ->assertSee('Line BV')
+            ->assertSee('160.00')
+            ->assertSee('Total BV')
             ->assertDontSee('Hidden Oil');
 
         $this->actingAs($member)

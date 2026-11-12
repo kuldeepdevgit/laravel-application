@@ -57,6 +57,10 @@
                             <dt>Total</dt>
                             <dd>{{ $order->formattedTotal() }}</dd>
                         </div>
+                        <div>
+                            <dt>Total BV</dt>
+                            <dd>{{ $order->formattedTotalBv() }}</dd>
+                        </div>
                     </dl>
                 </section>
             </div>
@@ -77,6 +81,8 @@
                             <th scope="col">Qty</th>
                             <th scope="col">Unit price</th>
                             <th scope="col">Line total</th>
+                            <th scope="col">Unit BV</th>
+                            <th scope="col">Line BV</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,10 +109,12 @@
                                 <td>{{ $item->qty }}</td>
                                 <td>{{ $item->formattedPrice() }}</td>
                                 <td>{{ $item->formattedLineTotal() }}</td>
+                                <td>{{ $item->formattedBv() }}</td>
+                                <td>{{ $item->formattedLineBv() }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-secondary py-4">No products on this order</td>
+                                <td colspan="9" class="text-center text-secondary py-4">No products on this order</td>
                             </tr>
                         @endforelse
                     </tbody>
