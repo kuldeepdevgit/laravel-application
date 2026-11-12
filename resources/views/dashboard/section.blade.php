@@ -29,6 +29,12 @@
             <p class="text-secondary">{{ $intro }}</p>
             @include('dashboard.my-team')
         </section>
+    @elseif ($section === 'my-downline-team')
+        <section class="panel">
+            <h2>{{ $heading }}</h2>
+            <p class="text-secondary">{{ $intro }}</p>
+            @include('dashboard.my-downline-team')
+        </section>
     @elseif ($section === 'order-history')
         @include('dashboard.order-history')
     @else

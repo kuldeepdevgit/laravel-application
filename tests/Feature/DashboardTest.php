@@ -296,6 +296,96 @@ class DashboardTest extends TestCase
         $this->assertTrue($byUsername->is($sponsor->directMembers()->last()));
     }
 
+    public function test_my_downline_team_counts_ten_levels(): void
+    {
+        $root = User::factory()->create([
+            'name' => 'Avery Chen',
+            'user_name' => 'GSI6185588',
+        ]);
+        $direct = User::factory()->create([
+            'name' => 'Riley Shaw',
+            'user_name' => 'GSI2000001',
+            'phone_number' => '9876543210',
+            'sponsor_name' => 'gsi6185588',
+        ]);
+        User::factory()->create([
+            'name' => 'Noah Patel',
+            'user_name' => 'GSI2000002',
+            'phone_number' => '9123456789',
+            'sponsor_name' => 'Riley Shaw',
+        ]);
+        User::factory()->create([
+            'name' => 'Second Branch',
+            'user_name' => 'GSI2000003',
+            'sponsor_name' => 'GSI2000001',
+        ]);
+
+        $sponsorName = 'GSI2000002';
+
+        for ($level = 3; $level <= 11; $level++) {
+            $userName = 'GSI4'.str_pad((string) $level, 6, '0', STR_PAD_LEFT);
+            User::factory()->create([
+                'name' => 'Level '.$level.' Member',
+                'user_name' => $userName,
+                'sponsor_name' => $sponsorName,
+            ]);
+            $sponsorName = $userName;
+        }
+
+        User::factory()->create([
+            'name' => 'Someone Else',
+            'sponsor_name' => 'Other Sponsor',
+        ]);
+
+        $downline = $root->downlineMembers();
+
+        $this->assertCount(11, $downline);
+        $this->assertTrue($direct->is($downline->first()));
+        $this->assertSame(1, (int) $downline->first()->getAttribute('downline_level'));
+        $this->assertSame(2, $downline->where('downline_level', 2)->count());
+        $this->assertSame(10, (int) $downline->firstWhere('name', 'Level 10 Member')?->getAttribute('downline_level'));
+        $this->assertNull($downline->firstWhere('name', 'Level 11 Member'));
+
+        $this->actingAs($root)
+            ->get('/dashboard/my-downline-team')
+            ->assertOk()
+            ->assertSee('My Downline Team')
+            ->assertSee('counted through 10 levels')
+            ->assertSee('11')
+            ->assertSee('members across 10 levels')
+            ->assertSee('Level 1')
+            ->assertSee('Level 10')
+            ->assertDontSee('Level 11')
+            ->assertSee('Riley Shaw')
+            ->assertSee('GSI2000001')
+            ->assertSee('9876543210')
+            ->assertSee('Noah Patel')
+            ->assertSee('Second Branch')
+            ->assertSee('Level 10 Member')
+            ->assertDontSee('Level 11 Member')
+            ->assertDontSee('Someone Else');
+    }
+
+    public function test_downline_counting_stops_when_sponsors_point_at_each_other(): void
+    {
+        $first = User::factory()->create([
+            'name' => 'Member A',
+            'user_name' => 'GSI3000001',
+            'sponsor_name' => 'GSI3000002',
+        ]);
+        $second = User::factory()->create([
+            'name' => 'Member B',
+            'user_name' => 'GSI3000002',
+            'sponsor_name' => 'GSI3000001',
+        ]);
+
+        $downline = $first->downlineMembers();
+
+        $this->assertCount(1, $downline);
+        $this->assertTrue($second->is($downline->first()));
+        $this->assertSame(1, (int) $downline->first()->getAttribute('downline_level'));
+    }
+
     public function test_update_wallet_address_shows_the_wallet_field(): void
     {
         $user = User::factory()->create([

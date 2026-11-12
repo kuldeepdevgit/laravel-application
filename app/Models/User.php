@@ -20,6 +20,8 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public const DOWNLINE_DEPTH = 10;
+
     /**
      * Get the attributes that should be cast.
      *
@@ -110,23 +112,80 @@ class User extends Authenticatable
      */
     public function directMembers(): Collection
     {
-        $names = collect([$this->name, $this->user_name])
+        return $this->membersSponsoredBy($this->sponsorMatchKeys())
+            ->reject(fn (self $member): bool => $member->is($this))
+            ->values();
+    }
+
+    /**
+     * Members in this account's downline, from direct referrals through the given depth.
+     * Each member has downline_level set, where 1 is a direct member.
+     *
+     * @return Collection<int, static>
+     */
+    public function downlineMembers(int $depth = self::DOWNLINE_DEPTH): Collection
+    {
+        $members = new Collection;
+        /** @var array<int, true> $seen */
+        $seen = [(int) $this->getKey() => true];
+        $keys = $this->sponsorMatchKeys();
+
+        for ($level = 1; $level <= $depth && $keys !== []; $level++) {
+            $levelMembers = $this->membersSponsoredBy($keys)
+                ->reject(fn (self $member): bool => isset($seen[(int) $member->getKey()]))
+                ->values();
+
+            if ($levelMembers->isEmpty()) {
+                break;
+            }
+
+            $nextKeys = [];
+
+            foreach ($levelMembers as $member) {
+                $seen[(int) $member->getKey()] = true;
+                $member->setAttribute('downline_level', $level);
+                $members->push($member);
+
+                foreach ($member->sponsorMatchKeys() as $key) {
+                    $nextKeys[$key] = $key;
+                }
+            }
+
+            $keys = array_values($nextKeys);
+        }
+
+        return $members;
+    }
+
+    /**
+     * Names and usernames that a new member can store as sponsor_name.
+     *
+     * @return list<string>
+     */
+    private function sponsorMatchKeys(): array
+    {
+        return collect([$this->name, $this->user_name])
             ->filter(fn (mixed $name): bool => filled($name))
             ->map(fn (mixed $name): string => mb_strtolower(trim((string) $name)))
             ->unique()
-            ->values();
+            ->values()
+            ->all();
+    }
 
-        if ($names->isEmpty()) {
+    /**
+     * @param  list<string>  $keys
+     * @return Collection<int, static>
+     */
+    private function membersSponsoredBy(array $keys): Collection
+    {
+        if ($keys === []) {
             return new Collection;
         }
 
+        $placeholders = implode(', ', array_fill(0, count($keys), '?'));
+
         return static::query()
-            ->where(function ($query) use ($names): void {
-                foreach ($names as $name) {
-                    $query->orWhereRaw('LOWER(sponsor_name) = ?', [$name]);
-                }
-            })
-            ->whereKeyNot($this->getKey())
+            ->whereRaw('LOWER(sponsor_name) IN ('.$placeholders.')', $keys)
             ->orderBy('id')
             ->get();
     }

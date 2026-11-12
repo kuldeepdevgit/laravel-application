@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -35,7 +36,7 @@ class DashboardController extends Controller
             'update-wallet-address' => ['Update Wallet Address', 'The wallet address on your account will be saved here.'],
             'team-report' => ['Team Report', 'Members who joined through your account will be listed here.'],
             'my-team' => ['My Team', 'Members who joined directly under your account will be listed here.'],
-            'my-downline-team' => ['My Downline Team', 'Members in your downline will be listed here.'],
+            'my-downline-team' => ['My Downline Team', 'Members in your downline are counted through '.User::DOWNLINE_DEPTH.' levels.'],
             'fund-management' => ['Fund Management', 'Fund activity for your account will be listed here.'],
             'fund-request-usdt' => ['Fund Request (USDT)', 'Request a USDT fund transfer for your account.'],
             'fund-request-list' => ['Fund Request List', 'Your fund requests will be listed here.'],
@@ -69,6 +70,11 @@ class DashboardController extends Controller
         $history = $section === 'order-history'
             ? $this->orderHistory($request, $user)
             : ['orders' => null, 'orderSearch' => '', 'orderTotal' => 0];
+        $members = match ($section) {
+            'my-team' => $user->directMembers(),
+            'my-downline-team' => $user->downlineMembers(),
+            default => null,
+        };
 
         return view('dashboard.section', [
             'heading' => $heading,
@@ -76,7 +82,10 @@ class DashboardController extends Controller
             'section' => $section,
             'referral' => $referral,
             'user' => $user,
-            'members' => $section === 'my-team' ? $user->directMembers() : null,
+            'members' => $members,
+            'downlineCounts' => $section === 'my-downline-team' && $members instanceof Collection
+                ? $this->downlineLevelCounts($members)
+                : null,
             'orders' => $history['orders'],
             'orderSearch' => $history['orderSearch'],
             'orderTotal' => $history['orderTotal'],
@@ -148,6 +157,25 @@ class DashboardController extends Controller
         return redirect()
             ->route('dashboard.section', 'update-wallet-address')
             ->with('status', 'Wallet address saved.');
+    }
+
+    /**
+     * @param  Collection<int, User>  $members
+     * @return array<int, int>
+     */
+    private function downlineLevelCounts(Collection $members): array
+    {
+        $counts = array_fill(1, User::DOWNLINE_DEPTH, 0);
+
+        foreach ($members as $member) {
+            $level = (int) $member->getAttribute('downline_level');
+
+            if (array_key_exists($level, $counts)) {
+                $counts[$level]++;
+            }
+        }
+
+        return $counts;
     }
 
     /**
