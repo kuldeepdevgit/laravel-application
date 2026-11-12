@@ -321,6 +321,7 @@ class StorefrontTest extends TestCase
             'email' => 'shopper@example.com',
             'country' => 'India',
             'pay_method' => 'cash',
+            'status' => 'pending',
         ]);
         $this->assertDatabaseHas('order_items', [
             'sku' => 'assam-honey',

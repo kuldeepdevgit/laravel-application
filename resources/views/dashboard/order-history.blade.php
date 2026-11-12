@@ -33,6 +33,7 @@
                             <th scope="col" class="order-wrap">Products</th>
                             <th scope="col">Total</th>
                             <th scope="col">Total BV</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -67,6 +68,7 @@
                                 </td>
                                 <td>{{ $order->formattedTotal() }}</td>
                                 <td>{{ $order->formattedTotalBv() }}</td>
+                                <td><span class="order-status is-{{ $order->status }}">{{ $order->statusLabel() }}</span></td>
                                 <td>
                                     <a class="btn cat-action" href="{{ route('dashboard.orders.show', $order) }}">Details</a>
                                 </td>

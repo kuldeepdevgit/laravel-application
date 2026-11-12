@@ -6,6 +6,10 @@
 
 @section('content')
     <div class="cat-page">
+        @if (session('status'))
+            <p class="cat-note" role="status">{{ session('status') }}</p>
+        @endif
+
         @if ($total === 0)
             <section class="panel cat-empty">
                 <span class="cat-empty-mark" aria-hidden="true"><i class="bi bi-bag-check"></i></span>
@@ -42,6 +46,7 @@
                                     <th scope="col" class="order-wrap">Products</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Total BV</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -81,9 +86,8 @@
                                         </td>
                                         <td>{{ $order->formattedTotal() }}</td>
                                         <td>{{ $order->formattedTotalBv() }}</td>
-                                        <td>
-                                            <a class="btn cat-action" href="{{ route('admin.orders.show', $order) }}">Details</a>
-                                        </td>
+                                        <td><span class="order-status is-{{ $order->status }}">{{ $order->statusLabel() }}</span></td>
+                                        <td>@include('admin.orders.status-actions', ['order' => $order, 'details' => true])</td>
                                     </tr>
                                 @endforeach
                             </tbody>

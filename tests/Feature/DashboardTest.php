@@ -577,6 +577,7 @@ class DashboardTest extends TestCase
             ->assertSee('BV 80.00')
             ->assertSee('Line BV 160.00')
             ->assertSee('Total BV')
+            ->assertSee('Pending')
             ->assertDontSee('NB-200002')
             ->assertDontSee('Hidden Oil');
 

@@ -25,6 +25,7 @@ class Order extends Model
         'postal',
         'country',
         'pay_method',
+        'status',
         'promo',
         'subtotal',
         'discount',
@@ -91,6 +92,15 @@ class Order extends Model
     public function formattedTotalBv(): string
     {
         return number_format($this->totalBv(), 2);
+    }
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            'confirmed' => 'Confirmed',
+            'rejected' => 'Rejected',
+            default => 'Pending',
+        };
     }
 
     public function paymentLabel(): string

@@ -46,6 +46,7 @@ class CheckoutService
                 'postal' => $customer['postal'],
                 'country' => $customer['country'],
                 'pay_method' => $customer['pay'],
+                'status' => 'pending',
                 'promo' => $this->cart->promo() ?: null,
                 'subtotal' => $totals['subtotal'],
                 'discount' => $totals['off'],

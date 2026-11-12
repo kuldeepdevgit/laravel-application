@@ -643,6 +643,40 @@ a.dash-btn-quiet {
     color: #8a3b2a;
 }
 
+.cat-action.is-current {
+    background: var(--dash-accent);
+    border-color: transparent;
+    color: #fff;
+}
+
+.cat-action.is-current:hover {
+    background: #c4622a;
+    color: #fff;
+}
+
+.order-status {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.28rem 0.6rem;
+}
+
+.order-status.is-pending {
+    background: #fff6e8;
+    color: #8a5a12;
+}
+
+.order-status.is-confirmed {
+    background: #eef6ef;
+    color: #1b5c32;
+}
+
+.order-status.is-rejected {
+    background: #fbf4f1;
+    color: #8a3b2a;
+}
+
 .cat-pages {
     margin-top: 1.25rem;
 }

@@ -17,6 +17,7 @@ class OrderManagementTest extends TestCase
     public function test_guests_are_sent_to_login(): void
     {
         $this->get('/admin/orders')->assertRedirect('/login');
+        $this->patch('/admin/orders/1/status')->assertRedirect('/login');
     }
 
     public function test_a_member_cannot_open_order_management(): void
@@ -30,6 +31,10 @@ class OrderManagementTest extends TestCase
 
         $this->actingAs($member)
             ->get('/admin/orders/'.$order->id)
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'confirmed'])
             ->assertForbidden();
     }
 
@@ -114,6 +119,9 @@ class OrderManagementTest extends TestCase
             ->assertSee('BV 80.00')
             ->assertSee('Line BV 160.00')
             ->assertSee('Total BV')
+            ->assertSee('Pending')
+            ->assertSee('Confirm')
+            ->assertSee('Rejected')
             ->assertSee('NB-200002')
             ->assertSee('Hidden Oil')
             ->assertSee('Details');
@@ -156,5 +164,51 @@ class OrderManagementTest extends TestCase
             ->assertSee('160.00')
             ->assertSee('Total BV')
             ->assertDontSee('Hidden Oil');
+    }
+
+    public function test_the_super_admin_can_confirm_pend_or_reject_an_order(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $order = Order::factory()->create([
+            'number' => 'NB-300003',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->from('/admin/orders')
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'confirmed'])
+            ->assertRedirect('/admin/orders')
+            ->assertSessionHas('status', 'NB-300003 is now Confirmed.');
+
+        $this->assertSame('confirmed', $order->fresh()->status);
+
+        $this->actingAs($admin)
+            ->get('/admin/orders/'.$order->id)
+            ->assertOk()
+            ->assertSee('Confirmed');
+
+        $this->actingAs($admin)
+            ->from('/admin/orders/'.$order->id)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'rejected'])
+            ->assertRedirect('/admin/orders/'.$order->id)
+            ->assertSessionHas('status', 'NB-300003 is now Rejected.');
+
+        $this->assertSame('rejected', $order->fresh()->status);
+
+        $this->actingAs($admin)
+            ->from('/admin/orders/'.$order->id)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'pending'])
+            ->assertRedirect('/admin/orders/'.$order->id)
+            ->assertSessionHas('status', 'NB-300003 is now Pending.');
+
+        $this->assertSame('pending', $order->fresh()->status);
+
+        $this->actingAs($admin)
+            ->from('/admin/orders/'.$order->id)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'shipped'])
+            ->assertRedirect('/admin/orders/'.$order->id)
+            ->assertSessionHasErrors('status');
+
+        $this->assertSame('pending', $order->fresh()->status);
     }
 }

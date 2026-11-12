@@ -8,7 +8,12 @@
     <div class="cat-page">
         <div class="cat-toolbar">
             <a class="btn dash-btn-quiet" href="{{ route('admin.orders.index') }}">Show all orders</a>
+            <span class="order-status is-{{ $order->status }}">{{ $order->statusLabel() }}</span>
+            @include('admin.orders.status-actions', ['order' => $order])
         </div>
+        @if (session('status'))
+            <p class="cat-note" role="status">{{ session('status') }}</p>
+        @endif
 
         <div class="row g-3 mb-3">
             <div class="col-lg-4">

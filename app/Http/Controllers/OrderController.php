@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class OrderController extends Controller
@@ -44,5 +46,18 @@ class OrderController extends Controller
         return view('admin.orders.show', [
             'order' => $order,
         ]);
+    }
+
+    public function updateStatus(Request $request, Order $order): RedirectResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', Rule::in(['pending', 'confirmed', 'rejected'])],
+        ]);
+
+        $order->update([
+            'status' => $data['status'],
+        ]);
+
+        return back()->with('status', $order->number.' is now '.$order->statusLabel().'.');
     }
 }

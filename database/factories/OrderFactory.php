@@ -29,6 +29,7 @@ class OrderFactory extends Factory
             'postal' => fake()->postcode(),
             'country' => 'India',
             'pay_method' => 'cash',
+            'status' => 'pending',
             'promo' => null,
             'subtotal' => $subtotal,
             'discount' => 0,

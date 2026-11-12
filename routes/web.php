@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
         Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');

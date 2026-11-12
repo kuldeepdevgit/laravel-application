@@ -49,6 +49,10 @@
                             <dt>Total BV</dt>
                             <dd>{{ $order->formattedTotalBv() }}</dd>
                         </div>
+                        <div>
+                            <dt>Status</dt>
+                            <dd><span class="order-status is-{{ $order->status }}">{{ $order->statusLabel() }}</span></dd>
+                        </div>
                     </dl>
                 </section>
             </div>
