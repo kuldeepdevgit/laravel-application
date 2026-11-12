@@ -46,8 +46,7 @@
         @enderror
     </div>
 
-    <h3 class="h6 mt-4">Google Pay</h3>
-    <div class="mb-3">
+    <div class="mb-3 mt-4">
         <label class="form-label" for="google_pay">Google Pay :</label>
         <input class="form-control" id="google_pay" name="google_pay" type="text" value="{{ old('google_pay', $user->google_pay) }}" maxlength="255" autocomplete="off" spellcheck="false" placeholder="name@okaxis or mobile number">
         <p class="form-text mb-0">UPI ID or 10-digit mobile number.</p>
@@ -56,7 +55,6 @@
         @enderror
     </div>
 
-    <h3 class="h6 mt-4">PhonePe</h3>
     <div class="mb-3">
         <label class="form-label" for="phonepe">PhonePe :</label>
         <input class="form-control" id="phonepe" name="phonepe" type="text" value="{{ old('phonepe', $user->phonepe) }}" maxlength="255" autocomplete="off" spellcheck="false" placeholder="name@ybl or mobile number">
