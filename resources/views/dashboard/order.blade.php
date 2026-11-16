@@ -54,6 +54,15 @@
                             <dd><span class="order-status is-{{ $order->status }}">{{ $order->statusLabel() }}</span></dd>
                         </div>
                     </dl>
+                    @if ($order->payment)
+                        <h3 class="h6 mt-3">Uploaded payment</h3>
+                        <p class="mb-1">{{ $order->payment->franchise_sponsor_id }}</p>
+                        <p class="mb-1">{{ $order->payment->formattedAmount() }} · {{ $order->payment->payModeLabel() }}</p>
+                        <p class="mb-1">{{ $order->payment->remark ?: 'No remark' }}</p>
+                        @if ($order->payment->screenshotUrl())
+                            <a href="{{ $order->payment->screenshotUrl() }}" target="_blank" rel="noopener">View screenshot</a>
+                        @endif
+                    @endif
                 </section>
             </div>
         </div>

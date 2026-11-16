@@ -654,6 +654,40 @@ a.dash-btn-quiet {
     color: #fff;
 }
 
+.order-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    min-width: 9.5rem;
+}
+
+.order-actions .btn {
+    white-space: nowrap;
+}
+
+.payment-uploaded {
+    color: #1b5c32;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.payment-shot {
+    display: block;
+    max-width: 280px;
+    border: 1px solid #e6e0d6;
+    border-radius: 0.8rem;
+}
+
+#upload-payment .modal-header,
+#upload-payment .modal-footer {
+    border-color: #e6e0d6;
+}
+
+#upload-payment .modal-title {
+    margin: 0;
+}
+
 .order-status {
     border-radius: 999px;
     display: inline-block;

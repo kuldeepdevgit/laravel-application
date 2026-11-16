@@ -71,6 +71,34 @@
             </div>
         </div>
 
+        @if ($order->payment)
+            <section class="panel mb-3">
+                <h2>Uploaded payment</h2>
+                <dl class="order-totals mb-0">
+                    <div>
+                        <dt>Franchise Sponsor ID</dt>
+                        <dd>{{ $order->payment->franchise_sponsor_id }}</dd>
+                    </div>
+                    <div>
+                        <dt>Amount</dt>
+                        <dd>{{ $order->payment->formattedAmount() }}</dd>
+                    </div>
+                    <div>
+                        <dt>Pay mode</dt>
+                        <dd>{{ $order->payment->payModeLabel() }}</dd>
+                    </div>
+                    <div>
+                        <dt>Remark</dt>
+                        <dd>{{ $order->payment->remark ?: '—' }}</dd>
+                    </div>
+                </dl>
+                @if ($order->payment->screenshotUrl())
+                    <p class="mt-3 mb-2"><a href="{{ $order->payment->screenshotUrl() }}" target="_blank" rel="noopener">View screenshot</a></p>
+                    <img class="payment-shot" src="{{ $order->payment->screenshotUrl() }}" alt="Payment screenshot for {{ $order->number }}">
+                @endif
+            </section>
+        @endif
+
         <section class="panel">
             <h2>Products</h2>
             <p class="text-secondary">These are the products saved on this order.</p>

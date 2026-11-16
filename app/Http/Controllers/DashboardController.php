@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -10,7 +11,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -98,12 +101,88 @@ class DashboardController extends Controller
         abort_unless($user instanceof User, 403);
         abort_unless((int) $order->user_id === (int) $user->id, 404);
 
-        $order->load(['items.product.category']);
+        $order->load(['items.product.category', 'payment']);
 
         return view('dashboard.order', [
             'order' => $order,
             'user' => $user,
         ]);
+    }
+
+    public function storePayment(Request $request, Order $order): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+        abort_unless((int) $order->user_id === (int) $user->id, 404);
+
+        $request->merge([
+            'franchise_sponsor_id' => trim($request->string('franchise_sponsor_id')->toString()),
+            'remark' => trim($request->string('remark')->toString()),
+        ]);
+
+        $payment = $order->payment;
+
+        try {
+            $data = $request->validate([
+                'franchise_sponsor_id' => ['required', 'string', 'max:64'],
+                'amount' => ['required', 'numeric', 'regex:/^\d{1,8}(\.\d{1,2})?$/', 'min:0.01'],
+                'screenshot' => [
+                    Rule::requiredIf(! filled($payment?->screenshot)),
+                    'nullable',
+                    'image',
+                    'mimes:jpg,jpeg,png,webp',
+                    'max:4096',
+                ],
+                'pay_mode' => ['required', Rule::in(array_keys(OrderPayment::MODES))],
+                'remark' => ['nullable', 'string', 'max:500'],
+            ], [
+                'franchise_sponsor_id.required' => 'Enter the franchise sponsor ID.',
+                'amount.required' => 'Enter the amount.',
+                'amount.numeric' => 'Enter an amount.',
+                'amount.regex' => 'Enter an amount with up to 2 decimal places.',
+                'amount.min' => 'Enter an amount greater than zero.',
+                'screenshot.required' => 'Upload a payment screenshot.',
+                'screenshot.image' => 'Upload a JPG, PNG, or WebP image.',
+                'screenshot.mimes' => 'Upload a JPG, PNG, or WebP image.',
+                'screenshot.max' => 'The screenshot must be 4 MB or smaller.',
+                'pay_mode.required' => 'Choose a pay mode.',
+                'pay_mode.in' => 'Choose cash, Google Pay, PhonePe, or bank.',
+                'remark.max' => 'The remark must be 500 characters or fewer.',
+            ]);
+        } catch (ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors())
+                ->withInput()
+                ->with('payment_order', $order->id);
+        }
+
+        $screenshot = $payment?->screenshot;
+
+        if ($request->hasFile('screenshot')) {
+            $stored = $request->file('screenshot')->store('order-payments', 'public');
+
+            if (filled($screenshot)) {
+                Storage::disk('public')->delete($screenshot);
+            }
+
+            $screenshot = $stored;
+        }
+
+        $order->payment()->updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'user_id' => $user->id,
+                'franchise_sponsor_id' => $data['franchise_sponsor_id'],
+                'amount' => $data['amount'],
+                'screenshot' => $screenshot,
+                'pay_mode' => $data['pay_mode'],
+                'remark' => $data['remark'] !== '' ? $data['remark'] : null,
+            ],
+        );
+
+        return redirect()
+            ->route('dashboard.section', 'order-history')
+            ->with('status', 'Payment uploaded for '.$order->number.'.');
     }
 
     public function updateProfile(Request $request): RedirectResponse
@@ -246,7 +325,7 @@ class DashboardController extends Controller
     {
         $search = trim($request->string('q')->toString());
         $orders = $user->orders()
-            ->with(['items.product.category'])
+            ->with(['items.product.category', 'payment'])
             ->when($search !== '', function ($query) use ($search): void {
                 $like = '%'.addcslashes($search, '%_\\').'%';
                 $query->where(function ($inner) use ($like): void {
