@@ -98,6 +98,89 @@
                 @if ($orders->hasPages())
                     <div class="cat-pages">{{ $orders->links() }}</div>
                 @endif
+
+                <div class="modal fade" id="view-payment" tabindex="-1" aria-labelledby="view-payment-title" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content cat-modal">
+                            <div class="modal-header">
+                                <div>
+                                    <h2 class="modal-title" id="view-payment-title">Uploaded payment</h2>
+                                    <p class="text-secondary mb-0" id="view-payment-order"></p>
+                                </div>
+                                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-0 text-secondary" id="view-payment-empty" hidden>No payment uploaded for this order.</p>
+                                <div class="payment-view" id="view-payment-body" hidden>
+                                    <dl>
+                                        <div>
+                                            <dt>Franchise Sponsor ID</dt>
+                                            <dd id="view-payment-sponsor">—</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Amount</dt>
+                                            <dd id="view-payment-amount">—</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Pay mode</dt>
+                                            <dd id="view-payment-mode">—</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Remark</dt>
+                                            <dd id="view-payment-remark">—</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Uploaded</dt>
+                                            <dd id="view-payment-when">—</dd>
+                                        </div>
+                                    </dl>
+                                    <figure id="view-payment-figure" hidden>
+                                        <a id="view-payment-open" href="#" target="_blank" rel="noopener">
+                                            <img class="payment-shot" id="view-payment-shot" alt="">
+                                        </a>
+                                        <figcaption><a id="view-payment-open-text" href="#" target="_blank" rel="noopener">Open full size</a></figcaption>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @push('scripts')
+                    <script>
+                        document.querySelectorAll('[data-bs-target="#view-payment"]').forEach(function (button) {
+                            button.addEventListener('click', function () {
+                                var shot = button.getAttribute('data-screenshot') || '';
+                                var sponsor = button.getAttribute('data-sponsor') || '';
+                                var hasPayment = sponsor !== '' || shot !== '';
+
+                                document.getElementById('view-payment-order').textContent = button.getAttribute('data-number') || '';
+                                document.getElementById('view-payment-empty').hidden = hasPayment;
+                                document.getElementById('view-payment-body').hidden = !hasPayment;
+                                document.getElementById('view-payment-sponsor').textContent = sponsor || '—';
+                                document.getElementById('view-payment-amount').textContent = button.getAttribute('data-amount') || '—';
+                                document.getElementById('view-payment-mode').textContent = button.getAttribute('data-mode') || '—';
+                                document.getElementById('view-payment-remark').textContent = button.getAttribute('data-remark') || '—';
+                                document.getElementById('view-payment-when').textContent = button.getAttribute('data-when') || '—';
+
+                                var figure = document.getElementById('view-payment-figure');
+                                var image = document.getElementById('view-payment-shot');
+                                var open = document.getElementById('view-payment-open');
+                                var openText = document.getElementById('view-payment-open-text');
+                                figure.hidden = shot === '';
+                                if (shot === '') {
+                                    image.removeAttribute('src');
+                                    open.removeAttribute('href');
+                                    openText.removeAttribute('href');
+                                } else {
+                                    image.src = shot;
+                                    image.alt = 'Payment screenshot for ' + (button.getAttribute('data-number') || 'this order');
+                                    open.href = shot;
+                                    openText.href = shot;
+                                }
+                            });
+                        });
+                    </script>
+                @endpush
             @endif
         @endif
     </div>

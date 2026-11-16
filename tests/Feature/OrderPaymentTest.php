@@ -84,6 +84,16 @@ class OrderPaymentTest extends TestCase
             ->assertSee('Paid at the counter');
 
         $this->actingAs($admin)
+            ->get('/admin/orders')
+            ->assertOk()
+            ->assertSee('View payment')
+            ->assertSee('id="view-payment"', false)
+            ->assertSee('data-sponsor="GSI6185588"', false)
+            ->assertSee('data-amount="₹250.50"', false)
+            ->assertSee('data-mode="Google Pay"', false)
+            ->assertSee('data-remark="Paid at the counter"', false);
+
+        $this->actingAs($admin)
             ->get('/admin/orders/'.$order->id)
             ->assertOk()
             ->assertSee('Uploaded payment')
@@ -91,7 +101,8 @@ class OrderPaymentTest extends TestCase
             ->assertSee('GSI6185588')
             ->assertSee('₹250.50')
             ->assertSee('Google Pay')
-            ->assertSee('Paid at the counter');
+            ->assertSee('Paid at the counter')
+            ->assertSee('Open full size');
 
         $image = $payment->screenshot;
         $payment->delete();

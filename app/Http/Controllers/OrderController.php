@@ -14,7 +14,7 @@ class OrderController extends Controller
     {
         $search = trim($request->string('q')->toString());
         $orders = Order::query()
-            ->with(['items.product.category', 'user'])
+            ->with(['items.product.category', 'user', 'payment'])
             ->when($search !== '', function ($query) use ($search): void {
                 $like = '%'.addcslashes($search, '%_\\').'%';
                 $query->where(function ($inner) use ($like): void {
