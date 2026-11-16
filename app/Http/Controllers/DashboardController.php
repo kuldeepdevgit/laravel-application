@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -159,13 +158,7 @@ class DashboardController extends Controller
         $screenshot = $payment?->screenshot;
 
         if ($request->hasFile('screenshot')) {
-            $stored = $request->file('screenshot')->store('order-payments', 'public');
-
-            if (filled($screenshot)) {
-                Storage::disk('public')->delete($screenshot);
-            }
-
-            $screenshot = $stored;
+            $screenshot = OrderPayment::storeImage($request->file('screenshot'));
         }
 
         $order->payment()->updateOrCreate(

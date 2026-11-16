@@ -7,7 +7,6 @@ use App\Models\OrderPayment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class OrderPaymentTest extends TestCase
@@ -41,7 +40,6 @@ class OrderPaymentTest extends TestCase
 
     public function test_a_member_can_upload_payment_for_their_order(): void
     {
-        Storage::fake('public');
         $admin = User::factory()->superAdmin()->create();
         $member = User::factory()->create();
         $order = Order::factory()->for($member)->create([
@@ -67,7 +65,8 @@ class OrderPaymentTest extends TestCase
         $this->assertSame('250.50', $payment->amount);
         $this->assertSame('google_pay', $payment->pay_mode);
         $this->assertSame('Paid at the counter', $payment->remark);
-        Storage::disk('public')->assertExists($payment->screenshot);
+        $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/payment/payment-img/', $payment->screenshot);
+        $this->assertFileExists(public_path($payment->screenshot));
 
         $this->actingAs($member)
             ->get('/dashboard/order-history')
@@ -93,14 +92,17 @@ class OrderPaymentTest extends TestCase
             ->assertSee('₹250.50')
             ->assertSee('Google Pay')
             ->assertSee('Paid at the counter');
+
+        $image = $payment->screenshot;
+        $payment->delete();
+        $this->assertFileDoesNotExist(public_path($image));
     }
 
     public function test_a_replacement_screenshot_replaces_the_saved_file(): void
     {
-        Storage::fake('public');
         $member = User::factory()->create();
         $order = Order::factory()->for($member)->create();
-        $previous = UploadedFile::fake()->image('first.jpg', 200, 200)->store('order-payments', 'public');
+        $previous = OrderPayment::storeImage(UploadedFile::fake()->image('first.jpg', 200, 200));
         OrderPayment::factory()->for($order)->for($member)->create([
             'screenshot' => $previous,
             'franchise_sponsor_id' => 'GSI100001',
@@ -118,7 +120,7 @@ class OrderPaymentTest extends TestCase
             ->assertRedirect('/dashboard/order-history');
 
         $this->assertSame($previous, $order->refresh()->payment->screenshot);
-        Storage::disk('public')->assertExists($previous);
+        $this->assertFileExists(public_path($previous));
 
         $this->actingAs($member)
             ->post('/dashboard/orders/'.$order->id.'/payment', [
@@ -134,13 +136,17 @@ class OrderPaymentTest extends TestCase
         $this->assertNotSame($previous, $payment->screenshot);
         $this->assertSame('phone_pe', $payment->pay_mode);
         $this->assertNull($payment->remark);
-        Storage::disk('public')->assertMissing($previous);
-        Storage::disk('public')->assertExists($payment->screenshot);
+        $this->assertStringStartsWith('uploads/'.now()->format('Y/m').'/payment/payment-img/', $payment->screenshot);
+        $this->assertFileDoesNotExist(public_path($previous));
+        $this->assertFileExists(public_path($payment->screenshot));
+
+        $image = $payment->screenshot;
+        $payment->delete();
+        $this->assertFileDoesNotExist(public_path($image));
     }
 
     public function test_payment_upload_rejects_a_missing_screenshot_and_another_members_order(): void
     {
-        Storage::fake('public');
         $member = User::factory()->create();
         $other = User::factory()->create();
         $order = Order::factory()->for($member)->create(['number' => 'NB-300005']);

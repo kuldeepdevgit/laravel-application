@@ -6,6 +6,7 @@ use Database\Factories\OrderPaymentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class OrderPayment extends Model
@@ -32,6 +33,73 @@ class OrderPayment extends Model
         'pay_mode',
         'remark',
     ];
+
+    protected static function booted(): void
+    {
+        static::updated(function (OrderPayment $payment): void {
+            if (! $payment->wasChanged('screenshot')) {
+                return;
+            }
+
+            $previous = $payment->getOriginal('screenshot');
+
+            if (! is_string($previous) || $previous === $payment->screenshot) {
+                return;
+            }
+
+            static::deleteImageFile($previous);
+        });
+
+        static::deleting(function (OrderPayment $payment): void {
+            static::deleteImageFile($payment->screenshot);
+        });
+    }
+
+    public static function imageDirectory(): string
+    {
+        return 'uploads/'.now()->format('Y/m').'/payment/payment-img';
+    }
+
+    public static function storeImage(UploadedFile $file): string
+    {
+        $directory = static::imageDirectory();
+        $absolute = public_path($directory);
+
+        if (! is_dir($absolute)) {
+            mkdir($absolute, 0755, true);
+        }
+
+        $name = $file->hashName();
+        $file->move($absolute, $name);
+
+        return $directory.'/'.$name;
+    }
+
+    public static function deleteImageFile(?string $path): void
+    {
+        if (! filled($path)) {
+            return;
+        }
+
+        $path = str_replace('\\', '/', $path);
+
+        if (str_contains($path, '..') || str_starts_with($path, '/')) {
+            return;
+        }
+
+        $publicFile = public_path($path);
+
+        if (is_file($publicFile)) {
+            $real = realpath($publicFile);
+            $root = realpath(public_path());
+
+            if ($real !== false && $root !== false && str_starts_with($real, $root.DIRECTORY_SEPARATOR)) {
+                unlink($real);
+            }
+        }
+
+        Storage::disk('public')->delete($path);
+    }
 
     /**
      * @return array<string, string>
@@ -75,6 +143,14 @@ class OrderPayment extends Model
             return null;
         }
 
-        return Storage::disk('public')->url($this->screenshot);
+        $path = str_replace('\\', '/', $this->screenshot);
+
+        if (! str_contains($path, '..') && is_file(public_path($path))) {
+            $encoded = implode('/', array_map(rawurlencode(...), explode('/', $path)));
+
+            return asset($encoded);
+        }
+
+        return Storage::disk('public')->url($path);
     }
 }
