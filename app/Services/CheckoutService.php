@@ -52,6 +52,7 @@ class CheckoutService
                 'discount' => $totals['off'],
                 'shipping' => $totals['ship'],
                 'total' => $totals['total'],
+                'total_bv' => $totals['bv'],
             ]);
 
             foreach ($lines as $line) {

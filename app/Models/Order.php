@@ -31,6 +31,7 @@ class Order extends Model
         'discount',
         'shipping',
         'total',
+        'total_bv',
     ];
 
     /**
@@ -43,6 +44,7 @@ class Order extends Model
             'discount' => 'decimal:2',
             'shipping' => 'decimal:2',
             'total' => 'decimal:2',
+            'total_bv' => 'decimal:2',
         ];
     }
 
@@ -84,9 +86,7 @@ class Order extends Model
 
     public function totalBv(): float
     {
-        return round((float) $this->items->sum(
-            fn (OrderItem $item): float => (float) $item->bv * $item->qty
-        ), 2);
+        return round((float) $this->total_bv, 2);
     }
 
     public function formattedTotalBv(): string

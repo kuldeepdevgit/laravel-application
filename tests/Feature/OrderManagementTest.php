@@ -80,6 +80,7 @@ class OrderManagementTest extends TestCase
             'discount' => 20,
             'shipping' => 40,
             'total' => 220,
+            'total_bv' => 160,
         ]);
 
         OrderItem::factory()->for($order)->for($product)->create([

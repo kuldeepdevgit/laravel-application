@@ -39,7 +39,7 @@
                                 ] as $field => [$label, $type, $autocomplete, $column])
                                     <div class="{{ $column }}">
                                         <label class="form-label" for="{{ $field }}">{{ $label }}</label>
-                                        <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}" type="{{ $type }}" value="{{ old($field) }}" autocomplete="{{ $autocomplete }}" required>
+                                        <input class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}" type="{{ $type }}" value="{{ old($field, $details[$field] ?? '') }}" autocomplete="{{ $autocomplete }}" required>
                                         @error($field)
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -50,7 +50,7 @@
                                     <select class="form-select @error('country') is-invalid @enderror" id="country" name="country" autocomplete="country-name" required>
                                         <option value="">Choose</option>
                                         @foreach (['India', 'United States', 'Canada', 'United Kingdom'] as $country)
-                                            <option value="{{ $country }}" @selected(old('country') === $country)>{{ $country }}</option>
+                                            <option value="{{ $country }}" @selected(old('country', $details['country'] ?? '') === $country)>{{ $country }}</option>
                                         @endforeach
                                     </select>
                                     @error('country')
@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="phone">Phone <span class="optional">(optional)</span></label>
-                                    <input class="form-control" id="phone" name="phone" type="tel" value="{{ old('phone') }}" autocomplete="tel">
+                                    <input class="form-control" id="phone" name="phone" type="tel" value="{{ old('phone', $details['phone'] ?? '') }}" autocomplete="tel">
                                 </div>
                             </div>
                         </section>

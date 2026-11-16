@@ -35,6 +35,7 @@ class OrderFactory extends Factory
             'discount' => 0,
             'shipping' => 0,
             'total' => $subtotal,
+            'total_bv' => 0,
         ];
     }
 }

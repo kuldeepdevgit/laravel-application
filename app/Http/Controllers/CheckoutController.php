@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
+use App\Models\User;
 use App\Services\CartService;
 use App\Services\CheckoutService;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,7 @@ class CheckoutController extends Controller
             'lines' => $this->cart->lines(),
             'totals' => $this->cart->totals(),
             'order' => session('order'),
+            'details' => $this->savedDetails(),
         ]);
     }
 
@@ -51,5 +53,37 @@ class CheckoutController extends Controller
         return redirect()
             ->route('checkout.create')
             ->with('order', $order->number);
+    }
+
+    /**
+     * @return array{name: string, email: string, phone: string, address: string, city: string, region: string, postal: string, country: string}
+     */
+    private function savedDetails(): array
+    {
+        $user = auth()->user();
+
+        if (! $user instanceof User) {
+            return [
+                'name' => '',
+                'email' => '',
+                'phone' => '',
+                'address' => '',
+                'city' => '',
+                'region' => '',
+                'postal' => '',
+                'country' => '',
+            ];
+        }
+
+        return [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => (string) $user->phone_number,
+            'address' => (string) $user->address,
+            'city' => (string) $user->city,
+            'region' => (string) $user->state,
+            'postal' => (string) $user->zip_code,
+            'country' => 'India',
+        ];
     }
 }

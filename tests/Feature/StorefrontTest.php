@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -322,6 +323,7 @@ class StorefrontTest extends TestCase
             'country' => 'India',
             'pay_method' => 'cash',
             'status' => 'pending',
+            'total_bv' => 1500,
         ]);
         $this->assertDatabaseHas('order_items', [
             'sku' => 'assam-honey',
@@ -385,5 +387,42 @@ class StorefrontTest extends TestCase
             ->assertSessionHas('status', 'Empty Tin is sold out.');
 
         $this->get('/cart')->assertSee('Your cart is empty');
+    }
+
+    public function test_checkout_fills_the_signed_in_members_details(): void
+    {
+        $member = User::factory()->create([
+            'name' => 'Kuldeep Singh',
+            'email' => 'kuldeep@example.com',
+            'phone_number' => '9876543210',
+            'address' => '14 Market Road',
+            'city' => 'Pune',
+            'state' => 'Maharashtra',
+            'zip_code' => '411001',
+        ]);
+
+        Product::factory()->create([
+            'slug' => '14-ltr-otg',
+            'price' => 7500,
+            'product_bv' => 2500,
+            'stock' => 3,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($member)
+            ->post('/cart', ['product' => '14-ltr-otg', 'qty' => 1])
+            ->assertRedirect();
+
+        $this->actingAs($member)
+            ->get('/checkout')
+            ->assertOk()
+            ->assertSee('value="Kuldeep Singh"', false)
+            ->assertSee('value="kuldeep@example.com"', false)
+            ->assertSee('value="9876543210"', false)
+            ->assertSee('value="14 Market Road"', false)
+            ->assertSee('value="Pune"', false)
+            ->assertSee('value="Maharashtra"', false)
+            ->assertSee('value="411001"', false)
+            ->assertSee('value="India" selected', false);
     }
 }
