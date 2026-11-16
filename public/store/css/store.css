@@ -868,6 +868,45 @@ a { color: var(--teal-2); }
 .confirm h2,
 .empty-state h2 { font-family: var(--display); margin-top: 8px; }
 
+.confirm-details {
+  max-width: 520px;
+  margin: 24px auto 0;
+  text-align: left;
+}
+
+.confirm-details h3 {
+  font-family: var(--display);
+  font-size: 1.15rem;
+  margin: 0 0 10px;
+}
+
+.confirm-details dl {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.confirm-details dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.confirm-details dt,
+.confirm-details dd {
+  margin: 0;
+}
+
+.confirm-details dd {
+  font-weight: 700;
+  text-align: right;
+}
+
+.confirm-details ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
 .product-layout {
   display: grid;
   gap: 28px;

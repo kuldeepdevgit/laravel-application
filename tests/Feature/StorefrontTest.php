@@ -316,7 +316,15 @@ class StorefrontTest extends TestCase
         $this->get('/checkout')
             ->assertOk()
             ->assertSee('Order placed')
-            ->assertSee('NB-');
+            ->assertSee('NB-')
+            ->assertSee('Test Shopper')
+            ->assertSee('shopper@example.com')
+            ->assertSee('18 Harbor Lane')
+            ->assertSee('Guwahati')
+            ->assertSee('Assam Honey')
+            ->assertSee('1,500.00')
+            ->assertSee('Pending')
+            ->assertDontSee('Order history');
 
         $this->assertDatabaseHas('orders', [
             'email' => 'shopper@example.com',
@@ -424,5 +432,30 @@ class StorefrontTest extends TestCase
             ->assertSee('value="Maharashtra"', false)
             ->assertSee('value="411001"', false)
             ->assertSee('value="India" selected', false);
+
+        $this->actingAs($member)
+            ->post('/checkout', [
+                'name' => 'Kuldeep Singh',
+                'email' => 'kuldeep@example.com',
+                'phone' => '9876543210',
+                'address' => '14 Market Road',
+                'city' => 'Pune',
+                'region' => 'Maharashtra',
+                'postal' => '411001',
+                'country' => 'India',
+                'pay' => 'cash',
+            ])->assertRedirect(route('checkout.create'));
+
+        $this->actingAs($member)
+            ->get('/checkout')
+            ->assertOk()
+            ->assertSee('Order placed')
+            ->assertSee('Kuldeep Singh')
+            ->assertSee('kuldeep@example.com')
+            ->assertSee('14 Market Road')
+            ->assertSee('₹7,500.00')
+            ->assertSee('2,500.00')
+            ->assertSee('Order history')
+            ->assertSee(route('dashboard.section', 'order-history'), false);
     }
 }

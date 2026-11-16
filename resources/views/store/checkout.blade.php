@@ -10,9 +10,40 @@
             <section class="confirm">
                 <i class="bi bi-check-circle"></i>
                 <h2>Order placed</h2>
-                <p>Your order number is <strong>{{ $order }}</strong>.</p>
+                <p>Your order number is <strong>{{ $placedOrder->number ?? $order }}</strong>.</p>
                 <p>We saved the order in this shop. Payment is cash, and nothing is charged online.</p>
-                <a class="btn btn-accent" href="{{ route('home') }}">Back to the shop</a>
+
+                @if ($placedOrder)
+                    <div class="confirm-details">
+                        <h3>Order details</h3>
+                        <dl>
+                            <div><dt>Status</dt><dd>{{ $placedOrder->statusLabel() }}</dd></div>
+                            <div><dt>Name</dt><dd>{{ $placedOrder->name }}</dd></div>
+                            <div><dt>Email</dt><dd>{{ $placedOrder->email }}</dd></div>
+                            <div><dt>Phone</dt><dd>{{ $placedOrder->phone ?: '—' }}</dd></div>
+                            <div><dt>Ship to</dt><dd>{{ $placedOrder->shippingAddress() }}</dd></div>
+                            <div><dt>Payment</dt><dd>{{ $placedOrder->paymentLabel() }}</dd></div>
+                            <div><dt>Subtotal</dt><dd>{{ $placedOrder->formattedSubtotal() }}</dd></div>
+                            <div><dt>Discount</dt><dd>{{ $placedOrder->formattedDiscount() }}</dd></div>
+                            <div><dt>Shipping</dt><dd>{{ $placedOrder->formattedShipping() }}</dd></div>
+                            <div><dt>Total</dt><dd>{{ $placedOrder->formattedTotal() }}</dd></div>
+                            <div><dt>Total BV</dt><dd>{{ $placedOrder->formattedTotalBv() }}</dd></div>
+                        </dl>
+                        <h3>Products</h3>
+                        <ul>
+                            @foreach ($placedOrder->items as $item)
+                                <li>{{ $item->name }} × {{ $item->qty }} · {{ $item->formattedLineTotal() }} · BV {{ $item->formattedLineBv() }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
+                    @auth
+                        <a class="btn btn-accent" href="{{ route('dashboard.section', 'order-history') }}">Order history</a>
+                    @endauth
+                    <a class="btn btn-ghost" href="{{ route('home') }}">Back to the shop</a>
+                </div>
             </section>
         @elseif ($lines->isEmpty())
             <div class="empty-state">

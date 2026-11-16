@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
+use App\Models\Order;
 use App\Models\User;
 use App\Services\CartService;
 use App\Services\CheckoutService;
@@ -25,10 +26,15 @@ class CheckoutController extends Controller
                 ->with('status', $this->cart->checkoutBvMessage());
         }
 
+        $number = session('order');
+
         return view('store.checkout', [
             'lines' => $this->cart->lines(),
             'totals' => $this->cart->totals(),
-            'order' => session('order'),
+            'order' => $number,
+            'placedOrder' => is_string($number) && $number !== ''
+                ? Order::query()->with('items')->where('number', $number)->first()
+                : null,
             'details' => $this->savedDetails(),
         ]);
     }
