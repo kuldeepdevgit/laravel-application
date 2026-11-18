@@ -34,6 +34,7 @@
             'label' => 'Income Report',
             'icon' => 'bi-graph-up-arrow',
             'items' => [
+                ['label' => 'Franchise Income History', 'section' => 'franchise-income-history', 'icon' => 'bi-percent'],
                 ['label' => 'Self ROI Income', 'section' => 'self-roi-income', 'icon' => 'bi-pie-chart'],
                 ['label' => 'Level Income History', 'section' => 'level-income-history', 'icon' => 'bi-clock-history'],
                 ['label' => 'Level ROI Income History', 'section' => 'level-roi-income-history', 'icon' => 'bi-bar-chart-line'],

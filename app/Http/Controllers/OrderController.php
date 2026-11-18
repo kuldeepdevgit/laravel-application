@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Income;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class OrderController extends Controller
 
     public function show(Order $order): View
     {
-        $order->load(['items.product.category', 'user', 'payment']);
+        $order->load(['items.product.category', 'user', 'payment', 'franchiseIncome']);
 
         return view('admin.orders.show', [
             'order' => $order,
@@ -62,6 +63,7 @@ class OrderController extends Controller
 
             if ($data['status'] === 'confirmed') {
                 $order->user?->markPaidOnFirstApproval();
+                Income::creditFranchiseFor($order);
             }
         });
 

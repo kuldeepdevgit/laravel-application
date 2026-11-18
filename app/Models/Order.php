@@ -73,6 +73,14 @@ class Order extends Model
         return $this->hasOne(OrderPayment::class);
     }
 
+    /**
+     * @return HasOne<Income, $this>
+     */
+    public function franchiseIncome(): HasOne
+    {
+        return $this->hasOne(Income::class)->where('type', Income::TYPE_FRANCHISE);
+    }
+
     public function formattedSubtotal(): string
     {
         return $this->rupees($this->subtotal);

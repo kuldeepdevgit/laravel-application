@@ -176,6 +176,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return HasMany<Income, $this>
+     */
+    public function incomes(): HasMany
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    /**
      * Members who joined directly under this account.
      *
      * @return Collection<int, static>

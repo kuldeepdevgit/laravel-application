@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Income;
 use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Models\Template;
@@ -52,6 +53,7 @@ class DashboardController extends Controller
             'activation-upgrade' => ['Activation/ Upgrade', 'Activation and upgrade options for your account will be listed here.'],
             'fund-wallet' => ['Fund Wallet', 'Your fund wallet will be shown here.'],
             'income-report' => ['Income Report', 'Income recorded on your account will be listed here.'],
+            'franchise-income-history' => ['Franchise Income History', 'When an admin approves an order that lists you as the franchise sponsor, you receive 10% of its total BV.'],
             'self-roi-income' => ['Self ROI Income', 'Your self ROI income will be listed here.'],
             'level-income-history' => ['Level Income History', 'Your level income history will be listed here.'],
             'level-roi-income-history' => ['Level ROI Income History', 'Your level ROI income history will be listed here.'],
@@ -82,6 +84,14 @@ class DashboardController extends Controller
             'my-downline-team' => $user->downlineMembers(),
             default => null,
         };
+        $franchiseIncomes = $section === 'franchise-income-history'
+            ? $user->incomes()
+                ->where('type', Income::TYPE_FRANCHISE)
+                ->with('order')
+                ->latest('id')
+                ->paginate(15)
+                ->withQueryString()
+            : null;
 
         return view('dashboard.section', [
             'heading' => $heading,
@@ -96,6 +106,10 @@ class DashboardController extends Controller
             'orders' => $history['orders'],
             'orderSearch' => $history['orderSearch'],
             'orderTotal' => $history['orderTotal'],
+            'franchiseIncomes' => $franchiseIncomes,
+            'franchiseIncomeTotal' => $franchiseIncomes instanceof LengthAwarePaginator
+                ? round((float) $user->incomes()->where('type', Income::TYPE_FRANCHISE)->sum('amount'), 2)
+                : null,
         ]);
     }
 

@@ -62,6 +62,7 @@ class DashboardTest extends TestCase
             ->assertSee('Activation/ Upgrade')
             ->assertSee('Fund Wallet')
             ->assertSee('Income Report')
+            ->assertSee('Franchise Income History')
             ->assertSee('Self ROI Income')
             ->assertSee('Level Income History')
             ->assertSee('Level ROI Income History')
@@ -170,6 +171,7 @@ class DashboardTest extends TestCase
         $this->actingAs($user)
             ->get('/dashboard/salary-income')
             ->assertOk()
+            ->assertSee('Franchise Income History')
             ->assertSee('Self ROI Income')
             ->assertSee('Salary Income');
 

@@ -66,6 +66,12 @@
                             <dt>Total BV</dt>
                             <dd>{{ $order->formattedTotalBv() }}</dd>
                         </div>
+                        @if ($order->franchiseIncome)
+                            <div>
+                                <dt>Franchise income</dt>
+                                <dd>{{ $order->franchiseIncome->formattedAmount() }} <span class="text-secondary">{{ $order->franchiseIncome->formattedPercent() }} of BV</span></dd>
+                            </div>
+                        @endif
                     </dl>
                 </section>
             </div>
