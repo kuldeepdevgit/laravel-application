@@ -27,12 +27,19 @@ class DashboardTest extends TestCase
         $user = User::factory()->create([
             'name' => 'Avery Chen',
             'email' => 'avery@example.com',
+            'user_name' => 'GSI2000002',
+            'sponsor_name' => 'Super Admin',
         ]);
 
         $this->actingAs($user)
             ->get('/dashboard')
             ->assertOk()
-            ->assertSee('Welcome back, Avery Chen')
+            ->assertSee('User ID')
+            ->assertSee('GSI2000002')
+            ->assertSee('Avery Chen')
+            ->assertSee('Sponsor')
+            ->assertSee('Super Admin')
+            ->assertDontSee('Welcome back, Avery Chen')
             ->assertSee('Green Smart India E Services')
             ->assertSee('images/green-smart-india.png', false)
             ->assertSee('avery@example.com')
@@ -68,7 +75,65 @@ class DashboardTest extends TestCase
             ->assertDontSee('Document List')
             ->assertSee('Logout')
             ->assertDontSee('Overview')
-            ->assertDontSee('Member desk');
+            ->assertDontSee('Member desk')
+            ->assertSee('Account status')
+            ->assertSee('Inactive')
+            ->assertSee('Not activated');
+    }
+
+    public function test_a_paid_member_is_shown_as_active(): void
+    {
+        $user = User::factory()->create([
+            'user_paid' => User::PAID,
+            'activation_date' => '2026-03-04',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Account status')
+            ->assertSee('Active')
+            ->assertSee('Mar 4, 2026')
+            ->assertDontSee('Inactive')
+            ->assertDontSee('Not activated');
+    }
+
+    public function test_dashboard_shows_the_sponsor_id_and_name(): void
+    {
+        $sponsor = User::factory()->create([
+            'name' => 'Priya Shah',
+            'user_name' => 'GSI1000008',
+        ]);
+
+        $byId = User::factory()->create([
+            'name' => 'Avery Chen',
+            'user_name' => 'GSI2000003',
+            'sponsor_name' => 'GSI1000008',
+        ]);
+
+        $this->actingAs($byId)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('GSI2000003')
+            ->assertSee('Avery Chen')
+            ->assertSee('Priya Shah')
+            ->assertSee('GSI1000008');
+
+        $byName = User::factory()->create([
+            'name' => 'Jordan Lee',
+            'user_name' => 'GSI2000004',
+            'sponsor_name' => 'Priya Shah',
+        ]);
+
+        $this->actingAs($byName)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Jordan Lee')
+            ->assertSee('Priya Shah')
+            ->assertSee('GSI1000008');
+
+        $this->assertTrue($sponsor->is($byId->sponsor()));
+        $this->assertTrue($sponsor->is($byName->sponsor()));
     }
 
     public function test_menu_sections_open_for_a_member(): void

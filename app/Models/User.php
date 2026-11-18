@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'sponsor_name', 'position', 'user_name', 'user_role', 'email', 'phone_number', 'address', 'city', 'state', 'zip_code', 'usdt_bep20', 'bank_name', 'account_name', 'account_number', 'ifsc_code', 'google_pay', 'phonepe', 'password'])]
+#[Fillable(['name', 'sponsor_name', 'position', 'user_name', 'user_role', 'email', 'phone_number', 'address', 'city', 'state', 'zip_code', 'usdt_bep20', 'bank_name', 'account_name', 'account_number', 'ifsc_code', 'google_pay', 'phonepe', 'user_paid', 'activation_date', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -21,6 +21,10 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const DOWNLINE_DEPTH = 10;
+
+    public const PAID = 'paid';
+
+    public const UNPAID = 'unpaid';
 
     /**
      * Get the attributes that should be cast.
@@ -31,8 +35,35 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'activation_date' => 'date',
             'password' => 'hashed',
         ];
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->user_paid === self::PAID;
+    }
+
+    /**
+     * Mark the account paid the first time an order is approved.
+     * A later approval leaves user_paid and activation_date as they are.
+     */
+    public function markPaidOnFirstApproval(): void
+    {
+        if ($this->isPaid()) {
+            return;
+        }
+
+        $attributes = [
+            'user_paid' => self::PAID,
+        ];
+
+        if ($this->activation_date === null) {
+            $attributes['activation_date'] = now()->toDateString();
+        }
+
+        $this->update($attributes);
     }
 
     public function isSuperAdmin(): bool
@@ -44,16 +75,28 @@ class User extends Authenticatable
 
     public static function isValidSponsor(string $sponsorName): bool
     {
+        return static::findSponsor($sponsorName) instanceof self;
+    }
+
+    public static function findSponsor(string $sponsorName): ?self
+    {
         $sponsorName = mb_strtolower(trim($sponsorName));
 
         if ($sponsorName === '') {
-            return false;
+            return null;
+        }
+
+        $byUsername = static::query()
+            ->whereRaw('LOWER(user_name) = ?', [$sponsorName])
+            ->first();
+
+        if ($byUsername instanceof self) {
+            return $byUsername;
         }
 
         return static::query()
             ->whereRaw('LOWER(name) = ?', [$sponsorName])
-            ->orWhereRaw('LOWER(user_name) = ?', [$sponsorName])
-            ->exists();
+            ->first();
     }
 
     public static function sponsorFullName(string $sponsorName): ?string
@@ -77,6 +120,33 @@ class User extends Authenticatable
             ->value('name');
 
         return is_string($byName) && $byName !== '' ? $byName : null;
+    }
+
+    /**
+     * The account stored as this member's sponsor, matched by user ID or name.
+     */
+    public function sponsor(): ?self
+    {
+        $sponsorName = mb_strtolower(trim((string) $this->sponsor_name));
+
+        if ($sponsorName === '') {
+            return null;
+        }
+
+        $byUsername = static::query()
+            ->whereKeyNot($this->getKey())
+            ->whereRaw('LOWER(user_name) = ?', [$sponsorName])
+            ->first();
+
+        if ($byUsername instanceof self) {
+            return $byUsername;
+        }
+
+        return static::query()
+            ->whereKeyNot($this->getKey())
+            ->whereRaw('LOWER(name) = ?', [$sponsorName])
+            ->orderBy('id')
+            ->first();
     }
 
     public static function generateUserName(): string

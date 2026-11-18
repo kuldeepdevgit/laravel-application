@@ -41,6 +41,10 @@ class OrderPaymentTest extends TestCase
     public function test_a_member_can_upload_payment_for_their_order(): void
     {
         $admin = User::factory()->superAdmin()->create();
+        User::factory()->create([
+            'name' => 'Franchise Sponsor',
+            'user_name' => 'GSI6185588',
+        ]);
         $member = User::factory()->create();
         $order = Order::factory()->for($member)->create([
             'number' => 'NB-300004',
@@ -49,7 +53,7 @@ class OrderPaymentTest extends TestCase
 
         $this->actingAs($member)
             ->post('/dashboard/orders/'.$order->id.'/payment', [
-                'franchise_sponsor_id' => ' GSI6185588 ',
+                'franchise_sponsor_id' => ' gsi6185588 ',
                 'amount' => '250.50',
                 'screenshot' => UploadedFile::fake()->image('proof.png', 400, 300),
                 'pay_mode' => 'google_pay',
@@ -111,6 +115,7 @@ class OrderPaymentTest extends TestCase
 
     public function test_a_replacement_screenshot_replaces_the_saved_file(): void
     {
+        User::factory()->create(['user_name' => 'GSI100001']);
         $member = User::factory()->create();
         $order = Order::factory()->for($member)->create();
         $previous = OrderPayment::storeImage(UploadedFile::fake()->image('first.jpg', 200, 200));
@@ -174,7 +179,11 @@ class OrderPaymentTest extends TestCase
                 'pay_mode' => 'wallet',
             ])
             ->assertRedirect('/dashboard/order-history')
-            ->assertSessionHasErrors(['screenshot', 'pay_mode'])
+            ->assertSessionHasErrors([
+                'franchise_sponsor_id' => 'Enter a valid franchise sponsor ID.',
+                'screenshot',
+                'pay_mode',
+            ])
             ->assertSessionHas('payment_order', $order->id);
 
         $this->assertNull($order->refresh()->payment);

@@ -39,28 +39,6 @@
         </label>
     </form>
 
-    <form method="POST" action="{{ route('cart.promo') }}" class="promo">
-        @csrf
-        <label class="visually-hidden" for="promo-code">Promo code</label>
-        <input id="promo-code" class="form-control" name="code" placeholder="Promo code" value="{{ $summaryCart->promo() }}" autocomplete="off">
-        <button class="btn btn-ghost" type="submit">Apply</button>
-    </form>
-    @if ($summaryCart->promoMessage())
-        <p class="promo-note">{{ $summaryCart->promoMessage() }}</p>
-    @endif
-    <p class="fine">
-        Try WELCOME10 for 10% off.
-        @if ($summaryCart->promo())
-            <button class="btn btn-link btn-sm p-0 align-baseline" type="submit" form="remove-promo">Remove code</button>
-        @endif
-    </p>
-    @if ($summaryCart->promo())
-        <form id="remove-promo" method="POST" action="{{ route('cart.promo') }}" hidden>
-            @csrf
-            <input type="hidden" name="code" value="">
-        </form>
-    @endif
-
     @if (($mode ?? 'cart') === 'checkout')
         <button class="btn btn-accent w-100 mt-3" type="submit" form="checkout-form" @disabled(! $summaryCart->checkoutBvMet())>Place order</button>
     @elseif ($summaryCart->checkoutBvMet())

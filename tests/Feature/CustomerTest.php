@@ -5,11 +5,20 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class CustomerTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_user_paid_and_activation_date_are_indexed(): void
+    {
+        $columns = collect(Schema::getIndexes('users'))->pluck('columns');
+
+        $this->assertTrue($columns->contains(fn (array $indexed): bool => $indexed === ['user_paid']));
+        $this->assertTrue($columns->contains(fn (array $indexed): bool => $indexed === ['activation_date']));
+    }
 
     public function test_guests_are_sent_to_login(): void
     {
@@ -55,6 +64,8 @@ class CustomerTest extends TestCase
             'phone_number' => '9876543210',
             'sponsor_name' => 'Super Admin',
             'position' => 'left',
+            'user_paid' => User::PAID,
+            'activation_date' => '2026-03-04',
         ]);
 
         $this->actingAs($admin)
@@ -68,6 +79,11 @@ class CustomerTest extends TestCase
             ->assertSee('Super Admin')
             ->assertSee('Left')
             ->assertSee('Customer')
+            ->assertSee('User paid')
+            ->assertSee('Activation date')
+            ->assertSee('Paid')
+            ->assertSee('Unpaid')
+            ->assertSee('Mar 4, 2026')
             ->assertSee('Edit')
             ->assertSee('Auto login')
             ->assertSee(route('admin.customers.login', $member), false)

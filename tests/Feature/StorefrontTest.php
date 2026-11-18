@@ -294,11 +294,15 @@ class StorefrontTest extends TestCase
             ->assertSee('₹241.00')
             ->assertSee('Total BV')
             ->assertSee('1,500.00')
+            ->assertDontSee('Promo code')
+            ->assertDontSee('Try WELCOME10')
             ->assertDontSee('Checkout needs a total BV');
 
         $this->get('/checkout')
             ->assertOk()
             ->assertSee('Cash')
+            ->assertDontSee('Promo code')
+            ->assertDontSee('Try WELCOME10')
             ->assertDontSee('Card number')
             ->assertDontSee('Pay on delivery');
 

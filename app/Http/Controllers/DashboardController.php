@@ -17,14 +17,19 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+
         $template = Schema::hasTable('templates')
             ? Template::query()->where('is_active', true)->first()
             : null;
 
         return view('dashboard.index', [
             'template' => $template,
+            'user' => $user,
+            'sponsor' => $user->sponsor(),
         ]);
     }
 
@@ -123,7 +128,16 @@ class DashboardController extends Controller
 
         try {
             $data = $request->validate([
-                'franchise_sponsor_id' => ['required', 'string', 'max:64'],
+                'franchise_sponsor_id' => [
+                    'required',
+                    'string',
+                    'max:64',
+                    function (string $attribute, mixed $value, \Closure $fail): void {
+                        if (! User::isValidSponsor((string) $value)) {
+                            $fail('Enter a valid franchise sponsor ID.');
+                        }
+                    },
+                ],
                 'amount' => ['required', 'numeric', 'regex:/^\d{1,8}(\.\d{1,2})?$/', 'min:0.01'],
                 'screenshot' => [
                     Rule::requiredIf(! filled($payment?->screenshot)),
@@ -136,6 +150,7 @@ class DashboardController extends Controller
                 'remark' => ['nullable', 'string', 'max:500'],
             ], [
                 'franchise_sponsor_id.required' => 'Enter the franchise sponsor ID.',
+                'franchise_sponsor_id.max' => 'Enter a valid franchise sponsor ID.',
                 'amount.required' => 'Enter the amount.',
                 'amount.numeric' => 'Enter an amount.',
                 'amount.regex' => 'Enter an amount with up to 2 decimal places.',
@@ -161,11 +176,15 @@ class DashboardController extends Controller
             $screenshot = OrderPayment::storeImage($request->file('screenshot'));
         }
 
+        $sponsor = User::findSponsor($data['franchise_sponsor_id']);
+
         $order->payment()->updateOrCreate(
             ['order_id' => $order->id],
             [
                 'user_id' => $user->id,
-                'franchise_sponsor_id' => $data['franchise_sponsor_id'],
+                'franchise_sponsor_id' => filled($sponsor?->user_name)
+                    ? $sponsor->user_name
+                    : $data['franchise_sponsor_id'],
                 'amount' => $data['amount'],
                 'screenshot' => $screenshot,
                 'pay_mode' => $data['pay_mode'],

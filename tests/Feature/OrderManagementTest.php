@@ -212,4 +212,54 @@ class OrderManagementTest extends TestCase
 
         $this->assertSame('pending', $order->fresh()->status);
     }
+
+    public function test_confirming_an_order_marks_the_customer_paid_only_the_first_time(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $buyer = User::factory()->create([
+            'user_paid' => User::UNPAID,
+            'activation_date' => null,
+        ]);
+        $order = Order::factory()->for($buyer)->create([
+            'number' => 'NB-400004',
+            'status' => 'pending',
+        ]);
+
+        $this->travelTo('2026-11-18 10:00:00');
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'rejected'])
+            ->assertRedirect();
+
+        $buyer->refresh();
+        $this->assertSame(User::UNPAID, $buyer->user_paid);
+        $this->assertNull($buyer->activation_date);
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'confirmed'])
+            ->assertRedirect()
+            ->assertSessionHas('status', 'NB-400004 is now Confirmed.');
+
+        $buyer->refresh();
+        $this->assertTrue($buyer->isPaid());
+        $this->assertSame('2026-11-18', $buyer->activation_date?->toDateString());
+
+        $this->travelTo('2026-12-01 10:00:00');
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'pending'])
+            ->assertRedirect();
+
+        $second = Order::factory()->for($buyer)->create([
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$second->id.'/status', ['status' => 'confirmed'])
+            ->assertRedirect();
+
+        $buyer->refresh();
+        $this->assertTrue($buyer->isPaid());
+        $this->assertSame('2026-11-18', $buyer->activation_date?->toDateString());
+    }
 }

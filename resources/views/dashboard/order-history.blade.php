@@ -124,6 +124,7 @@
                             <div class="mb-3">
                                 <label class="form-label" for="franchise_sponsor_id">Franchise Sponsor ID</label>
                                 <input class="form-control" id="franchise_sponsor_id" name="franchise_sponsor_id" type="text" value="{{ old('franchise_sponsor_id', $failedPaymentOrder?->payment?->franchise_sponsor_id) }}" maxlength="64" autocomplete="off" required>
+                                <p class="small text-secondary mb-0">Use an existing sponsor member ID.</p>
                                 @error('franchise_sponsor_id')
                                     <p class="text-danger small mb-0">{{ $message }}</p>
                                 @enderror

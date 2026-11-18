@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -54,9 +55,15 @@ class OrderController extends Controller
             'status' => ['required', Rule::in(['pending', 'confirmed', 'rejected'])],
         ]);
 
-        $order->update([
-            'status' => $data['status'],
-        ]);
+        DB::transaction(function () use ($data, $order): void {
+            $order->update([
+                'status' => $data['status'],
+            ]);
+
+            if ($data['status'] === 'confirmed') {
+                $order->user?->markPaidOnFirstApproval();
+            }
+        });
 
         return back()->with('status', $order->number.' is now '.$order->statusLabel().'.');
     }

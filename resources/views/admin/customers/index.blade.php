@@ -49,6 +49,8 @@
                                     <th scope="col">Position</th>
                                     <th scope="col">Role</th>
                                     <th scope="col">Joined</th>
+                                    <th scope="col">User paid</th>
+                                    <th scope="col">Activation date</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -70,6 +72,8 @@
                                             } }}
                                         </td>
                                         <td>{{ $customer->created_at?->format('M j, Y') ?: '—' }}</td>
+                                        <td>{{ $customer->isPaid() ? 'Paid' : 'Unpaid' }}</td>
+                                        <td>{{ $customer->activation_date?->format('M j, Y') ?: '—' }}</td>
                                         <td>
                                             <div class="email-actions">
                                                 <a class="btn cat-action" href="{{ route('admin.customers.edit', $customer) }}">Edit</a>
