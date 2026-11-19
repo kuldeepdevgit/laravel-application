@@ -23,10 +23,7 @@
                 <dt>Sponsor</dt>
                 <dd>
                     @if ($sponsor)
-                        {{ $sponsor->name }}
-                        @if (filled($sponsor->user_name))
-                            <span class="member-code">{{ $sponsor->user_name }}</span>
-                        @endif
+                        {{ $sponsor->name }}@if (filled($sponsor->user_name))<span class="member-code">{{ $sponsor->user_name }}</span>@endif
                     @else
                         {{ $user->sponsor_name ?: '—' }}
                     @endif
@@ -41,7 +38,7 @@
                 <dd>
                     {{ $package->package_name ?? '—' }}
                     @if ($package)
-                        <span class="member-code">{{ $package->isActive() ? 'Active' : 'Inactive' }}</span>
+                        <span class="member-pill {{ $package->isActive() ? 'is-active' : 'is-inactive' }}">{{ $package->isActive() ? 'Active' : 'Inactive' }}</span>
                     @endif
                 </dd>
             </div>

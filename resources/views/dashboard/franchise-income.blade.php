@@ -22,7 +22,12 @@
                         <td>{{ $franchiseIncomes->firstItem() + $loop->index }}</td>
                         <td>{{ $income->created_at?->format('M j, Y g:i A') ?: '—' }}</td>
                         <td>{{ $income->order?->number ?: '—' }}</td>
-                        <td>{{ $income->order?->name ?: '—' }}</td>
+                        <td>
+                            {{ $income->order?->name ?: ($income->fromUser?->name ?: '—') }}
+                            @if (filled($income->fromUser?->user_name))
+                                <div class="text-secondary">{{ $income->fromUser->user_name }}</div>
+                            @endif
+                        </td>
                         <td>{{ $income->formattedOrderBv() }}</td>
                         <td>{{ $income->formattedAmount() }} <span class="text-secondary">({{ $income->formattedPercent() }})</span></td>
                         <td>—</td>

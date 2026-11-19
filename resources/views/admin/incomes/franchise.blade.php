@@ -58,7 +58,12 @@
                                                 —
                                             @endif
                                         </td>
-                                        <td>{{ $income->order?->name ?: ($income->fromUser?->name ?: '—') }}</td>
+                                        <td>
+                                            {{ $income->order?->name ?: ($income->fromUser?->name ?: '—') }}
+                                            @if (filled($income->fromUser?->user_name))
+                                                <div class="text-secondary">{{ $income->fromUser->user_name }}</div>
+                                            @endif
+                                        </td>
                                         <td>
                                             {{ $income->user?->name ?: '—' }}
                                             @if (filled($income->user?->user_name))

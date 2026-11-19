@@ -134,7 +134,9 @@ class FranchiseIncomeTest extends TestCase
         $other = User::factory()->create([
             'user_name' => 'GSI300003',
         ]);
-        $buyer = User::factory()->create();
+        $buyer = User::factory()->create([
+            'user_name' => 'GSI200001',
+        ]);
         $order = Order::factory()->for($buyer)->create([
             'number' => 'NB-600006',
             'name' => 'Asha Rao',
@@ -165,6 +167,7 @@ class FranchiseIncomeTest extends TestCase
             ->assertSee('₹160.00')
             ->assertSee('NB-600006')
             ->assertSee('Asha Rao')
+            ->assertSee('GSI200001')
             ->assertSee('1,600.00')
             ->assertSee('10%');
 

@@ -23,6 +23,9 @@ class IncomeController extends Controller
                     })->orWhereHas('user', function ($users) use ($like): void {
                         $users->where('name', 'like', $like)
                             ->orWhere('user_name', 'like', $like);
+                    })->orWhereHas('fromUser', function ($customers) use ($like): void {
+                        $customers->where('name', 'like', $like)
+                            ->orWhere('user_name', 'like', $like);
                     });
                 });
             })

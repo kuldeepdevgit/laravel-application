@@ -88,6 +88,7 @@ class IncomeManagementTest extends TestCase
             ->assertOk()
             ->assertSee('NB-500005')
             ->assertSee('Asha Rao')
+            ->assertSee('GSI200001')
             ->assertSee('Franchise Sponsor')
             ->assertSee('GSI100001')
             ->assertSee('1,600.00')
@@ -106,6 +107,13 @@ class IncomeManagementTest extends TestCase
             ->assertSee('NB-500005')
             ->assertSee('Franchise Sponsor')
             ->assertDontSee('NB-700007')
+            ->assertDontSee('Hidden Buyer');
+
+        $this->actingAs($admin)
+            ->get('/admin/incomes/franchise?q=GSI200001')
+            ->assertOk()
+            ->assertSee('Asha Rao')
+            ->assertSee('GSI200001')
             ->assertDontSee('Hidden Buyer');
 
         $this->actingAs($admin)

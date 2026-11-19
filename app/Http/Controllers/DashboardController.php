@@ -93,7 +93,7 @@ class DashboardController extends Controller
         $franchiseIncomes = $section === 'franchise-income-history'
             ? $user->incomes()
                 ->where('type', Income::TYPE_FRANCHISE)
-                ->with('order')
+                ->with(['order', 'fromUser'])
                 ->latest('id')
                 ->paginate(15)
                 ->withQueryString()
