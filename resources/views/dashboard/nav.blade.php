@@ -1,5 +1,6 @@
 @php
     $section = request()->route('section');
+    $account = $dashboardAccount ?? auth()->user();
     $groups = [
         [
             'label' => 'Manage Profile',
@@ -59,10 +60,10 @@
     <a class="dash-brand" href="{{ route('dashboard') }}">
         <img src="{{ asset('images/green-smart-india.png') }}" alt="Green Smart India E Services" width="220" height="220">
     </a>
-    <div class="dash-status {{ auth()->user()?->isPaid() ? 'is-active' : 'is-inactive' }}" role="status">
-        <i class="bi {{ auth()->user()?->isPaid() ? 'bi-person-check' : 'bi-person-x' }}" aria-hidden="true"></i>
+    <div class="dash-status {{ $account?->isPaid() ? 'is-active' : 'is-inactive' }}" role="status">
+        <i class="bi {{ $account?->isPaid() ? 'bi-person-check' : 'bi-person-x' }}" aria-hidden="true"></i>
         <span>Account</span>
-        <strong>{{ auth()->user()?->isPaid() ? 'Active' : 'Inactive' }}</strong>
+        <strong>{{ $account?->isPaid() ? 'Active' : 'Inactive' }}</strong>
     </div>
     <a class="dash-item @if (request()->routeIs('dashboard')) is-active @endif" href="{{ route('dashboard') }}" @if (request()->routeIs('dashboard')) aria-current="page" @endif>
         <i class="bi bi-speedometer2" aria-hidden="true"></i>

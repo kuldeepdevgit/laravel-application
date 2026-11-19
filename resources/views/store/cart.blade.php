@@ -13,10 +13,16 @@
                 <a class="btn btn-accent" href="{{ route('shop') }}">Browse products</a>
             </div>
         @else
+            @php
+                $cart = app(\App\Services\CartService::class);
+            @endphp
             <div class="row g-4">
                 <div class="col-lg-8">
                     <div class="panel">
                         @foreach ($lines as $line)
+                            @php
+                                $unitBv = (float) ($line['product']['bv'] ?? 0);
+                            @endphp
                             <article class="cart-line">
                                 <a href="{{ route('products.show', $line['product']['id']) }}">
                                     @if (! empty($line['product']['images'][0]))
@@ -27,7 +33,7 @@
                                 </a>
                                 <div>
                                     <h2><a href="{{ route('products.show', $line['product']['id']) }}">{{ $line['product']['name'] }}</a></h2>
-                                    <p class="fine mb-2">{{ app(\App\Services\CartService::class)->money($line['product']['price']) }} each</p>
+                                    <p class="fine mb-2">{{ $cart->money($line['product']['price']) }} each · BV {{ $cart->formattedBv($unitBv) }}@if ($line['qty'] > 1) · Line BV {{ $cart->formattedBv($unitBv * $line['qty']) }}@endif</p>
                                     <div class="d-flex flex-wrap align-items-center gap-2">
                                         <form method="POST" action="{{ route('cart.update', $line['product']['id']) }}">
                                             @csrf
@@ -49,7 +55,7 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div class="line-total">{{ app(\App\Services\CartService::class)->money($line['product']['price'] * $line['qty']) }}</div>
+                                <div class="line-total">{{ $cart->money($line['product']['price'] * $line['qty']) }}</div>
                             </article>
                         @endforeach
                     </div>

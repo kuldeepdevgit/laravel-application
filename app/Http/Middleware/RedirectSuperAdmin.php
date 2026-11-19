@@ -3,8 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Support\Impersonation;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
 
 class RedirectSuperAdmin
@@ -19,8 +21,20 @@ class RedirectSuperAdmin
         $user = $request->user();
 
         if ($user instanceof User && $user->isSuperAdmin()) {
-            return redirect()->route('admin.dashboard');
+            $customer = Impersonation::customer($request);
+
+            if (! $customer instanceof User) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            View::share('impersonatedCustomer', $customer);
+            View::share('dashboardAccount', $customer);
+
+            return $next($request);
         }
+
+        View::share('impersonatedCustomer', null);
+        View::share('dashboardAccount', $user);
 
         return $next($request);
     }

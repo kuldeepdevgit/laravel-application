@@ -292,6 +292,8 @@ class StorefrontTest extends TestCase
             ->assertSee('Assam Honey')
             ->assertSee('₹120.50')
             ->assertSee('₹241.00')
+            ->assertSee('BV 750.00')
+            ->assertSee('Line BV 1,500.00')
             ->assertSee('Total BV')
             ->assertSee('1,500.00')
             ->assertDontSee('Promo code')

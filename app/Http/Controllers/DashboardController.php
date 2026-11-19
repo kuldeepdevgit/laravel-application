@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\WalletEntry;
 use App\Services\FranchiseIncomeCache;
 use App\Services\FranchiseIncomeRow;
+use App\Support\Impersonation;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -23,8 +24,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request): View
     {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
+        $user = $this->account($request);
 
         $template = Schema::hasTable('templates')
             ? Template::query()->where('is_active', true)->first()
@@ -78,8 +78,7 @@ class DashboardController extends Controller
         abort_unless(isset($pages[$section]), 404);
 
         [$heading, $intro] = $pages[$section];
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
+        $user = $this->account($request);
         $referral = $section === 'ref-link' && filled($user->user_name)
             ? route('register', ['ref' => $user->user_name])
             : null;
@@ -138,8 +137,7 @@ class DashboardController extends Controller
 
     public function order(Request $request, Order $order): View
     {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
+        $user = $this->account($request);
         abort_unless((int) $order->user_id === (int) $user->id, 404);
 
         $order->load(['items.product.category', 'payment']);
@@ -152,8 +150,7 @@ class DashboardController extends Controller
 
     public function storePayment(Request $request, Order $order): RedirectResponse
     {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
+        $user = $this->account($request);
         abort_unless((int) $order->user_id === (int) $user->id, 404);
 
         $request->merge([
@@ -236,7 +233,7 @@ class DashboardController extends Controller
 
     public function updateProfile(Request $request): RedirectResponse
     {
-        $user = $request->user();
+        $user = $this->account($request);
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -261,7 +258,7 @@ class DashboardController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $request->user()->update([
+        $this->account($request)->update([
             'password' => $data['password'],
         ]);
 
@@ -302,7 +299,7 @@ class DashboardController extends Controller
             'phonepe.regex' => 'Enter a PhonePe UPI ID or a 10-digit mobile number.',
         ]);
 
-        $request->user()->update([
+        $this->account($request)->update([
             'usdt_bep20' => $data['usdt_bep20'] ?? null,
             'bank_name' => $data['bank_name'] ?? null,
             'account_name' => $data['account_name'] ?? null,
@@ -365,6 +362,14 @@ class DashboardController extends Controller
         }
 
         return $counts;
+    }
+
+    private function account(Request $request): User
+    {
+        $user = Impersonation::account($request);
+        abort_unless($user instanceof User, 403);
+
+        return $user;
     }
 
     /**

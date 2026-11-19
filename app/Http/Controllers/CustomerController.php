@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\Impersonation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -108,32 +108,22 @@ class CustomerController extends Controller
 
     public function login(Request $request, User $user): RedirectResponse
     {
-        if ($user->isSuperAdmin()) {
-            abort(403);
-        }
+        $admin = $request->user();
+        abort_unless($admin instanceof User && $admin->isSuperAdmin(), 403);
+        abort_if($user->isSuperAdmin(), 403);
 
-        $adminId = (int) $request->user()->getKey();
-
-        Auth::login($user);
-        $request->session()->regenerate();
-        $request->session()->put('impersonator_id', $adminId);
+        Impersonation::start($request, $user);
 
         return redirect()->route('dashboard');
     }
 
     public function stop(Request $request): RedirectResponse
     {
-        $adminId = $request->session()->pull('impersonator_id');
-        $admin = is_numeric($adminId)
-            ? User::query()->find((int) $adminId)
-            : null;
+        $admin = $request->user();
+        abort_unless($admin instanceof User && $admin->isSuperAdmin(), 403);
+        abort_unless($request->session()->has(Impersonation::KEY), 403);
 
-        if (! $admin instanceof User || ! $admin->isSuperAdmin()) {
-            abort(403);
-        }
-
-        Auth::login($admin);
-        $request->session()->regenerate();
+        Impersonation::stop($request);
 
         return redirect()
             ->route('admin.customers.index')

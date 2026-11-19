@@ -85,7 +85,7 @@
                                                         @csrf
                                                         <button class="btn cat-action" type="submit">{{ $customer->isFranchise() ? 'Remove franchise' : 'Make franchise' }}</button>
                                                     </form>
-                                                    <form method="POST" action="{{ route('admin.customers.login', $customer) }}">
+                                                    <form method="POST" action="{{ route('admin.customers.login', $customer) }}" target="_blank">
                                                         @csrf
                                                         <button class="btn cat-action" type="submit">Auto login</button>
                                                     </form>

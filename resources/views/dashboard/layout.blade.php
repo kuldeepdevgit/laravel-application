@@ -37,12 +37,11 @@
             </header>
 
             <div class="p-3 p-lg-4">
-                @if (session()->has('impersonator_id'))
-                    <form class="impersonation-bar" method="POST" action="{{ route('impersonation.stop') }}">
-                        @csrf
-                        <p>Signed in as {{ auth()->user()->name }}. This is the customer account.</p>
-                        <button class="btn dash-btn btn-sm" type="submit">Back to admin</button>
-                    </form>
+                @if (($impersonatedCustomer ?? null) instanceof \App\Models\User)
+                    <div class="impersonation-bar">
+                        <p>Signed in as {{ $impersonatedCustomer->name }}. This is the customer account.</p>
+                        <a class="btn dash-btn btn-sm" href="{{ route('admin.dashboard') }}">Back to admin</a>
+                    </div>
                 @endif
                 @yield('content')
             </div>

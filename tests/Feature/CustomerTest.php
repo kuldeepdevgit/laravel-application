@@ -100,6 +100,7 @@ class CustomerTest extends TestCase
             ->assertSee('All Customers')
             ->assertSee('Franchise Members')
             ->assertSee('Auto login')
+            ->assertSee('target="_blank"', false)
             ->assertSee(route('admin.customers.login', $member), false)
             ->assertSee(route('admin.customers.franchise', $member), false)
             ->assertDontSee(route('admin.customers.login', $admin), false)
@@ -264,13 +265,27 @@ class CustomerTest extends TestCase
             ->post('/admin/customers/'.$member->id.'/login')
             ->assertRedirect('/dashboard');
 
-        $this->assertAuthenticatedAs($member);
+        $this->assertAuthenticatedAs($admin);
 
         $this->get('/dashboard')
             ->assertOk()
             ->assertSee('Signed in as Asha Patel')
             ->assertSee('Back to admin')
-            ->assertSee('Manage Profile');
+            ->assertSee('Manage Profile')
+            ->assertSee(route('admin.dashboard'), false);
+
+        $this->get('/admin')
+            ->assertOk()
+            ->assertSee('Customer Management')
+            ->assertSee('Viewing Asha Patel')
+            ->assertSee('Your admin sign-in is still active.')
+            ->assertSee('All Customers');
+
+        $this->get('/admin/customers')
+            ->assertOk()
+            ->assertSee('Make franchise');
+
+        $this->assertAuthenticatedAs($admin);
 
         $this->post('/impersonation/stop')
             ->assertRedirect('/admin/customers')
@@ -278,9 +293,13 @@ class CustomerTest extends TestCase
 
         $this->assertAuthenticatedAs($admin);
 
+        $this->get('/dashboard')
+            ->assertRedirect('/admin');
+
         $this->get('/admin/customers')
             ->assertOk()
-            ->assertSee('Asha Patel');
+            ->assertSee('Asha Patel')
+            ->assertDontSee('Viewing Asha Patel');
     }
 
     public function test_auto_login_cannot_target_the_super_admin(): void
@@ -304,7 +323,7 @@ class CustomerTest extends TestCase
             ->assertForbidden();
 
         $this->actingAs($member)
-            ->withSession(['impersonator_id' => $other->id])
+            ->withSession(['impersonated_user_id' => $other->id])
             ->post('/impersonation/stop')
             ->assertForbidden();
 
@@ -356,6 +375,7 @@ class CustomerTest extends TestCase
             ->assertSee('asha@example.com')
             ->assertSee('9876543210')
             ->assertSee('Remove franchise')
+            ->assertSee('target="_blank"', false)
             ->assertSee(route('admin.customers.franchise', $member), false);
 
         $this->actingAs($admin)

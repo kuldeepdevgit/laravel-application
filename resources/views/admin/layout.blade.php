@@ -37,6 +37,18 @@
             </header>
 
             <div class="p-3 p-lg-4">
+                @if (($impersonatedCustomer ?? null) instanceof \App\Models\User)
+                    <div class="impersonation-bar">
+                        <p>Viewing {{ $impersonatedCustomer->name }}. Your admin sign-in is still active.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a class="btn dash-btn btn-sm" href="{{ route('dashboard') }}">Customer dashboard</a>
+                            <form method="POST" action="{{ route('impersonation.stop') }}">
+                                @csrf
+                                <button class="btn dash-btn-quiet btn-sm" type="submit">Stop viewing</button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
                 @yield('content')
             </div>
         </div>

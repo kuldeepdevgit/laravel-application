@@ -71,7 +71,7 @@
                                                     @csrf
                                                     <button class="btn cat-action" type="submit">Remove franchise</button>
                                                 </form>
-                                                <form method="POST" action="{{ route('admin.customers.login', $member) }}">
+                                                <form method="POST" action="{{ route('admin.customers.login', $member) }}" target="_blank">
                                                     @csrf
                                                     <button class="btn cat-action" type="submit">Auto login</button>
                                                 </form>
