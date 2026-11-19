@@ -160,6 +160,8 @@ class FranchiseIncomeTest extends TestCase
             ->assertOk()
             ->assertSee('Franchise Income History')
             ->assertSee('10% of its total BV')
+            ->assertSee('Credit')
+            ->assertSee('Debit')
             ->assertSee('₹160.00')
             ->assertSee('NB-600006')
             ->assertSee('Asha Rao')

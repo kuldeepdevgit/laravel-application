@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Income;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Models\Package;
 use App\Models\Template;
 use App\Models\User;
+use App\Models\WalletEntry;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -26,11 +28,14 @@ class DashboardController extends Controller
         $template = Schema::hasTable('templates')
             ? Template::query()->where('is_active', true)->first()
             : null;
+        $currentBv = $user->currentBv();
 
         return view('dashboard.index', [
             'template' => $template,
             'user' => $user,
             'sponsor' => $user->sponsor(),
+            'currentBv' => $currentBv,
+            'package' => Package::forBv($currentBv),
         ]);
     }
 
@@ -54,6 +59,7 @@ class DashboardController extends Controller
             'fund-wallet' => ['Fund Wallet', 'Your fund wallet will be shown here.'],
             'income-report' => ['Income Report', 'Income recorded on your account will be listed here.'],
             'franchise-income-history' => ['Franchise Income History', 'When an admin approves an order that lists you as the franchise sponsor, you receive 10% of its total BV.'],
+            'wallet' => ['Wallet', 'Credits and debits on your wallet are listed here. Franchise income is added as a credit.'],
             'self-roi-income' => ['Self ROI Income', 'Your self ROI income will be listed here.'],
             'level-income-history' => ['Level Income History', 'Your level income history will be listed here.'],
             'level-roi-income-history' => ['Level ROI Income History', 'Your level ROI income history will be listed here.'],
@@ -92,6 +98,18 @@ class DashboardController extends Controller
                 ->paginate(15)
                 ->withQueryString()
             : null;
+        $walletEntries = $section === 'wallet'
+            ? $user->walletEntries()
+                ->latest('id')
+                ->paginate(15)
+                ->withQueryString()
+            : null;
+        $walletCreditTotal = $walletEntries instanceof LengthAwarePaginator
+            ? round((float) $user->walletEntries()->where('direction', WalletEntry::CREDIT)->sum('amount'), 2)
+            : null;
+        $walletDebitTotal = $walletEntries instanceof LengthAwarePaginator
+            ? round((float) $user->walletEntries()->where('direction', WalletEntry::DEBIT)->sum('amount'), 2)
+            : null;
 
         return view('dashboard.section', [
             'heading' => $heading,
@@ -110,6 +128,12 @@ class DashboardController extends Controller
             'franchiseIncomeTotal' => $franchiseIncomes instanceof LengthAwarePaginator
                 ? round((float) $user->incomes()->where('type', Income::TYPE_FRANCHISE)->sum('amount'), 2)
                 : null,
+            'walletEntries' => $walletEntries,
+            'walletBalance' => $walletCreditTotal === null || $walletDebitTotal === null
+                ? null
+                : round($walletCreditTotal - $walletDebitTotal, 2),
+            'walletCreditTotal' => $walletCreditTotal,
+            'walletDebitTotal' => $walletDebitTotal,
         ]);
     }
 

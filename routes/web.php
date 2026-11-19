@@ -13,6 +13,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FundController;
+use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
@@ -60,6 +61,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::get('/incomes/franchise', [IncomeController::class, 'franchise'])->name('incomes.franchise');
         Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
         Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
         Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Package;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -63,7 +64,7 @@ class DashboardTest extends TestCase
             ->assertSee('Fund Wallet')
             ->assertSee('Income Report')
             ->assertSee('Franchise Income History')
-            ->assertSee('Self ROI Income')
+            ->assertSeeInOrder(['Franchise Income History', 'Wallet', 'Self ROI Income'])
             ->assertSee('Level Income History')
             ->assertSee('Level ROI Income History')
             ->assertSee('Booster Income')
@@ -97,6 +98,101 @@ class DashboardTest extends TestCase
             ->assertSee('Mar 4, 2026')
             ->assertDontSee('Inactive')
             ->assertDontSee('Not activated');
+    }
+
+    public function test_dashboard_shows_the_package_for_the_members_current_bv(): void
+    {
+        $none = User::factory()->create();
+        $silver = User::factory()->create();
+        $between = User::factory()->create();
+        $gold = User::factory()->create();
+        $diamond = User::factory()->create();
+        $other = User::factory()->create();
+
+        Order::factory()->for($silver)->create([
+            'status' => 'confirmed',
+            'total_bv' => 1500,
+        ]);
+        Order::factory()->for($between)->create([
+            'status' => 'confirmed',
+            'total_bv' => 2000,
+        ]);
+        Order::factory()->for($gold)->create([
+            'status' => 'pending',
+            'total_bv' => 9000,
+        ]);
+        Order::factory()->for($gold)->create([
+            'status' => 'confirmed',
+            'total_bv' => 5000,
+        ]);
+        Order::factory()->for($diamond)->create([
+            'status' => 'confirmed',
+            'total_bv' => 1500,
+        ]);
+        Order::factory()->for($diamond)->create([
+            'status' => 'confirmed',
+            'total_bv' => 5500,
+        ]);
+        Order::factory()->for($diamond)->create([
+            'status' => 'rejected',
+            'total_bv' => 5000,
+        ]);
+        Order::factory()->for($other)->create([
+            'status' => 'confirmed',
+            'total_bv' => 7000,
+        ]);
+
+        $this->actingAs($none)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Current BV')
+            ->assertSee('0.00')
+            ->assertSee('Package')
+            ->assertDontSee('SILVER PACKAGE')
+            ->assertDontSee('GOLD PACKAGE')
+            ->assertDontSee('DAIMOND');
+
+        $this->actingAs($silver)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('1,500.00')
+            ->assertSee('SILVER PACKAGE')
+            ->assertSee('Active')
+            ->assertDontSee('GOLD PACKAGE')
+            ->assertDontSee('DAIMOND');
+
+        $this->actingAs($between)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('2,000.00')
+            ->assertSee('SILVER PACKAGE')
+            ->assertDontSee('GOLD PACKAGE');
+
+        $this->actingAs($gold)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('5,000.00')
+            ->assertSee('GOLD PACKAGE')
+            ->assertDontSee('SILVER PACKAGE')
+            ->assertDontSee('DAIMOND');
+
+        $this->actingAs($diamond)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('7,000.00')
+            ->assertSee('DAIMOND')
+            ->assertDontSee('SILVER PACKAGE')
+            ->assertDontSee('GOLD PACKAGE');
+
+        Package::query()->where('package_name', 'SILVER PACKAGE')->update([
+            'package_status' => 'inactive',
+        ]);
+
+        $this->actingAs($silver)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('1,500.00')
+            ->assertDontSee('SILVER PACKAGE');
     }
 
     public function test_dashboard_shows_the_sponsor_id_and_name(): void
@@ -172,7 +268,7 @@ class DashboardTest extends TestCase
             ->get('/dashboard/salary-income')
             ->assertOk()
             ->assertSee('Franchise Income History')
-            ->assertSee('Self ROI Income')
+            ->assertSeeInOrder(['Franchise Income History', 'Wallet', 'Self ROI Income'])
             ->assertSee('Salary Income');
 
         $this->actingAs($user)

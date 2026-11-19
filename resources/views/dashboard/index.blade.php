@@ -32,6 +32,19 @@
                     @endif
                 </dd>
             </div>
+            <div>
+                <dt>Current BV</dt>
+                <dd>{{ number_format($currentBv, 2) }}</dd>
+            </div>
+            <div>
+                <dt>Package</dt>
+                <dd>
+                    {{ $package->package_name ?? '—' }}
+                    @if ($package)
+                        <span class="member-code">{{ $package->isActive() ? 'Active' : 'Inactive' }}</span>
+                    @endif
+                </dd>
+            </div>
         </dl>
     </section>
 
@@ -92,6 +105,15 @@
                     <dd class="col-sm-9">{{ $user->email }}</dd>
                     <dt class="col-sm-3">Phone</dt>
                     <dd class="col-sm-9">{{ $user->phone_number }}</dd>
+                    <dt class="col-sm-3">Current BV</dt>
+                    <dd class="col-sm-9">{{ number_format($currentBv, 2) }}</dd>
+                    <dt class="col-sm-3">Package</dt>
+                    <dd class="col-sm-9">
+                        {{ $package->package_name ?? '—' }}
+                        @if ($package)
+                            ({{ $package->isActive() ? 'Active' : 'Inactive' }})
+                        @endif
+                    </dd>
                     <dt class="col-sm-3">Template</dt>
                     <dd class="col-sm-9 mb-0">{{ $template->name ?? 'Ecommerce' }} is the public home page.</dd>
                 </dl>
@@ -100,7 +122,6 @@
         <div class="col-lg-5">
             <section class="panel">
                 <h2>Next</h2>
-                <p class="text-secondary">Open the Bootstrap template, or choose which front page visitors see.</p>
                 <div class="d-flex flex-wrap gap-2">
                     <a class="btn dash-btn" href="{{ route('bootstrap.home') }}">Open Brightpath</a>
                     <a class="btn btn-outline-dark" href="{{ route('templates.index') }}">Choose template</a>

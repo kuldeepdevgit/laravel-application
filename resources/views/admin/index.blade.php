@@ -76,6 +76,13 @@
         </div>
         <div class="col-lg-3">
             <section class="panel h-100">
+                <h2>Income Management</h2>
+                <p class="text-secondary">See every franchise income credit from approved orders.</p>
+                <a class="btn dash-btn" href="{{ route('admin.incomes.franchise') }}">Open franchise income</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
                 <h2>Category</h2>
                 <p class="text-secondary">Add, edit, and remove categories from this admin desk.</p>
                 <a class="btn dash-btn" href="{{ route('admin.categories.index') }}">Open categories</a>

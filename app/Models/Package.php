@@ -35,4 +35,17 @@ class Package extends Model
     {
         return $this->package_status === 'active';
     }
+
+    /**
+     * Highest active package this BV qualifies for.
+     */
+    public static function forBv(float $bv): ?self
+    {
+        return static::query()
+            ->where('package_status', 'active')
+            ->where('package_bv', '<=', number_format($bv, 2, '.', ''))
+            ->orderByDesc('package_bv')
+            ->orderByDesc('id')
+            ->first();
+    }
 }

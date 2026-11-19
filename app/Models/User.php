@@ -176,11 +176,27 @@ class User extends Authenticatable
     }
 
     /**
+     * BV from this member's confirmed orders.
+     */
+    public function currentBv(): float
+    {
+        return round((float) $this->orders()->where('status', 'confirmed')->sum('total_bv'), 2);
+    }
+
+    /**
      * @return HasMany<Income, $this>
      */
     public function incomes(): HasMany
     {
         return $this->hasMany(Income::class);
+    }
+
+    /**
+     * @return HasMany<WalletEntry, $this>
+     */
+    public function walletEntries(): HasMany
+    {
+        return $this->hasMany(WalletEntry::class);
     }
 
     /**

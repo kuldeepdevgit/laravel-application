@@ -12,7 +12,8 @@
                     <th scope="col">Order</th>
                     <th scope="col">Customer</th>
                     <th scope="col">Order BV</th>
-                    <th scope="col">Income</th>
+                    <th scope="col">Credit</th>
+                    <th scope="col">Debit</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,7 @@
                         <td>{{ $income->order?->name ?: '—' }}</td>
                         <td>{{ $income->formattedOrderBv() }}</td>
                         <td>{{ $income->formattedAmount() }} <span class="text-secondary">({{ $income->formattedPercent() }})</span></td>
+                        <td>—</td>
                     </tr>
                 @endforeach
             </tbody>

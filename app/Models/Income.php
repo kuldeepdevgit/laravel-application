@@ -54,6 +54,8 @@ class Income extends Model
             ->first();
 
         if ($existing instanceof self) {
+            WalletEntry::creditFromIncome($existing);
+
             return $existing;
         }
 
@@ -78,7 +80,7 @@ class Income extends Model
             return null;
         }
 
-        return static::query()->create([
+        $income = static::query()->create([
             'user_id' => $sponsor->getKey(),
             'order_id' => $order->getKey(),
             'from_user_id' => $order->user_id,
@@ -87,6 +89,10 @@ class Income extends Model
             'percent' => self::FRANCHISE_PERCENT,
             'amount' => $amount,
         ]);
+
+        WalletEntry::creditFromIncome($income);
+
+        return $income;
     }
 
     /**

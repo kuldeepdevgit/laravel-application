@@ -32,6 +32,19 @@
             </a>
         </div>
     </details>
+    <details class="dash-group" @if (request()->routeIs('admin.incomes.*')) open @endif>
+        <summary class="dash-item">
+            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+            <span>Income Management</span>
+            <i class="bi bi-chevron-right dash-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="dash-sub">
+            <a class="dash-subitem @if (request()->routeIs('admin.incomes.franchise')) is-active @endif" href="{{ route('admin.incomes.franchise') }}" @if (request()->routeIs('admin.incomes.franchise')) aria-current="page" @endif>
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Franchise Income History</span>
+            </a>
+        </div>
+    </details>
     <a class="dash-item @if (request()->routeIs('admin.companies.*')) is-active @endif" href="{{ route('admin.companies.index') }}" @if (request()->routeIs('admin.companies.*')) aria-current="page" @endif>
         <i class="bi bi-building" aria-hidden="true"></i>
         <span>Company</span>
