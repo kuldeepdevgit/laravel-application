@@ -7,14 +7,23 @@
         <i class="bi bi-speedometer2" aria-hidden="true"></i>
         <span>Dashboard</span>
     </a>
-    <a class="dash-item @if (request()->routeIs('admin.customers.*')) is-active @endif" href="{{ route('admin.customers.index') }}" @if (request()->routeIs('admin.customers.*')) aria-current="page" @endif>
-        <i class="bi bi-people" aria-hidden="true"></i>
-        <span>Customer Management</span>
-    </a>
-    <a class="dash-item @if (request()->routeIs('admin.franchises.*')) is-active @endif" href="{{ route('admin.franchises.index') }}" @if (request()->routeIs('admin.franchises.*')) aria-current="page" @endif>
-        <i class="bi bi-shop" aria-hidden="true"></i>
-        <span>Franchise Members</span>
-    </a>
+    <details class="dash-group" @if (request()->routeIs('admin.customers.*', 'admin.franchises.*')) open @endif>
+        <summary class="dash-item">
+            <i class="bi bi-people" aria-hidden="true"></i>
+            <span>Customer Management</span>
+            <i class="bi bi-chevron-right dash-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="dash-sub">
+            <a class="dash-subitem @if (request()->routeIs('admin.customers.*')) is-active @endif" href="{{ route('admin.customers.index') }}" @if (request()->routeIs('admin.customers.*')) aria-current="page" @endif>
+                <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
+                <span>All Customers</span>
+            </a>
+            <a class="dash-subitem @if (request()->routeIs('admin.franchises.*')) is-active @endif" href="{{ route('admin.franchises.index') }}" @if (request()->routeIs('admin.franchises.*')) aria-current="page" @endif>
+                <i class="bi bi-shop" aria-hidden="true"></i>
+                <span>Franchise Members</span>
+            </a>
+        </div>
+    </details>
     <a class="dash-item @if (request()->routeIs('admin.categories.*')) is-active @endif" href="{{ route('admin.categories.index') }}" @if (request()->routeIs('admin.categories.*')) aria-current="page" @endif>
         <i class="bi bi-grid" aria-hidden="true"></i>
         <span>Category</span>

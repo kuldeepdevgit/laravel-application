@@ -1,8 +1,8 @@
 @extends('admin.layout')
 
-@section('title', 'Customer Management — Admin')
+@section('title', 'All Customers — Admin')
 
-@section('heading', 'Customer Management')
+@section('heading', 'All Customers')
 
 @section('content')
     <div class="cat-page">
@@ -23,7 +23,7 @@
                     <input class="form-control" id="q" name="q" type="search" value="{{ $search }}" placeholder="Search name, user name, email, or phone" autocomplete="off">
                     <button class="btn dash-btn" type="submit">Search</button>
                 </form>
-                <a class="btn dash-btn-quiet" href="{{ route('admin.franchises.index') }}">Franchise members</a>
+                <a class="btn dash-btn-quiet" href="{{ route('admin.franchises.index') }}">Franchise Members</a>
             </div>
 
             @if ($customers->isEmpty())

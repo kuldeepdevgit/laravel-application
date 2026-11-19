@@ -24,7 +24,7 @@
                     <input class="form-control" id="q" name="q" type="search" value="{{ $search }}" placeholder="Search name, user name, email, or phone" autocomplete="off">
                     <button class="btn dash-btn" type="submit">Search</button>
                 </form>
-                <a class="btn dash-btn-quiet" href="{{ route('admin.customers.index') }}">Customer Management</a>
+                <a class="btn dash-btn-quiet" href="{{ route('admin.customers.index') }}">All Customers</a>
             </div>
 
             @if ($members->isEmpty())
@@ -35,7 +35,7 @@
                 </section>
             @else
                 <section class="panel">
-                    <h2>Franchise members</h2>
+                    <h2>Franchise Members</h2>
                     <p class="text-secondary">These accounts can be entered as a franchise sponsor ID. An approved order credits them 10% of the order BV.</p>
 
                     <div class="table-responsive">

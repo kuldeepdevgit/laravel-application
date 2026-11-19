@@ -146,6 +146,8 @@ class AdminTest extends TestCase
             ->assertSee('superadmin@software.com')
             ->assertSee('Super Admin')
             ->assertSee('Customer Management')
+            ->assertSee('All Customers')
+            ->assertSee('Franchise Members')
             ->assertSee('Franchise Members')
             ->assertSee('Open franchise members')
             ->assertSee('Category')

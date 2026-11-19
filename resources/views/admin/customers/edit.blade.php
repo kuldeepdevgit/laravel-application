@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="cat-page">
-        <p class="mb-3"><a class="cat-back" href="{{ route('admin.customers.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Customer Management</a></p>
+        <p class="mb-3"><a class="cat-back" href="{{ route('admin.customers.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> All Customers</a></p>
 
         <form method="POST" action="{{ route('admin.customers.update', $customer) }}">
             @csrf
