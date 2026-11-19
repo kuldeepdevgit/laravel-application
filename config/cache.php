@@ -17,6 +17,8 @@ return [
 
     'default' => env('CACHE_STORE', 'database'),
 
+    'franchise_income_store' => env('FRANCHISE_INCOME_CACHE_STORE', 'redis'),
+
     /*
     |--------------------------------------------------------------------------
     | Cache Stores

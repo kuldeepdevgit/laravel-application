@@ -16,6 +16,12 @@
         </div>
         <div class="col-sm-6 col-xl-3">
             <article class="stat-card">
+                <span>Franchise members</span>
+                <strong>{{ $franchiseCount }}</strong>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="stat-card">
                 <span>Products</span>
                 <strong>{{ $productCount }}</strong>
             </article>
@@ -58,6 +64,13 @@
                 <h2>Customer Management</h2>
                 <p class="text-secondary">See every account, edit details, or sign in as that customer.</p>
                 <a class="btn dash-btn" href="{{ route('admin.customers.index') }}">Open customers</a>
+            </section>
+        </div>
+        <div class="col-lg-3">
+            <section class="panel h-100">
+                <h2>Franchise Members</h2>
+                <p class="text-secondary">See every franchise member. Their user ID can be entered as a franchise sponsor ID.</p>
+                <a class="btn dash-btn" href="{{ route('admin.franchises.index') }}">Open franchise members</a>
             </section>
         </div>
         <div class="col-lg-3">

@@ -11,6 +11,10 @@
         <i class="bi bi-people" aria-hidden="true"></i>
         <span>Customer Management</span>
     </a>
+    <a class="dash-item @if (request()->routeIs('admin.franchises.*')) is-active @endif" href="{{ route('admin.franchises.index') }}" @if (request()->routeIs('admin.franchises.*')) aria-current="page" @endif>
+        <i class="bi bi-shop" aria-hidden="true"></i>
+        <span>Franchise Members</span>
+    </a>
     <a class="dash-item @if (request()->routeIs('admin.categories.*')) is-active @endif" href="{{ route('admin.categories.index') }}" @if (request()->routeIs('admin.categories.*')) aria-current="page" @endif>
         <i class="bi bi-grid" aria-hidden="true"></i>
         <span>Category</span>

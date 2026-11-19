@@ -20,7 +20,7 @@ class FranchiseIncomeTest extends TestCase
             'name' => 'Asha Rao',
             'user_name' => 'GSI200001',
         ]);
-        $sponsor = User::factory()->create([
+        $sponsor = User::factory()->franchise()->create([
             'name' => 'Franchise Sponsor',
             'user_name' => 'GSI100001',
         ]);
@@ -123,6 +123,27 @@ class FranchiseIncomeTest extends TestCase
         $this->assertSame('confirmed', $unknown->fresh()->status);
         $this->assertSame('confirmed', $zeroBv->fresh()->status);
         $this->assertSame('confirmed', $unpaid->fresh()->status);
+    }
+
+    public function test_approving_an_order_does_not_credit_a_member_who_is_not_a_franchise(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $buyer = User::factory()->create();
+        User::factory()->create(['user_name' => 'GSI100001']);
+        $order = Order::factory()->for($buyer)->create([
+            'status' => 'pending',
+            'total_bv' => 1600,
+        ]);
+        OrderPayment::factory()->for($order)->for($buyer)->create([
+            'franchise_sponsor_id' => 'GSI100001',
+        ]);
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'confirmed'])
+            ->assertRedirect();
+
+        $this->assertSame(0, Income::query()->count());
+        $this->assertSame('confirmed', $order->fresh()->status);
     }
 
     public function test_the_franchise_sponsor_sees_franchise_income_first_in_the_income_report(): void

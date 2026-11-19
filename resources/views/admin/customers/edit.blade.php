@@ -139,5 +139,22 @@
                 <button class="btn dash-btn" type="submit">Save customer</button>
             </section>
         </form>
+
+        @unless ($customer->isSuperAdmin())
+            <section class="panel mt-3">
+                <h2>Franchise</h2>
+                <p class="text-secondary">
+                    @if ($customer->isFranchise())
+                        {{ $customer->name }} is a franchise member. Buyers can enter {{ $customer->user_name }} as the franchise sponsor ID.
+                    @else
+                        Make {{ $customer->name }} a franchise member so buyers can enter {{ $customer->user_name }} as the franchise sponsor ID.
+                    @endif
+                </p>
+                <form method="POST" action="{{ route('admin.customers.franchise', $customer) }}">
+                    @csrf
+                    <button class="btn dash-btn" type="submit">{{ $customer->isFranchise() ? 'Remove franchise' : 'Make franchise' }}</button>
+                </form>
+            </section>
+        @endunless
     </div>
 @endsection

@@ -36,6 +36,48 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function franchises(Request $request): View
+    {
+        $search = trim($request->string('q')->toString());
+        $members = User::query()
+            ->where('is_franchise', true)
+            ->when($search !== '', function ($query) use ($search): void {
+                $like = '%'.addcslashes($search, '%_\\').'%';
+                $query->where(function ($inner) use ($like): void {
+                    $inner->where('name', 'like', $like)
+                        ->orWhere('user_name', 'like', $like)
+                        ->orWhere('email', 'like', $like)
+                        ->orWhere('phone_number', 'like', $like)
+                        ->orWhere('sponsor_name', 'like', $like);
+                });
+            })
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.franchises.index', [
+            'members' => $members,
+            'search' => $search,
+            'total' => User::query()->where('is_franchise', true)->count(),
+        ]);
+    }
+
+    public function toggleFranchise(User $user): RedirectResponse
+    {
+        abort_if($user->isSuperAdmin(), 403);
+
+        $user->update([
+            'is_franchise' => ! $user->isFranchise(),
+        ]);
+
+        return back()->with(
+            'status',
+            $user->isFranchise()
+                ? $user->name.' is now a franchise member.'
+                : $user->name.' is no longer a franchise member.',
+        );
+    }
+
     public function edit(User $user): View
     {
         return view('admin.customers.edit', [

@@ -20,16 +20,16 @@
                 @foreach ($franchiseIncomes as $income)
                     <tr>
                         <td>{{ $franchiseIncomes->firstItem() + $loop->index }}</td>
-                        <td>{{ $income->created_at?->format('M j, Y g:i A') ?: '—' }}</td>
-                        <td>{{ $income->order?->number ?: '—' }}</td>
+                        <td>{{ $income->createdAt ?: '—' }}</td>
+                        <td>{{ $income->orderNumber ?: '—' }}</td>
                         <td>
-                            {{ $income->order?->name ?: ($income->fromUser?->name ?: '—') }}
-                            @if (filled($income->fromUser?->user_name))
-                                <div class="text-secondary">{{ $income->fromUser->user_name }}</div>
+                            {{ $income->customerName ?: '—' }}
+                            @if (filled($income->customerUserName))
+                                <div class="text-secondary">{{ $income->customerUserName }}</div>
                             @endif
                         </td>
-                        <td>{{ $income->formattedOrderBv() }}</td>
-                        <td>{{ $income->formattedAmount() }} <span class="text-secondary">({{ $income->formattedPercent() }})</span></td>
+                        <td>{{ $income->orderBv }}</td>
+                        <td>{{ $income->amount }} <span class="text-secondary">({{ $income->percent }})</span></td>
                         <td>—</td>
                     </tr>
                 @endforeach

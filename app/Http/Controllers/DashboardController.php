@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Income;
 use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Models\Package;
 use App\Models\Template;
 use App\Models\User;
 use App\Models\WalletEntry;
+use App\Services\FranchiseIncomeCache;
+use App\Services\FranchiseIncomeRow;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -39,7 +40,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function section(Request $request, string $section): View
+    public function section(Request $request, string $section, FranchiseIncomeCache $franchiseIncomeCache): View
     {
         $pages = [
             'ref-link' => ['Ref Link', 'Share this link so new members join under your account.'],
@@ -90,13 +91,11 @@ class DashboardController extends Controller
             'my-downline-team' => $user->downlineMembers(),
             default => null,
         };
-        $franchiseIncomes = $section === 'franchise-income-history'
-            ? $user->incomes()
-                ->where('type', Income::TYPE_FRANCHISE)
-                ->with(['order', 'fromUser'])
-                ->latest('id')
-                ->paginate(15)
-                ->withQueryString()
+        $franchiseRows = $section === 'franchise-income-history'
+            ? $franchiseIncomeCache->forUser((int) $user->getKey())
+            : null;
+        $franchiseIncomes = $franchiseRows instanceof \Illuminate\Support\Collection
+            ? $franchiseIncomeCache->paginate($franchiseRows, $request)
             : null;
         $walletEntries = $section === 'wallet'
             ? $user->walletEntries()
@@ -125,8 +124,8 @@ class DashboardController extends Controller
             'orderSearch' => $history['orderSearch'],
             'orderTotal' => $history['orderTotal'],
             'franchiseIncomes' => $franchiseIncomes,
-            'franchiseIncomeTotal' => $franchiseIncomes instanceof LengthAwarePaginator
-                ? round((float) $user->incomes()->where('type', Income::TYPE_FRANCHISE)->sum('amount'), 2)
+            'franchiseIncomeTotal' => $franchiseRows instanceof \Illuminate\Support\Collection
+                ? round((float) $franchiseRows->sum(fn (FranchiseIncomeRow $row): float => $row->amountValue), 2)
                 : null,
             'walletEntries' => $walletEntries,
             'walletBalance' => $walletCreditTotal === null || $walletDebitTotal === null
@@ -171,7 +170,7 @@ class DashboardController extends Controller
                     'string',
                     'max:64',
                     function (string $attribute, mixed $value, \Closure $fail): void {
-                        if (! User::isValidSponsor((string) $value)) {
+                        if (! User::isValidFranchise((string) $value)) {
                             $fail('Enter a valid franchise sponsor ID.');
                         }
                     },
@@ -214,7 +213,7 @@ class DashboardController extends Controller
             $screenshot = OrderPayment::storeImage($request->file('screenshot'));
         }
 
-        $sponsor = User::findSponsor($data['franchise_sponsor_id']);
+        $sponsor = User::findFranchise($data['franchise_sponsor_id']);
 
         $order->payment()->updateOrCreate(
             ['order_id' => $order->id],

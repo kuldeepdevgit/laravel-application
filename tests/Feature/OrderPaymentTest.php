@@ -41,7 +41,7 @@ class OrderPaymentTest extends TestCase
     public function test_a_member_can_upload_payment_for_their_order(): void
     {
         $admin = User::factory()->superAdmin()->create();
-        User::factory()->create([
+        User::factory()->franchise()->create([
             'name' => 'Franchise Sponsor',
             'user_name' => 'GSI6185588',
         ]);
@@ -115,7 +115,7 @@ class OrderPaymentTest extends TestCase
 
     public function test_a_replacement_screenshot_replaces_the_saved_file(): void
     {
-        User::factory()->create(['user_name' => 'GSI100001']);
+        User::factory()->franchise()->create(['user_name' => 'GSI100001']);
         $member = User::factory()->create();
         $order = Order::factory()->for($member)->create();
         $previous = OrderPayment::storeImage(UploadedFile::fake()->image('first.jpg', 200, 200));
@@ -198,5 +198,29 @@ class OrderPaymentTest extends TestCase
             ->assertNotFound();
 
         $this->assertSame(0, OrderPayment::query()->count());
+    }
+
+    public function test_payment_upload_rejects_a_member_who_is_not_a_franchise(): void
+    {
+        User::factory()->create([
+            'user_name' => 'GSI2000002',
+        ]);
+        $member = User::factory()->create();
+        $order = Order::factory()->for($member)->create();
+
+        $this->actingAs($member)
+            ->from('/dashboard/order-history')
+            ->post('/dashboard/orders/'.$order->id.'/payment', [
+                'franchise_sponsor_id' => 'GSI2000002',
+                'amount' => '15',
+                'screenshot' => UploadedFile::fake()->image('proof.jpg'),
+                'pay_mode' => 'cash',
+            ])
+            ->assertRedirect('/dashboard/order-history')
+            ->assertSessionHasErrors([
+                'franchise_sponsor_id' => 'Enter a valid franchise sponsor ID.',
+            ]);
+
+        $this->assertNull($order->refresh()->payment);
     }
 }

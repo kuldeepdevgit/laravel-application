@@ -20,6 +20,7 @@ class AdminController extends Controller
             'companyCount' => Company::query()->count(),
             'bannerCount' => Banner::query()->count(),
             'customerCount' => User::query()->count(),
+            'franchiseCount' => User::query()->where('is_franchise', true)->count(),
             'orderCount' => Order::query()->count(),
         ]);
     }

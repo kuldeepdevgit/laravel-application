@@ -23,6 +23,7 @@
                     <input class="form-control" id="q" name="q" type="search" value="{{ $search }}" placeholder="Search name, user name, email, or phone" autocomplete="off">
                     <button class="btn dash-btn" type="submit">Search</button>
                 </form>
+                <a class="btn dash-btn-quiet" href="{{ route('admin.franchises.index') }}">Franchise members</a>
             </div>
 
             @if ($customers->isEmpty())
@@ -34,7 +35,7 @@
             @else
                 <section class="panel">
                     <h2>Customers</h2>
-                    <p class="text-secondary">Every account is listed here. Edit a customer, or sign in as that customer.</p>
+                    <p class="text-secondary">Every account is listed here. Edit a customer, make them a franchise member, or sign in as that customer.</p>
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle mb-0 team-table customer-table">
@@ -48,6 +49,7 @@
                                     <th scope="col">Sponsor</th>
                                     <th scope="col">Position</th>
                                     <th scope="col">Role</th>
+                                    <th scope="col">Franchise</th>
                                     <th scope="col">Joined</th>
                                     <th scope="col">User paid</th>
                                     <th scope="col">Activation date</th>
@@ -71,6 +73,7 @@
                                                 default => 'Customer',
                                             } }}
                                         </td>
+                                        <td>{{ $customer->isFranchise() ? 'Franchise' : '—' }}</td>
                                         <td>{{ $customer->created_at?->format('M j, Y') ?: '—' }}</td>
                                         <td>{{ $customer->isPaid() ? 'Paid' : 'Unpaid' }}</td>
                                         <td>{{ $customer->activation_date?->format('M j, Y') ?: '—' }}</td>
@@ -78,6 +81,10 @@
                                             <div class="email-actions">
                                                 <a class="btn cat-action" href="{{ route('admin.customers.edit', $customer) }}">Edit</a>
                                                 @unless ($customer->isSuperAdmin())
+                                                    <form method="POST" action="{{ route('admin.customers.franchise', $customer) }}">
+                                                        @csrf
+                                                        <button class="btn cat-action" type="submit">{{ $customer->isFranchise() ? 'Remove franchise' : 'Make franchise' }}</button>
+                                                    </form>
                                                     <form method="POST" action="{{ route('admin.customers.login', $customer) }}">
                                                         @csrf
                                                         <button class="btn cat-action" type="submit">Auto login</button>

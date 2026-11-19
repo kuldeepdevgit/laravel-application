@@ -50,28 +50,28 @@
                                 @foreach ($incomes as $income)
                                     <tr>
                                         <td>{{ $incomes->firstItem() + $loop->index }}</td>
-                                        <td>{{ $income->created_at?->format('M j, Y g:i A') ?: '—' }}</td>
+                                        <td>{{ $income->createdAt ?: '—' }}</td>
                                         <td>
-                                            @if ($income->order)
-                                                <a href="{{ route('admin.orders.show', $income->order) }}">{{ $income->order->number }}</a>
+                                            @if ($income->orderId && filled($income->orderNumber))
+                                                <a href="{{ route('admin.orders.show', $income->orderId) }}">{{ $income->orderNumber }}</a>
                                             @else
-                                                —
+                                                {{ $income->orderNumber ?: '—' }}
                                             @endif
                                         </td>
                                         <td>
-                                            {{ $income->order?->name ?: ($income->fromUser?->name ?: '—') }}
-                                            @if (filled($income->fromUser?->user_name))
-                                                <div class="text-secondary">{{ $income->fromUser->user_name }}</div>
+                                            {{ $income->customerName ?: '—' }}
+                                            @if (filled($income->customerUserName))
+                                                <div class="text-secondary">{{ $income->customerUserName }}</div>
                                             @endif
                                         </td>
                                         <td>
-                                            {{ $income->user?->name ?: '—' }}
-                                            @if (filled($income->user?->user_name))
-                                                <div class="text-secondary">{{ $income->user->user_name }}</div>
+                                            {{ $income->sponsorName ?: '—' }}
+                                            @if (filled($income->sponsorUserName))
+                                                <div class="text-secondary">{{ $income->sponsorUserName }}</div>
                                             @endif
                                         </td>
-                                        <td>{{ $income->formattedOrderBv() }}</td>
-                                        <td>{{ $income->formattedAmount() }} <span class="text-secondary">({{ $income->formattedPercent() }})</span></td>
+                                        <td>{{ $income->orderBv }}</td>
+                                        <td>{{ $income->amount }} <span class="text-secondary">({{ $income->percent }})</span></td>
                                         <td>—</td>
                                     </tr>
                                 @endforeach

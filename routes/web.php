@@ -43,6 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('super-admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/franchises', [CustomerController::class, 'franchises'])->name('franchises.index');
+        Route::post('/customers/{user}/franchise', [CustomerController::class, 'toggleFranchise'])->name('customers.franchise');
         Route::get('/customers/{user}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
         Route::put('/customers/{user}', [CustomerController::class, 'update'])->name('customers.update');
         Route::post('/customers/{user}/login', [CustomerController::class, 'login'])->name('customers.login');

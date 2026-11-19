@@ -22,7 +22,7 @@ class WalletTest extends TestCase
             'name' => 'Asha Rao',
             'user_name' => 'GSI200001',
         ]);
-        $sponsor = User::factory()->create([
+        $sponsor = User::factory()->franchise()->create([
             'name' => 'Franchise Sponsor',
             'user_name' => 'GSI100001',
         ]);

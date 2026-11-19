@@ -2,42 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Income;
+use App\Services\FranchiseIncomeCache;
+use App\Services\FranchiseIncomeRow;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class IncomeController extends Controller
 {
-    public function franchise(Request $request): View
+    public function franchise(Request $request, FranchiseIncomeCache $cache): View
     {
         $search = trim($request->string('q')->toString());
-        $franchise = Income::query()->where('type', Income::TYPE_FRANCHISE);
-        $incomes = (clone $franchise)
-            ->with(['user', 'order', 'fromUser'])
-            ->when($search !== '', function ($query) use ($search): void {
-                $like = '%'.addcslashes($search, '%_\\').'%';
-                $query->where(function ($inner) use ($like): void {
-                    $inner->whereHas('order', function ($orders) use ($like): void {
-                        $orders->where('number', 'like', $like)
-                            ->orWhere('name', 'like', $like);
-                    })->orWhereHas('user', function ($users) use ($like): void {
-                        $users->where('name', 'like', $like)
-                            ->orWhere('user_name', 'like', $like);
-                    })->orWhereHas('fromUser', function ($customers) use ($like): void {
-                        $customers->where('name', 'like', $like)
-                            ->orWhere('user_name', 'like', $like);
-                    });
-                });
-            })
-            ->latest('id')
-            ->paginate(15)
-            ->withQueryString();
+        $all = $cache->all();
+        $filtered = $cache->matching($all, $search);
 
         return view('admin.incomes.franchise', [
-            'incomes' => $incomes,
+            'incomes' => $cache->paginate($filtered, $request),
             'search' => $search,
-            'total' => (clone $franchise)->count(),
-            'totalAmount' => round((float) (clone $franchise)->sum('amount'), 2),
+            'total' => $all->count(),
+            'totalAmount' => round((float) $all->sum(fn (FranchiseIncomeRow $row): float => $row->amountValue), 2),
         ]);
     }
 }

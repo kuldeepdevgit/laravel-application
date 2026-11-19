@@ -18,12 +18,15 @@ class CustomerTest extends TestCase
 
         $this->assertTrue($columns->contains(fn (array $indexed): bool => $indexed === ['user_paid']));
         $this->assertTrue($columns->contains(fn (array $indexed): bool => $indexed === ['activation_date']));
+        $this->assertTrue($columns->contains(fn (array $indexed): bool => $indexed === ['is_franchise']));
     }
 
     public function test_guests_are_sent_to_login(): void
     {
         $this->get('/admin/customers')->assertRedirect('/login');
+        $this->get('/admin/franchises')->assertRedirect('/login');
         $this->post('/admin/customers/1/login')->assertRedirect('/login');
+        $this->post('/admin/customers/1/franchise')->assertRedirect('/login');
         $this->post('/impersonation/stop')->assertRedirect('/login');
     }
 
@@ -51,6 +54,14 @@ class CustomerTest extends TestCase
 
         $this->actingAs($member)
             ->post('/admin/customers/'.$other->id.'/login')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/franchises')
+            ->assertForbidden();
+
+        $this->actingAs($member)
+            ->post('/admin/customers/'.$other->id.'/franchise')
             ->assertForbidden();
     }
 
@@ -85,9 +96,13 @@ class CustomerTest extends TestCase
             ->assertSee('Unpaid')
             ->assertSee('Mar 4, 2026')
             ->assertSee('Edit')
+            ->assertSee('Make franchise')
+            ->assertSee('Franchise members')
             ->assertSee('Auto login')
             ->assertSee(route('admin.customers.login', $member), false)
+            ->assertSee(route('admin.customers.franchise', $member), false)
             ->assertDontSee(route('admin.customers.login', $admin), false)
+            ->assertDontSee(route('admin.customers.franchise', $admin), false)
             ->assertDontSee('Manage Profile')
             ->assertDontSee('Ref Link');
     }
@@ -293,5 +308,119 @@ class CustomerTest extends TestCase
             ->assertForbidden();
 
         $this->assertAuthenticatedAs($member);
+    }
+
+    public function test_the_super_admin_can_make_and_remove_a_franchise_member(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $member = User::factory()->create([
+            'name' => 'Asha Patel',
+            'user_name' => 'GSI2000002',
+            'email' => 'asha@example.com',
+            'phone_number' => '9876543210',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/customers/'.$member->id.'/edit')
+            ->assertOk()
+            ->assertSee('Make franchise')
+            ->assertSee('GSI2000002');
+
+        $this->actingAs($admin)
+            ->from('/admin/customers')
+            ->post('/admin/customers/'.$member->id.'/franchise')
+            ->assertRedirect('/admin/customers')
+            ->assertSessionHas('status', 'Asha Patel is now a franchise member.');
+
+        $this->assertTrue($member->refresh()->isFranchise());
+
+        $this->actingAs($admin)
+            ->put('/admin/customers/'.$member->id, [
+                'name' => 'Asha Patel',
+                'user_name' => 'GSI2000002',
+                'email' => 'asha@example.com',
+                'phone_number' => '9876543210',
+            ])
+            ->assertRedirect('/admin/customers');
+
+        $this->assertTrue($member->refresh()->isFranchise());
+
+        $this->actingAs($admin)
+            ->get('/admin/franchises')
+            ->assertOk()
+            ->assertSee('Franchise Members')
+            ->assertSee('Asha Patel')
+            ->assertSee('GSI2000002')
+            ->assertSee('asha@example.com')
+            ->assertSee('9876543210')
+            ->assertSee('Remove franchise')
+            ->assertSee(route('admin.customers.franchise', $member), false);
+
+        $this->actingAs($admin)
+            ->from('/admin/franchises')
+            ->post('/admin/customers/'.$member->id.'/franchise')
+            ->assertRedirect('/admin/franchises')
+            ->assertSessionHas('status', 'Asha Patel is no longer a franchise member.');
+
+        $this->assertFalse($member->refresh()->isFranchise());
+
+        $this->actingAs($admin)
+            ->get('/admin/franchises')
+            ->assertOk()
+            ->assertSee('No franchise members yet')
+            ->assertSee('Asha Patel is no longer a franchise member.')
+            ->assertDontSee('GSI2000002');
+    }
+
+    public function test_franchise_member_search_lists_only_franchise_members(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        User::factory()->franchise()->create([
+            'name' => 'Asha Patel',
+            'user_name' => 'GSI2000002',
+        ]);
+        User::factory()->franchise()->create([
+            'name' => 'Rohan Das',
+            'user_name' => 'GSI2000003',
+        ]);
+        User::factory()->create([
+            'name' => 'Meera Shah',
+            'user_name' => 'GSI2000004',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/franchises')
+            ->assertOk()
+            ->assertSee('Asha Patel')
+            ->assertSee('Rohan Das')
+            ->assertDontSee('Meera Shah');
+
+        $this->actingAs($admin)
+            ->get('/admin/franchises?q=Asha')
+            ->assertOk()
+            ->assertSee('Asha Patel')
+            ->assertDontSee('Rohan Das');
+
+        $this->actingAs($admin)
+            ->get('/admin/franchises?q=nobody-here')
+            ->assertOk()
+            ->assertSee('No matches')
+            ->assertDontSee('Rohan Das');
+    }
+
+    public function test_the_super_admin_cannot_be_made_a_franchise_member(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+
+        $this->actingAs($admin)
+            ->get('/admin/customers/'.$admin->id.'/edit')
+            ->assertOk()
+            ->assertDontSee('Make franchise');
+
+        $this->actingAs($admin)
+            ->post('/admin/customers/'.$admin->id.'/franchise')
+            ->assertForbidden();
+
+        $this->assertFalse($admin->refresh()->isFranchise());
     }
 }

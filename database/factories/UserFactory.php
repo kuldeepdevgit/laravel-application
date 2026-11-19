@@ -47,6 +47,13 @@ class UserFactory extends Factory
         ]);
     }
 
+    public function franchise(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_franchise' => true,
+        ]);
+    }
+
     /**
      * The seeded super admin: id 1, superadmin@software.com, role super_admin.
      */

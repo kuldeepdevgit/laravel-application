@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\FranchiseIncomeCache;
 use Database\Factories\IncomeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class Income extends Model
 {
@@ -67,7 +69,7 @@ class Income extends Model
             return null;
         }
 
-        $sponsor = User::findSponsor($sponsorKey);
+        $sponsor = User::findFranchise($sponsorKey);
 
         if (! $sponsor instanceof User) {
             return null;
@@ -91,6 +93,13 @@ class Income extends Model
         ]);
 
         WalletEntry::creditFromIncome($income);
+
+        $cache = app(FranchiseIncomeCache::class);
+        $cache->refresh();
+
+        DB::afterRollBack(function () use ($cache): void {
+            $cache->forget();
+        });
 
         return $income;
     }

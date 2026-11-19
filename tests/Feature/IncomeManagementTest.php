@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Income;
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class IncomeManagementTest extends TestCase
@@ -122,5 +124,97 @@ class IncomeManagementTest extends TestCase
             ->assertSee('No matches')
             ->assertSee('Nothing matches “Missing”')
             ->assertDontSee('NB-500005');
+    }
+
+    public function test_franchise_income_is_read_from_cache_until_a_new_credit_updates_it(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $buyer = User::factory()->create([
+            'name' => 'Asha Rao',
+            'user_name' => 'GSI200001',
+        ]);
+        $sponsor = User::factory()->franchise()->create([
+            'name' => 'Franchise Sponsor',
+            'user_name' => 'GSI100001',
+        ]);
+        $order = Order::factory()->for($buyer)->create([
+            'number' => 'NB-500005',
+            'name' => 'Asha Rao',
+            'status' => 'pending',
+            'total_bv' => 1600,
+        ]);
+        OrderPayment::factory()->for($order)->for($buyer)->create([
+            'franchise_sponsor_id' => 'GSI100001',
+        ]);
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$order->id.'/status', ['status' => 'confirmed'])
+            ->assertRedirect();
+
+        $queries = [];
+        $recording = false;
+        DB::listen(function (object $query) use (&$recording, &$queries): void {
+            if ($recording) {
+                $queries[] = $query->sql;
+            }
+        });
+
+        $recording = true;
+
+        $this->actingAs($admin)
+            ->get('/admin/incomes/franchise')
+            ->assertOk()
+            ->assertSee('NB-500005')
+            ->assertSee('GSI200001');
+
+        $this->actingAs($sponsor)
+            ->get('/dashboard/franchise-income-history')
+            ->assertOk()
+            ->assertSee('NB-500005')
+            ->assertSee('GSI200001');
+
+        $recording = false;
+
+        $this->assertSame([], $this->incomeQueries($queries));
+
+        $second = Order::factory()->for($buyer)->create([
+            'number' => 'NB-800008',
+            'name' => 'Asha Rao',
+            'status' => 'pending',
+            'total_bv' => 500,
+        ]);
+        OrderPayment::factory()->for($second)->for($buyer)->create([
+            'franchise_sponsor_id' => 'GSI100001',
+        ]);
+
+        $this->actingAs($admin)
+            ->patch('/admin/orders/'.$second->id.'/status', ['status' => 'confirmed'])
+            ->assertRedirect();
+
+        $queries = [];
+        $recording = true;
+
+        $this->actingAs($admin)
+            ->get('/admin/incomes/franchise')
+            ->assertOk()
+            ->assertSee('NB-500005')
+            ->assertSee('NB-800008')
+            ->assertSee('₹210.00');
+
+        $recording = false;
+
+        $this->assertSame([], $this->incomeQueries($queries));
+    }
+
+    /**
+     * @param  list<string>  $queries
+     * @return list<string>
+     */
+    private function incomeQueries(array $queries): array
+    {
+        return array_values(array_filter(
+            $queries,
+            fn (string $sql): bool => str_contains($sql, 'incomes'),
+        ));
     }
 }

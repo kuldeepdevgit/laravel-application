@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'sponsor_name', 'position', 'user_name', 'user_role', 'email', 'phone_number', 'address', 'city', 'state', 'zip_code', 'usdt_bep20', 'bank_name', 'account_name', 'account_number', 'ifsc_code', 'google_pay', 'phonepe', 'user_paid', 'activation_date', 'password'])]
+#[Fillable(['name', 'sponsor_name', 'position', 'user_name', 'user_role', 'is_franchise', 'email', 'phone_number', 'address', 'city', 'state', 'zip_code', 'usdt_bep20', 'bank_name', 'account_name', 'account_number', 'ifsc_code', 'google_pay', 'phonepe', 'user_paid', 'activation_date', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -36,6 +36,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'activation_date' => 'date',
+            'is_franchise' => 'boolean',
             'password' => 'hashed',
         ];
     }
@@ -43,6 +44,11 @@ class User extends Authenticatable
     public function isPaid(): bool
     {
         return $this->user_paid === self::PAID;
+    }
+
+    public function isFranchise(): bool
+    {
+        return (bool) $this->is_franchise;
     }
 
     /**
@@ -76,6 +82,22 @@ class User extends Authenticatable
     public static function isValidSponsor(string $sponsorName): bool
     {
         return static::findSponsor($sponsorName) instanceof self;
+    }
+
+    public static function isValidFranchise(string $sponsorName): bool
+    {
+        return static::findFranchise($sponsorName) instanceof self;
+    }
+
+    public static function findFranchise(string $sponsorName): ?self
+    {
+        $sponsor = static::findSponsor($sponsorName);
+
+        if (! $sponsor instanceof self || ! $sponsor->isFranchise()) {
+            return null;
+        }
+
+        return $sponsor;
     }
 
     public static function findSponsor(string $sponsorName): ?self
