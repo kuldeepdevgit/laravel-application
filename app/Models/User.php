@@ -214,6 +214,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Level income credited to this member.
+     *
+     * @return HasMany<LevelIncomeHistory, $this>
+     */
+    public function levelIncomeHistories(): HasMany
+    {
+        return $this->hasMany(LevelIncomeHistory::class);
+    }
+
+    /**
      * @return HasMany<WalletEntry, $this>
      */
     public function walletEntries(): HasMany

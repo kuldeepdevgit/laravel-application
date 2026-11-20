@@ -424,12 +424,16 @@ class DashboardTest extends TestCase
             'user_name' => 'GSI2000001',
             'phone_number' => '9876543210',
             'sponsor_name' => 'Avery Chen',
+            'user_paid' => User::UNPAID,
+            'activation_date' => null,
         ]);
         $byUsername = User::factory()->create([
             'name' => 'Noah Patel',
             'user_name' => 'GSI2000002',
             'phone_number' => '9123456789',
             'sponsor_name' => 'gsi6185588',
+            'user_paid' => User::PAID,
+            'activation_date' => '2026-03-04',
         ]);
         User::factory()->create([
             'name' => 'Someone Else',
@@ -448,13 +452,8 @@ class DashboardTest extends TestCase
             ->assertSee('Join Date')
             ->assertSee('Activation Date')
             ->assertSee('Self+Team RV')
-            ->assertSee('Riley Shaw')
-            ->assertSee('GSI2000001')
-            ->assertSee('9876543210')
-            ->assertSee('Noah Patel')
-            ->assertSee('GSI2000002')
-            ->assertSee('9123456789')
-            ->assertSee($byName->created_at->format('M j, Y'))
+            ->assertSeeInOrder(['Riley Shaw', 'GSI2000001', '9876543210', 'Inactive', $byName->created_at->format('M j, Y')])
+            ->assertSeeInOrder(['Noah Patel', 'GSI2000002', '9123456789', 'Active', 'Mar 4, 2026'])
             ->assertDontSee('Someone Else')
             ->assertDontSee('Other Sponsor');
 

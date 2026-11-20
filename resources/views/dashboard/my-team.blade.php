@@ -21,9 +21,11 @@
                     <td>{{ $member->user_name ?: '—' }}</td>
                     <td>{{ $member->phone_number ?: '—' }}</td>
                     <td>—</td>
-                    <td>—</td>
+                    <td>
+                        <span class="member-pill {{ $member->isPaid() ? 'is-active' : 'is-inactive' }}">{{ $member->isPaid() ? 'Active' : 'Inactive' }}</span>
+                    </td>
                     <td>{{ $member->created_at?->format('M j, Y') ?: '—' }}</td>
-                    <td>—</td>
+                    <td>{{ $member->activation_date?->format('M j, Y') ?: '—' }}</td>
                     <td>—</td>
                 </tr>
             @endforeach
