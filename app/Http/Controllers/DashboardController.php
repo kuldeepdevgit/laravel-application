@@ -60,6 +60,7 @@ class DashboardController extends Controller
             'fund-wallet' => ['Fund Wallet', 'Your fund wallet will be shown here.'],
             'income-report' => ['Income Report', 'Income recorded on your account will be listed here.'],
             'franchise-income-history' => ['Franchise Income History', 'When an admin approves an order that lists you as the franchise sponsor, you receive 10% of its total BV.'],
+            'matrix-level-income' => ['3x Matrix Level Income', 'Income is paid on two levels. Level 1 has 3 seats under you. Level 2 has 3 seats under each of those, 9 in all.'],
             'wallet' => ['Wallet', 'Credits and debits on your wallet are listed here. Franchise income is added as a credit.'],
             'self-roi-income' => ['Self ROI Income', 'Your self ROI income will be listed here.'],
             'level-income-history' => ['Level Income History', 'Your level income history will be listed here.'],

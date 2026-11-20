@@ -36,6 +36,7 @@
             'icon' => 'bi-graph-up-arrow',
             'items' => [
                 ['label' => 'Franchise Income History', 'section' => 'franchise-income-history', 'icon' => 'bi-percent'],
+                ['label' => '3x Matrix Level Income', 'section' => 'matrix-level-income', 'icon' => 'bi-grid-3x3-gap'],
                 ['label' => 'Wallet', 'section' => 'wallet', 'icon' => 'bi-wallet2'],
                 ['label' => 'Self ROI Income', 'section' => 'self-roi-income', 'icon' => 'bi-pie-chart'],
                 ['label' => 'Level Income History', 'section' => 'level-income-history', 'icon' => 'bi-clock-history'],

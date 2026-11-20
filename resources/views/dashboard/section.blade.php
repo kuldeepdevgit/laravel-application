@@ -41,6 +41,12 @@
             <p class="text-secondary">{{ $intro }}</p>
             @include('dashboard.franchise-income')
         </section>
+    @elseif ($section === 'matrix-level-income')
+        <section class="panel">
+            <h2>{{ $heading }}</h2>
+            <p class="text-secondary">{{ $intro }}</p>
+            @include('dashboard.matrix-income')
+        </section>
     @elseif ($section === 'wallet')
         <section class="panel">
             <h2>{{ $heading }}</h2>

@@ -64,7 +64,8 @@ class DashboardTest extends TestCase
             ->assertSee('Fund Wallet')
             ->assertSee('Income Report')
             ->assertSee('Franchise Income History')
-            ->assertSeeInOrder(['Franchise Income History', 'Wallet', 'Self ROI Income'])
+            ->assertSee('3x Matrix Level Income')
+            ->assertSeeInOrder(['Franchise Income History', '3x Matrix Level Income', 'Wallet', 'Self ROI Income'])
             ->assertSee('Level Income History')
             ->assertSee('Level ROI Income History')
             ->assertSee('Booster Income')
@@ -268,7 +269,8 @@ class DashboardTest extends TestCase
             ->get('/dashboard/salary-income')
             ->assertOk()
             ->assertSee('Franchise Income History')
-            ->assertSeeInOrder(['Franchise Income History', 'Wallet', 'Self ROI Income'])
+            ->assertSee('3x Matrix Level Income')
+            ->assertSeeInOrder(['Franchise Income History', '3x Matrix Level Income', 'Wallet', 'Self ROI Income'])
             ->assertSee('Salary Income');
 
         $this->actingAs($user)
@@ -793,5 +795,33 @@ class DashboardTest extends TestCase
         $this->actingAs($admin)
             ->get('/dashboard/order-history')
             ->assertRedirect('/admin');
+    }
+
+    public function test_matrix_level_income_shows_the_two_level_layout(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Avery Chen',
+            'user_name' => 'GSI2000002',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/dashboard/matrix-level-income')
+            ->assertOk()
+            ->assertSee('3x Matrix Level Income')
+            ->assertSee('Income is paid on two levels')
+            ->assertSee('Avery Chen')
+            ->assertSee('GSI2000002')
+            ->assertSee('Level 1')
+            ->assertSee('Level 2')
+            ->assertSee('3 seats')
+            ->assertSee('9 seats')
+            ->assertSee('Seat 1')
+            ->assertSee('Seat 3')
+            ->assertSee('1.1')
+            ->assertSee('3.3')
+            ->assertSee('No 3x matrix income yet')
+            ->assertSee('₹0.00')
+            ->assertSee('Credit')
+            ->assertSee('Debit');
     }
 }
