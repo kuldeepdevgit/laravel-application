@@ -63,7 +63,7 @@ class DashboardController extends Controller
             'matrix-level-income' => ['3x Matrix Level Income', 'Income is paid on two levels. Level 1 has 3 seats under you. Level 2 has 3 seats under each of those, 9 in all.'],
             'wallet' => ['Wallet', 'Credits and debits on your wallet are listed here. Franchise income is added as a credit.'],
             'self-roi-income' => ['Self ROI Income', 'Your self ROI income will be listed here.'],
-            'level-income-history' => ['Level Income History', 'Your level income history will be listed here.'],
+            'level-income-history' => ['Level Income History', 'When an admin confirms an order, 40% of its total BV is level income. Level 1 and level 2 each receive half of that.'],
             'level-roi-income-history' => ['Level ROI Income History', 'Your level ROI income history will be listed here.'],
             'booster-income' => ['Booster Income', 'Your booster income will be listed here.'],
             'life-time-reward' => ['Life Time Reward', 'Your lifetime rewards will be listed here.'],
@@ -97,6 +97,16 @@ class DashboardController extends Controller
         $franchiseIncomes = $franchiseRows instanceof \Illuminate\Support\Collection
             ? $franchiseIncomeCache->paginate($franchiseRows, $request)
             : null;
+        $levelIncomes = $section === 'level-income-history'
+            ? $user->levelIncomeHistories()
+                ->with(['payUser', 'order'])
+                ->latest('id')
+                ->paginate(15)
+                ->withQueryString()
+            : null;
+        $levelIncomeTotal = $levelIncomes instanceof LengthAwarePaginator
+            ? round((float) $user->levelIncomeHistories()->sum('income'), 2)
+            : null;
         $walletEntries = $section === 'wallet'
             ? $user->walletEntries()
                 ->latest('id')
@@ -127,6 +137,8 @@ class DashboardController extends Controller
             'franchiseIncomeTotal' => $franchiseRows instanceof \Illuminate\Support\Collection
                 ? round((float) $franchiseRows->sum(fn (FranchiseIncomeRow $row): float => $row->amountValue), 2)
                 : null,
+            'levelIncomes' => $levelIncomes,
+            'levelIncomeTotal' => $levelIncomeTotal,
             'walletEntries' => $walletEntries,
             'walletBalance' => $walletCreditTotal === null || $walletDebitTotal === null
                 ? null
