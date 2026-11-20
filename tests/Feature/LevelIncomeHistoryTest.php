@@ -139,6 +139,18 @@ class LevelIncomeHistoryTest extends TestCase
             ->assertSee('Credited')
             ->assertDontSee('Member A');
 
+        $this->actingAs($directUpline)
+            ->get('/dashboard/matrix-level-income')
+            ->assertOk()
+            ->assertSee('Level 1')
+            ->assertSee('Level 2')
+            ->assertSee('₹300.00')
+            ->assertSee('₹0.00')
+            ->assertSee('Member C')
+            ->assertSee('1,500.00')
+            ->assertDontSee('Seat 1')
+            ->assertDontSee('9 seats');
+
         $this->actingAs($firstUpline)
             ->get('/dashboard/level-income-history')
             ->assertOk()

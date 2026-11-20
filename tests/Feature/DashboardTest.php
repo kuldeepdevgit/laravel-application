@@ -823,20 +823,13 @@ class DashboardTest extends TestCase
             ->get('/dashboard/matrix-level-income')
             ->assertOk()
             ->assertSee('3x Matrix Level Income')
-            ->assertSee('Income is paid on two levels')
-            ->assertSee('Avery Chen')
-            ->assertSee('GSI2000002')
+            ->assertSee('This income has two levels')
             ->assertSee('Level 1')
             ->assertSee('Level 2')
-            ->assertSee('3 seats')
-            ->assertSee('9 seats')
-            ->assertSee('Seat 1')
-            ->assertSee('Seat 3')
-            ->assertSee('1.1')
-            ->assertSee('3.3')
-            ->assertSee('No 3x matrix income yet')
+            ->assertSee('No level income yet')
             ->assertSee('₹0.00')
-            ->assertSee('Credit')
-            ->assertSee('Debit');
+            ->assertDontSee('Seat 1')
+            ->assertDontSee('3 seats')
+            ->assertDontSee('9 seats');
     }
 }

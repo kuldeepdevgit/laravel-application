@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LevelIncomeHistory;
 use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Models\Package;
@@ -60,7 +61,7 @@ class DashboardController extends Controller
             'fund-wallet' => ['Fund Wallet', 'Your fund wallet will be shown here.'],
             'income-report' => ['Income Report', 'Income recorded on your account will be listed here.'],
             'franchise-income-history' => ['Franchise Income History', 'When an admin approves an order that lists you as the franchise sponsor, you receive 10% of its total BV.'],
-            'matrix-level-income' => ['3x Matrix Level Income', 'Income is paid on two levels. Level 1 has 3 seats under you. Level 2 has 3 seats under each of those, 9 in all.'],
+            'matrix-level-income' => ['3x Matrix Level Income', 'This income has two levels. 40% of a confirmed order\'s BV is split in half: level 1 and level 2 each receive 20%.'],
             'wallet' => ['Wallet', 'Credits and debits on your wallet are listed here. Franchise income is added as a credit.'],
             'self-roi-income' => ['Self ROI Income', 'Your self ROI income will be listed here.'],
             'level-income-history' => ['Level Income History', 'When an admin confirms an order, 40% of its total BV is level income. Level 1 and level 2 each receive half of that.'],
@@ -97,15 +98,24 @@ class DashboardController extends Controller
         $franchiseIncomes = $franchiseRows instanceof \Illuminate\Support\Collection
             ? $franchiseIncomeCache->paginate($franchiseRows, $request)
             : null;
-        $levelIncomes = $section === 'level-income-history'
+        $levelIncomes = in_array($section, ['level-income-history', 'matrix-level-income'], true)
             ? $user->levelIncomeHistories()
                 ->with(['payUser', 'order'])
+                ->whereIn('level', [LevelIncomeHistory::LEVEL_ONE, LevelIncomeHistory::LEVEL_TWO])
                 ->latest('id')
                 ->paginate(15)
                 ->withQueryString()
             : null;
         $levelIncomeTotal = $levelIncomes instanceof LengthAwarePaginator
-            ? round((float) $user->levelIncomeHistories()->sum('income'), 2)
+            ? round((float) $user->levelIncomeHistories()
+                ->whereIn('level', [LevelIncomeHistory::LEVEL_ONE, LevelIncomeHistory::LEVEL_TWO])
+                ->sum('income'), 2)
+            : null;
+        $levelOneTotal = $section === 'matrix-level-income'
+            ? round((float) $user->levelIncomeHistories()->where('level', LevelIncomeHistory::LEVEL_ONE)->sum('income'), 2)
+            : null;
+        $levelTwoTotal = $section === 'matrix-level-income'
+            ? round((float) $user->levelIncomeHistories()->where('level', LevelIncomeHistory::LEVEL_TWO)->sum('income'), 2)
             : null;
         $walletEntries = $section === 'wallet'
             ? $user->walletEntries()
@@ -139,6 +149,8 @@ class DashboardController extends Controller
                 : null,
             'levelIncomes' => $levelIncomes,
             'levelIncomeTotal' => $levelIncomeTotal,
+            'levelOneTotal' => $levelOneTotal,
+            'levelTwoTotal' => $levelTwoTotal,
             'walletEntries' => $walletEntries,
             'walletBalance' => $walletCreditTotal === null || $walletDebitTotal === null
                 ? null
