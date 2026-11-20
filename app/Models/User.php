@@ -7,6 +7,7 @@ use App\Services\TemplateMailer;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -206,6 +207,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Confirmed order BV for a team-list row.
+     */
+    public function formattedSelfInvestment(): string
+    {
+        return number_format((float) $this->getAttribute('self_investment'), 2);
+    }
+
+    /**
      * @return HasMany<Income, $this>
      */
     public function incomes(): HasMany
@@ -311,6 +320,9 @@ class User extends Authenticatable
         $placeholders = implode(', ', array_fill(0, count($keys), '?'));
 
         return static::query()
+            ->withSum(['orders as self_investment' => function (Builder $query): void {
+                $query->where('status', 'confirmed');
+            }], 'total_bv')
             ->whereRaw('LOWER(sponsor_name) IN ('.$placeholders.')', $keys)
             ->orderBy('id')
             ->get();

@@ -10,7 +10,6 @@
                 <th scope="col">Status</th>
                 <th scope="col">Join Date</th>
                 <th scope="col">Activation Date</th>
-                <th scope="col">Self+Team RV</th>
             </tr>
         </thead>
         <tbody>
@@ -20,13 +19,12 @@
                     <td>{{ $member->name }}</td>
                     <td>{{ $member->user_name ?: '—' }}</td>
                     <td>{{ $member->phone_number ?: '—' }}</td>
-                    <td>—</td>
+                    <td>{{ $member->formattedSelfInvestment() }}</td>
                     <td>
                         <span class="member-pill {{ $member->isPaid() ? 'is-active' : 'is-inactive' }}">{{ $member->isPaid() ? 'Active' : 'Inactive' }}</span>
                     </td>
                     <td>{{ $member->created_at?->format('M j, Y') ?: '—' }}</td>
                     <td>{{ $member->activation_date?->format('M j, Y') ?: '—' }}</td>
-                    <td>—</td>
                 </tr>
             @endforeach
         </tbody>

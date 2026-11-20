@@ -24,7 +24,6 @@
                 <th scope="col">Status</th>
                 <th scope="col">Join Date</th>
                 <th scope="col">Activation Date</th>
-                <th scope="col">Self+Team RV</th>
             </tr>
         </thead>
         <tbody>
@@ -35,15 +34,14 @@
                     <td>{{ $member->name }}</td>
                     <td>{{ $member->user_name ?: '—' }}</td>
                     <td>{{ $member->phone_number ?: '—' }}</td>
-                    <td>—</td>
+                    <td>{{ $member->formattedSelfInvestment() }}</td>
                     <td>—</td>
                     <td>{{ $member->created_at?->format('M j, Y') ?: '—' }}</td>
-                    <td>—</td>
                     <td>—</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10">No members in your downline.</td>
+                    <td colspan="9">No members in your downline.</td>
                 </tr>
             @endforelse
         </tbody>

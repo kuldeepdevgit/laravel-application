@@ -439,6 +439,18 @@ class DashboardTest extends TestCase
             'name' => 'Someone Else',
             'sponsor_name' => 'Other Sponsor',
         ]);
+        Order::factory()->for($byName)->create([
+            'status' => 'rejected',
+            'total_bv' => 2500,
+        ]);
+        Order::factory()->for($byUsername)->create([
+            'status' => 'confirmed',
+            'total_bv' => 1500,
+        ]);
+        Order::factory()->for($byUsername)->create([
+            'status' => 'pending',
+            'total_bv' => 4000,
+        ]);
 
         $this->actingAs($sponsor)
             ->get('/dashboard/my-team')
@@ -451,9 +463,11 @@ class DashboardTest extends TestCase
             ->assertSee('Status')
             ->assertSee('Join Date')
             ->assertSee('Activation Date')
-            ->assertSee('Self+Team RV')
-            ->assertSeeInOrder(['Riley Shaw', 'GSI2000001', '9876543210', 'Inactive', $byName->created_at->format('M j, Y')])
-            ->assertSeeInOrder(['Noah Patel', 'GSI2000002', '9123456789', 'Active', 'Mar 4, 2026'])
+            ->assertDontSee('Self+Team RV')
+            ->assertSeeInOrder(['Riley Shaw', 'GSI2000001', '9876543210', '0.00', 'Inactive', $byName->created_at->format('M j, Y')])
+            ->assertSeeInOrder(['Noah Patel', 'GSI2000002', '9123456789', '1,500.00', 'Active', 'Mar 4, 2026'])
+            ->assertDontSee('4,000.00')
+            ->assertDontSee('2,500.00')
             ->assertDontSee('Someone Else')
             ->assertDontSee('Other Sponsor');
 
@@ -523,6 +537,8 @@ class DashboardTest extends TestCase
             ->assertSee('Riley Shaw')
             ->assertSee('GSI2000001')
             ->assertSee('9876543210')
+            ->assertSee('0.00')
+            ->assertDontSee('Self+Team RV')
             ->assertSee('Noah Patel')
             ->assertSee('Second Branch')
             ->assertSee('Level 10 Member')
