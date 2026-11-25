@@ -18,7 +18,8 @@ class PackageQualificationTest extends TestCase
     {
         $indexes = Schema::getIndexes('users_package_qualification');
 
-        $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['user_id', 'package_id'] && (bool) $index['unique']));
+        $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['user_id'] && ! (bool) $index['unique']));
+        $this->assertFalse(collect($indexes)->contains(fn (array $index): bool => in_array('user_id', $index['columns'], true) && (bool) $index['unique'] && ! (bool) $index['primary']));
         $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['is_qualified']));
         $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['package_id', 'is_qualified']));
     }
