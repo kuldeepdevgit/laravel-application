@@ -20,7 +20,7 @@
 
             <section class="panel">
                 <h2>Details</h2>
-                <p class="text-secondary">Name the package and set its amount and status. Package BV matches the amount.</p>
+                <p class="text-secondary">Name the package and set its amount, the direct selling BV a sponsor's direct members must reach, and its status. Package BV matches the amount.</p>
 
                 <div class="mb-3">
                     <label class="form-label" for="package_name">Package name</label>
@@ -42,6 +42,15 @@
                     <label class="form-label" for="package_bv">Package BV</label>
                     <input class="form-control" id="package_bv" type="text" value="{{ old('package_amount', $package->package_bv ?? $package->package_amount) }}" readonly>
                     <p class="form-text mb-0">Package BV matches the package amount.</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="direct_bv">Direct selling BV</label>
+                    <input class="form-control" id="direct_bv" name="direct_bv" type="number" value="{{ old('direct_bv', $package->direct_bv) }}" min="0" max="99999999.99" step="0.01" required inputmode="decimal">
+                    <p class="form-text mb-0">Used when an admin approves an order. The sponsor must hold this package, and the total confirmed BV of their direct members must reach this amount.</p>
+                    @error('direct_bv')
+                        <p class="text-danger small mb-0">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4">

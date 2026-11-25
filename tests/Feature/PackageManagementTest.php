@@ -58,12 +58,16 @@ class PackageManagementTest extends TestCase
             ->assertSee('List package')
             ->assertSee('Upgrade History')
             ->assertSee('Package BV')
+            ->assertSee('Direct selling BV')
             ->assertSee('SILVER PACKAGE')
             ->assertSee('GOLD PACKAGE')
             ->assertSee('DAIMOND')
             ->assertSee('1,500.00')
             ->assertSee('5,000.00')
             ->assertSee('7,000.00')
+            ->assertSee('4,500.00')
+            ->assertSee('15,000.00')
+            ->assertSee('21,000.00')
             ->assertSee('Add package')
             ->assertDontSee('Manage Profile')
             ->assertDontSee('Ref Link');
@@ -93,12 +97,14 @@ class PackageManagementTest extends TestCase
             ->assertOk()
             ->assertSee('Add package')
             ->assertSee('Package name')
-            ->assertSee('Package amount');
+            ->assertSee('Package amount')
+            ->assertSee('Direct selling BV');
 
         $this->actingAs($admin)
             ->post('/admin/packages', [
                 'package_name' => 'Starter',
                 'package_amount' => '1500',
+                'direct_bv' => '4500',
                 'package_status' => 'active',
             ])
             ->assertRedirect('/admin/packages')
@@ -109,6 +115,7 @@ class PackageManagementTest extends TestCase
         $this->assertNotNull($package);
         $this->assertSame('1500.00', $package->package_amount);
         $this->assertSame('1500.00', $package->package_bv);
+        $this->assertSame('4500.00', $package->direct_bv);
         $this->assertSame('active', $package->package_status);
 
         $this->actingAs($admin)
@@ -146,6 +153,7 @@ class PackageManagementTest extends TestCase
             ->post('/admin/packages', [
                 'package_name' => 'Starter',
                 'package_amount' => '500',
+                'direct_bv' => '1500',
                 'package_status' => 'active',
             ])
             ->assertRedirect('/admin/packages/create')
@@ -173,6 +181,7 @@ class PackageManagementTest extends TestCase
             ->put('/admin/packages/'.$package->id, [
                 'package_name' => 'Starter',
                 'package_amount' => '2500.50',
+                'direct_bv' => '7500',
                 'package_status' => 'inactive',
             ])
             ->assertRedirect('/admin/packages')
@@ -183,6 +192,7 @@ class PackageManagementTest extends TestCase
         $this->assertSame('Starter', $package->package_name);
         $this->assertSame('2500.50', $package->package_amount);
         $this->assertSame('2500.50', $package->package_bv);
+        $this->assertSame('7500.00', $package->direct_bv);
         $this->assertSame('inactive', $package->package_status);
         $this->assertFalse($package->isActive());
 
@@ -210,6 +220,11 @@ class PackageManagementTest extends TestCase
         $this->assertSame(
             $packages->pluck('package_amount')->all(),
             $packages->pluck('package_bv')->all(),
+        );
+
+        $this->assertSame(
+            ['4500.00', '15000.00', '21000.00'],
+            $packages->pluck('direct_bv')->all(),
         );
     }
 

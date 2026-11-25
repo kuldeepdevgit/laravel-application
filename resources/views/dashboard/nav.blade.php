@@ -15,6 +15,7 @@
             'label' => 'Team Report',
             'icon' => 'bi-people',
             'items' => [
+                ['label' => 'Qualification', 'section' => 'qualification', 'icon' => 'bi-patch-check'],
                 ['label' => 'My Team', 'section' => 'my-team', 'icon' => 'bi-person-lines-fill'],
                 ['label' => 'My Downline Team', 'section' => 'my-downline-team', 'icon' => 'bi-diagram-3'],
             ],

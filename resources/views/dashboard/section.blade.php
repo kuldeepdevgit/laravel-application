@@ -35,6 +35,12 @@
             <p class="text-secondary">{{ $intro }}</p>
             @include('dashboard.my-downline-team')
         </section>
+    @elseif ($section === 'qualification')
+        <section class="panel">
+            <h2>{{ $heading }}</h2>
+            <p class="text-secondary">{{ $intro }}</p>
+            @include('dashboard.qualification')
+        </section>
     @elseif ($section === 'franchise-income-history')
         <section class="panel">
             <h2>{{ $heading }}</h2>

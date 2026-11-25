@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Income;
 use App\Models\LevelIncomeHistory;
 use App\Models\Order;
+use App\Models\UserPackageQualification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,8 @@ class OrderController extends Controller
         ]);
 
         DB::transaction(function () use ($data, $order): void {
+            $wasConfirmed = $order->status === 'confirmed';
+
             $order->update([
                 'status' => $data['status'],
             ]);
@@ -66,6 +69,10 @@ class OrderController extends Controller
                 $order->user?->markPaidOnFirstApproval();
                 Income::creditFranchiseFor($order);
                 LevelIncomeHistory::creditFor($order);
+            }
+
+            if ($data['status'] === 'confirmed' || $wasConfirmed) {
+                UserPackageQualification::refreshForOrder($order);
             }
         });
 

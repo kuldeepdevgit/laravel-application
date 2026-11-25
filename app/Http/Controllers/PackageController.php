@@ -77,7 +77,7 @@ class PackageController extends Controller
     }
 
     /**
-     * @return array{package_name: string, package_amount: string, package_bv: string, package_status: string}
+     * @return array{package_name: string, package_amount: string, package_bv: string, direct_bv: string, package_status: string}
      */
     private function validated(Request $request, ?Package $package = null): array
     {
@@ -89,6 +89,7 @@ class PackageController extends Controller
                 Rule::unique('package', 'package_name')->ignore($package?->id),
             ],
             'package_amount' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
+            'direct_bv' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
             'package_status' => ['required', Rule::in(['active', 'inactive'])],
         ], [
             'package_name.required' => 'Enter a package name.',
@@ -97,6 +98,10 @@ class PackageController extends Controller
             'package_amount.numeric' => 'Enter a package amount.',
             'package_amount.min' => 'Enter a package amount of 0 or more.',
             'package_amount.decimal' => 'Use up to two decimal places.',
+            'direct_bv.required' => 'Enter the direct selling BV.',
+            'direct_bv.numeric' => 'Enter the direct selling BV.',
+            'direct_bv.min' => 'Enter a direct selling BV of 0 or more.',
+            'direct_bv.decimal' => 'Use up to two decimal places.',
             'package_status.required' => 'Choose a status.',
             'package_status.in' => 'Choose a status.',
         ]);
@@ -107,6 +112,7 @@ class PackageController extends Controller
             'package_name' => $data['package_name'],
             'package_amount' => $amount,
             'package_bv' => $amount,
+            'direct_bv' => number_format((float) $data['direct_bv'], 2, '.', ''),
             'package_status' => $data['package_status'],
         ];
     }

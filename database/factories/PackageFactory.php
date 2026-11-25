@@ -21,6 +21,7 @@ class PackageFactory extends Factory
             'package_name' => fake()->unique()->words(2, true),
             'package_amount' => $amount,
             'package_bv' => $amount,
+            'direct_bv' => number_format((float) $amount * 3, 2, '.', ''),
             'package_status' => 'active',
         ];
     }

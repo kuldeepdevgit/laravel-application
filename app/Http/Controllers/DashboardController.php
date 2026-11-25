@@ -50,6 +50,7 @@ class DashboardController extends Controller
             'change-password' => ['Change Password', 'Choose a new password for your account.'],
             'update-wallet-address' => ['Update Wallet Address', 'Save a USDT wallet, bank account, Google Pay, or PhonePe for your account.'],
             'team-report' => ['Team Report', 'Members who joined through your account will be listed here.'],
+            'qualification' => ['Qualification', 'When an admin approves an order, your sponsor is checked. They qualify when they hold a package and the total confirmed BV of members who joined directly under them reaches the direct selling BV saved on that package.'],
             'my-team' => ['My Team', 'Members who joined directly under your account will be listed here.'],
             'my-downline-team' => ['My Downline Team', 'Members in your downline are counted through '.User::DOWNLINE_DEPTH.' levels.'],
             'fund-management' => ['Fund Management', 'Fund activity for your account will be listed here.'],
@@ -129,6 +130,16 @@ class DashboardController extends Controller
         $walletDebitTotal = $walletEntries instanceof LengthAwarePaginator
             ? round((float) $user->walletEntries()->where('direction', WalletEntry::DEBIT)->sum('amount'), 2)
             : null;
+        $qualification = $section === 'qualification'
+            ? $user->packageQualification()->with('package')->first()
+            : null;
+        $qualificationPackages = $section === 'qualification'
+            ? Package::query()
+                ->where('package_status', 'active')
+                ->orderBy('package_bv')
+                ->orderBy('id')
+                ->get()
+            : null;
 
         return view('dashboard.section', [
             'heading' => $heading,
@@ -157,6 +168,8 @@ class DashboardController extends Controller
                 : round($walletCreditTotal - $walletDebitTotal, 2),
             'walletCreditTotal' => $walletCreditTotal,
             'walletDebitTotal' => $walletDebitTotal,
+            'qualification' => $qualification,
+            'qualificationPackages' => $qualificationPackages,
         ]);
     }
 

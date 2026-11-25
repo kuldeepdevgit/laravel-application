@@ -17,6 +17,7 @@ class Package extends Model
         'package_name',
         'package_amount',
         'package_bv',
+        'direct_bv',
         'package_status',
     ];
 
@@ -28,12 +29,21 @@ class Package extends Model
         return [
             'package_amount' => 'decimal:2',
             'package_bv' => 'decimal:2',
+            'direct_bv' => 'decimal:2',
         ];
     }
 
     public function isActive(): bool
     {
         return $this->package_status === 'active';
+    }
+
+    /**
+     * Confirmed BV required from members who joined directly under the sponsor.
+     */
+    public function directBv(): float
+    {
+        return round((float) $this->direct_bv, 2);
     }
 
     /**

@@ -36,7 +36,7 @@
             @else
                 <section class="panel">
                     <h2>Packages</h2>
-                    <p class="text-secondary">Each package has a name, an amount, and a BV. Package BV matches the amount.</p>
+                    <p class="text-secondary">Each package has a name, an amount, a BV, and the direct selling BV a sponsor's direct members must reach.</p>
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle mb-0 team-table">
@@ -46,6 +46,7 @@
                                     <th scope="col">Package name</th>
                                     <th scope="col">Package amount</th>
                                     <th scope="col">Package BV</th>
+                                    <th scope="col">Direct selling BV</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -57,6 +58,7 @@
                                         <td>{{ $package->package_name }}</td>
                                         <td>₹{{ number_format((float) $package->package_amount, 2) }}</td>
                                         <td>{{ number_format((float) $package->package_bv, 2) }}</td>
+                                        <td>{{ number_format($package->directBv(), 2) }}</td>
                                         <td>{{ $package->isActive() ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             <div class="email-actions">

@@ -53,6 +53,7 @@ class DashboardTest extends TestCase
             ->assertSee('Change Password')
             ->assertSee('Update Wallet Address')
             ->assertSee('Team Report')
+            ->assertSee('Qualification')
             ->assertSee('My Team')
             ->assertSee('My Downline Team')
             ->assertSee('Fund Management')
