@@ -209,15 +209,15 @@ class User extends Authenticatable
     }
 
     /**
-     * BV from this member's confirmed orders.
+     * BV from this member's paid or confirmed orders.
      */
     public function currentBv(): float
     {
-        return round((float) $this->orders()->where('status', 'confirmed')->sum('total_bv'), 2);
+        return round((float) $this->orders()->whereIn('status', Order::BV_STATUSES)->sum('total_bv'), 2);
     }
 
     /**
-     * Confirmed product BV from members who joined directly under this account.
+     * Paid or confirmed product BV from members who joined directly under this account.
      */
     public function directSellingBv(): float
     {
@@ -230,7 +230,7 @@ class User extends Authenticatable
         $placeholders = implode(', ', array_fill(0, count($keys), '?'));
 
         return round((float) Order::query()
-            ->where('status', 'confirmed')
+            ->whereIn('status', Order::BV_STATUSES)
             ->whereHas('user', function (Builder $query) use ($keys, $placeholders): void {
                 $query->whereKeyNot($this->getKey())
                     ->whereRaw('LOWER(sponsor_name) IN ('.$placeholders.')', $keys);
@@ -239,7 +239,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Confirmed order BV for a team-list row.
+     * Paid or confirmed order BV for a team-list row.
      */
     public function formattedSelfInvestment(): string
     {
@@ -353,7 +353,7 @@ class User extends Authenticatable
 
         return static::query()
             ->withSum(['orders as self_investment' => function (Builder $query): void {
-                $query->where('status', 'confirmed');
+                $query->whereIn('status', Order::BV_STATUSES);
             }], 'total_bv')
             ->whereRaw('LOWER(sponsor_name) IN ('.$placeholders.')', $keys)
             ->orderBy('id')

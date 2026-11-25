@@ -152,7 +152,7 @@ class UserPackageQualification extends Model
     /**
      * When an order is approved, check the buyer's sponsor.
      * The sponsor must hold a package, and the total BV of members who joined directly under them must reach the direct BV saved on that package.
-     * The buyer is checked with the same rule because their own confirmed BV is what lets them hold a package.
+     * The buyer is checked with the same rule because their own paid or confirmed BV is what lets them hold a package.
      */
     public static function refreshForOrder(Order $order): void
     {

@@ -347,6 +347,54 @@ class PackageQualificationTest extends TestCase
             ->assertDontSee('Avery Chen');
     }
 
+    public function test_bv_counts_paid_and_confirmed_orders_only(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $member = User::factory()->create([
+            'name' => 'Paid Member',
+            'user_name' => 'GSI7400001',
+        ]);
+        $direct = User::factory()->create([
+            'name' => 'Paid Direct',
+            'user_name' => 'GSI7400002',
+            'sponsor_name' => 'GSI7400001',
+        ]);
+        $silver = Package::query()->where('package_name', 'SILVER PACKAGE')->firstOrFail();
+
+        Order::factory()->for($member)->create([
+            'status' => 'paid',
+            'total_bv' => 1000,
+        ]);
+        Order::factory()->for($member)->create([
+            'status' => 'pending',
+            'total_bv' => 9000,
+        ]);
+        Order::factory()->for($member)->create([
+            'status' => 'rejected',
+            'total_bv' => 2000,
+        ]);
+        Order::factory()->for($direct)->create([
+            'status' => 'paid',
+            'total_bv' => 4500,
+        ]);
+        Order::factory()->for($direct)->create([
+            'status' => 'pending',
+            'total_bv' => 8000,
+        ]);
+
+        $this->confirm($admin, Order::factory()->for($member)->create([
+            'status' => 'pending',
+            'total_bv' => 500,
+        ]));
+
+        $member->refresh();
+
+        $this->assertSame(1500.0, $member->currentBv());
+        $this->assertSame(4500.0, $member->directSellingBv());
+        $this->assertSame(4500.0, round((float) $member->directMembers()->firstWhere('id', $direct->id)?->getAttribute('self_investment'), 2));
+        $this->assertQualification($member, '1500.00', '4500.00', $silver->id);
+    }
+
     public function test_the_qualification_section_shows_each_package_and_the_saved_result(): void
     {
         $admin = User::factory()->superAdmin()->create();

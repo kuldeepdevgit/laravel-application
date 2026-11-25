@@ -47,7 +47,7 @@
                 <div class="mb-3">
                     <label class="form-label" for="direct_bv">Direct selling BV</label>
                     <input class="form-control" id="direct_bv" name="direct_bv" type="number" value="{{ old('direct_bv', $package->direct_bv) }}" min="0" max="99999999.99" step="0.01" required inputmode="decimal">
-                    <p class="form-text mb-0">Used when an admin approves an order. The sponsor must hold this package, and the total confirmed BV of their direct members must reach this amount.</p>
+                    <p class="form-text mb-0">Used when an admin approves an order. The sponsor must hold this package, and the total paid or confirmed BV of their direct members must reach this amount.</p>
                     @error('direct_bv')
                         <p class="text-danger small mb-0">{{ $message }}</p>
                     @enderror

@@ -14,6 +14,13 @@ class Order extends Model
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
 
+    /**
+     * Statuses whose BV counts for a member.
+     *
+     * @var list<string>
+     */
+    public const BV_STATUSES = ['paid', 'confirmed'];
+
     protected $fillable = [
         'number',
         'user_id',
