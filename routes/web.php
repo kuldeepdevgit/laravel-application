@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/packages/create', [PackageController::class, 'create'])->name('packages.create');
         Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
         Route::get('/packages/upgrades', [PackageController::class, 'history'])->name('packages.history');
+        Route::get('/packages/qualifications', [PackageController::class, 'qualifications'])->name('packages.qualifications');
         Route::get('/packages/{package}/edit', [PackageController::class, 'edit'])->name('packages.edit');
         Route::put('/packages/{package}', [PackageController::class, 'update'])->name('packages.update');
         Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');

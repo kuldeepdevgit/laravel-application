@@ -15,6 +15,7 @@ class PackageManagementTest extends TestCase
     {
         $this->get('/admin/packages')->assertRedirect('/login');
         $this->get('/admin/packages/upgrades')->assertRedirect('/login');
+        $this->get('/admin/packages/qualifications')->assertRedirect('/login');
     }
 
     public function test_a_member_cannot_open_package_management(): void
@@ -45,6 +46,10 @@ class PackageManagementTest extends TestCase
         $this->actingAs($member)
             ->get('/admin/packages/upgrades')
             ->assertForbidden();
+
+        $this->actingAs($member)
+            ->get('/admin/packages/qualifications')
+            ->assertForbidden();
     }
 
     public function test_the_super_admin_can_open_the_package_list(): void
@@ -57,6 +62,7 @@ class PackageManagementTest extends TestCase
             ->assertSee('Package Management')
             ->assertSee('List package')
             ->assertSee('Upgrade History')
+            ->assertSee('Package Qualification History')
             ->assertSee('Package BV')
             ->assertSee('Direct selling BV')
             ->assertSee('SILVER PACKAGE')
@@ -83,6 +89,7 @@ class PackageManagementTest extends TestCase
             ->assertSee('Package Management')
             ->assertSee('List package')
             ->assertSee('Upgrade History')
+            ->assertSee('Package Qualification History')
             ->assertSee('No upgrades yet')
             ->assertDontSee('Manage Profile')
             ->assertDontSee('Ref Link');

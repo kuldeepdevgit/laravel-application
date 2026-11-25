@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Package;
+use App\Models\UserPackageQualification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -74,6 +75,34 @@ class PackageController extends Controller
     public function history(): View
     {
         return view('admin.packages.history');
+    }
+
+    public function qualifications(Request $request): View
+    {
+        $search = trim($request->string('q')->toString());
+        $qualifications = UserPackageQualification::query()
+            ->with(['user', 'package'])
+            ->when($search !== '', function ($query) use ($search): void {
+                $like = '%'.addcslashes($search, '%_\\').'%';
+                $query->where(function ($inner) use ($like): void {
+                    $inner->whereHas('user', function ($users) use ($like): void {
+                        $users->where('name', 'like', $like)
+                            ->orWhere('user_name', 'like', $like)
+                            ->orWhere('email', 'like', $like);
+                    })->orWhereHas('package', function ($packages) use ($like): void {
+                        $packages->where('package_name', 'like', $like);
+                    });
+                });
+            })
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.packages.qualifications', [
+            'qualifications' => $qualifications,
+            'search' => $search,
+            'total' => UserPackageQualification::query()->count(),
+        ]);
     }
 
     /**

@@ -279,6 +279,73 @@ class PackageQualificationTest extends TestCase
         $this->assertQualification($sponsor, '1500.00', '100.00', $silver->id);
     }
 
+    public function test_the_admin_package_qualification_history_lists_every_saved_row(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $member = User::factory()->create([
+            'name' => 'Avery Chen',
+            'user_name' => 'GSI7600001',
+            'email' => 'avery@example.com',
+        ]);
+        $other = User::factory()->create([
+            'name' => 'Jordan Lee',
+            'user_name' => 'GSI7600002',
+        ]);
+        $silver = Package::query()->where('package_name', 'SILVER PACKAGE')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get('/admin/packages/qualifications')
+            ->assertOk()
+            ->assertSee('Package Qualification History')
+            ->assertSee('No package qualification yet');
+
+        UserPackageQualification::factory()->create([
+            'user_id' => $member->id,
+            'package_id' => $silver->id,
+            'self_bv' => 1500,
+            'direct_bv' => 4500,
+            'is_qualified' => true,
+            'qualified_at' => '2026-11-25 10:00:00',
+        ]);
+        UserPackageQualification::factory()->create([
+            'user_id' => $other->id,
+            'self_bv' => 100,
+            'direct_bv' => 0,
+            'is_qualified' => false,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/packages/qualifications')
+            ->assertOk()
+            ->assertSee('Avery Chen')
+            ->assertSee('GSI7600001')
+            ->assertSee('Jordan Lee')
+            ->assertSee('SILVER PACKAGE')
+            ->assertSee('1,500.00')
+            ->assertSee('4,500.00')
+            ->assertSee('Qualified')
+            ->assertSee('Not qualified')
+            ->assertSee('Nov 25, 2026');
+
+        $this->actingAs($admin)
+            ->get('/admin/packages/qualifications?q=Avery')
+            ->assertOk()
+            ->assertSee('Avery Chen')
+            ->assertDontSee('Jordan Lee');
+
+        $this->actingAs($admin)
+            ->get('/admin/packages/qualifications?q=SILVER')
+            ->assertOk()
+            ->assertSee('Avery Chen')
+            ->assertDontSee('Jordan Lee');
+
+        $this->actingAs($admin)
+            ->get('/admin/packages/qualifications?q=missing-member')
+            ->assertOk()
+            ->assertSee('No matches')
+            ->assertDontSee('Avery Chen');
+    }
+
     public function test_the_qualification_section_shows_each_package_and_the_saved_result(): void
     {
         $admin = User::factory()->superAdmin()->create();

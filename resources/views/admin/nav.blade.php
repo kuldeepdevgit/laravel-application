@@ -69,13 +69,17 @@
             <i class="bi bi-chevron-right dash-chevron" aria-hidden="true"></i>
         </summary>
         <div class="dash-sub">
-            <a class="dash-subitem @if (request()->routeIs('admin.packages.*') && ! request()->routeIs('admin.packages.history')) is-active @endif" href="{{ route('admin.packages.index') }}" @if (request()->routeIs('admin.packages.*') && ! request()->routeIs('admin.packages.history')) aria-current="page" @endif>
+            <a class="dash-subitem @if (request()->routeIs('admin.packages.*') && ! request()->routeIs('admin.packages.history', 'admin.packages.qualifications')) is-active @endif" href="{{ route('admin.packages.index') }}" @if (request()->routeIs('admin.packages.*') && ! request()->routeIs('admin.packages.history', 'admin.packages.qualifications')) aria-current="page" @endif>
                 <i class="bi bi-card-list" aria-hidden="true"></i>
                 <span>List package</span>
             </a>
             <a class="dash-subitem @if (request()->routeIs('admin.packages.history')) is-active @endif" href="{{ route('admin.packages.history') }}" @if (request()->routeIs('admin.packages.history')) aria-current="page" @endif>
                 <i class="bi bi-clock-history" aria-hidden="true"></i>
                 <span>Upgrade History</span>
+            </a>
+            <a class="dash-subitem @if (request()->routeIs('admin.packages.qualifications')) is-active @endif" href="{{ route('admin.packages.qualifications') }}" @if (request()->routeIs('admin.packages.qualifications')) aria-current="page" @endif>
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Package Qualification History</span>
             </a>
         </div>
     </details>

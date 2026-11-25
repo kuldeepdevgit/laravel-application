@@ -161,6 +161,7 @@ class AdminTest extends TestCase
             ->assertSee('Package Management')
             ->assertSee('List package')
             ->assertSee('Upgrade History')
+            ->assertSee('Package Qualification History')
             ->assertSee('Fund Management')
             ->assertSee('Fund Request List')
             ->assertSee('Update Fund Address')
