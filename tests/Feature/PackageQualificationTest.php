@@ -18,7 +18,7 @@ class PackageQualificationTest extends TestCase
     {
         $indexes = Schema::getIndexes('users_package_qualification');
 
-        $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['user_id'] && (bool) $index['unique']));
+        $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['user_id', 'package_id'] && (bool) $index['unique']));
         $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['is_qualified']));
         $this->assertTrue(collect($indexes)->contains(fn (array $index): bool => $index['columns'] === ['package_id', 'is_qualified']));
     }
@@ -39,7 +39,7 @@ class PackageQualificationTest extends TestCase
 
         $this->assertTrue($row->user->is($user));
         $this->assertTrue($row->package->is($package));
-        $this->assertTrue($user->packageQualification->is($row));
+        $this->assertTrue($user->packageQualifications->contains($row));
         $this->assertSame('1500.00', $row->self_bv);
         $this->assertSame('4500.00', $row->direct_bv);
         $this->assertTrue($row->is_qualified);
@@ -106,7 +106,7 @@ class PackageQualificationTest extends TestCase
 
         $this->travel(2)->days();
         $this->confirm($admin, $extraSelf);
-        $this->assertTrue($silverRow->qualified_at->equalTo($sponsor->packageQualification()->first()?->qualified_at));
+        $this->assertTrue($silverRow->qualified_at->equalTo($sponsor->packageQualifications()->where('package_id', $silver->id)->first()?->qualified_at));
         $this->assertSame(1, UserPackageQualification::query()->where('user_id', $sponsor->id)->count());
 
         $moreDirect = Order::factory()->for($otherDirect)->create([
@@ -279,7 +279,7 @@ class PackageQualificationTest extends TestCase
         $this->assertQualification($sponsor, '1500.00', '100.00', $silver->id);
     }
 
-    public function test_the_admin_package_qualification_history_lists_every_saved_row(): void
+    public function test_the_admin_package_qualification_history_lists_only_qualified_members(): void
     {
         $admin = User::factory()->superAdmin()->create();
         $member = User::factory()->create([
@@ -297,7 +297,7 @@ class PackageQualificationTest extends TestCase
             ->get('/admin/packages/qualifications')
             ->assertOk()
             ->assertSee('Package Qualification History')
-            ->assertSee('No package qualification yet');
+            ->assertSee('No qualified members yet');
 
         UserPackageQualification::factory()->create([
             'user_id' => $member->id,
@@ -319,12 +319,12 @@ class PackageQualificationTest extends TestCase
             ->assertOk()
             ->assertSee('Avery Chen')
             ->assertSee('GSI7600001')
-            ->assertSee('Jordan Lee')
+            ->assertDontSee('Jordan Lee')
             ->assertSee('SILVER PACKAGE')
             ->assertSee('1,500.00')
             ->assertSee('4,500.00')
             ->assertSee('Qualified')
-            ->assertSee('Not qualified')
+            ->assertDontSee('Not qualified')
             ->assertSee('Nov 25, 2026');
 
         $this->actingAs($admin)
@@ -405,18 +405,38 @@ class PackageQualificationTest extends TestCase
 
     private function assertQualification(User $user, string $selfBv, string $directBv, ?int $packageId): UserPackageQualification
     {
-        $row = $user->packageQualification()->first();
-
-        $this->assertInstanceOf(UserPackageQualification::class, $row);
-        $this->assertSame($selfBv, $row->self_bv);
-        $this->assertSame($directBv, $row->direct_bv);
-        $this->assertSame($packageId, $row->package_id);
-        $this->assertSame($packageId !== null, $row->is_qualified);
+        $rows = $user->packageQualifications()->get();
 
         if ($packageId === null) {
+            $this->assertCount(1, $rows);
+            $row = $rows->first();
+            $this->assertInstanceOf(UserPackageQualification::class, $row);
+            $this->assertNull($row->package_id);
+            $this->assertSame($selfBv, $row->self_bv);
+            $this->assertSame($directBv, $row->direct_bv);
+            $this->assertFalse($row->is_qualified);
             $this->assertNull($row->qualified_at);
-        } else {
-            $this->assertNotNull($row->qualified_at);
+
+            return $row;
+        }
+
+        $expected = UserPackageQualification::packagesFor((float) $selfBv, (float) $directBv);
+
+        $this->assertSame($packageId, $expected->last()?->getKey());
+        $this->assertEqualsCanonicalizing(
+            $expected->pluck('id')->map(fn (mixed $id): int => (int) $id)->all(),
+            $rows->pluck('package_id')->map(fn (mixed $id): int => (int) $id)->all(),
+        );
+
+        $row = $rows->firstWhere('package_id', $packageId);
+        $this->assertInstanceOf(UserPackageQualification::class, $row);
+        $this->assertTrue($row->is_qualified);
+        $this->assertNotNull($row->qualified_at);
+
+        foreach ($rows as $stored) {
+            $this->assertSame($selfBv, $stored->self_bv);
+            $this->assertSame($directBv, $stored->direct_bv);
+            $this->assertTrue($stored->is_qualified);
         }
 
         return $row;

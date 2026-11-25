@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserPackageQualificationFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,51 +39,114 @@ class UserPackageQualification extends Model
     }
 
     /**
-     * Highest active package this sponsor holds whose saved direct BV their direct total also reaches.
-     * Holding a package means their own confirmed BV is at least that package BV.
+     * Every active package this sponsor holds whose saved direct BV their direct total also reaches.
+     * Diamond includes Silver and Gold because those lower targets are already met.
+     *
+     * @return Collection<int, Package>
      */
-    public static function forSponsor(float $selfBv, float $directTotal): ?Package
+    public static function packagesFor(float $selfBv, float $directTotal): Collection
     {
         return Package::query()
             ->where('package_status', 'active')
-            ->orderByDesc('package_bv')
-            ->orderByDesc('id')
+            ->orderBy('package_bv')
+            ->orderBy('id')
             ->get()
-            ->first(function (Package $package) use ($selfBv, $directTotal): bool {
+            ->filter(function (Package $package) use ($selfBv, $directTotal): bool {
                 return round($selfBv, 2) >= round((float) $package->package_bv, 2)
                     && round($directTotal, 2) >= $package->directBv();
-            });
+            })
+            ->values();
     }
 
     /**
-     * Replace this member's qualification with the totals from confirmed orders.
+     * Highest active package this sponsor holds whose saved direct BV their direct total also reaches.
      */
-    public static function refreshFor(User $user): self
+    public static function forSponsor(float $selfBv, float $directTotal): ?Package
+    {
+        return static::packagesFor($selfBv, $directTotal)->last();
+    }
+
+    /**
+     * Store one row for every package this member qualifies for.
+     * A Diamond qualification also keeps Silver and Gold. Packages they no longer meet are removed.
+     *
+     * @return Collection<int, self>
+     */
+    public static function refreshFor(User $user): Collection
     {
         $selfBv = $user->currentBv();
         $directBv = $user->directSellingBv();
-        $package = static::forSponsor($selfBv, $directBv);
-        $existing = static::query()->where('user_id', $user->getKey())->first();
+        $packages = static::packagesFor($selfBv, $directBv);
 
-        $qualifiedAt = null;
-
-        if ($package instanceof Package) {
-            $samePackage = $existing instanceof self
-                && (int) $existing->package_id === (int) $package->getKey()
-                && $existing->qualified_at !== null;
-            $qualifiedAt = $samePackage ? $existing->qualified_at : now();
+        if ($packages->isEmpty()) {
+            return new Collection([static::storeUnqualified($user, $selfBv, $directBv)]);
         }
 
-        return static::query()->updateOrCreate(
-            ['user_id' => $user->getKey()],
-            [
-                'package_id' => $package?->getKey(),
+        $packageIds = $packages->map(fn (Package $package): int => (int) $package->getKey())->all();
+
+        static::query()
+            ->where('user_id', $user->getKey())
+            ->where(function ($query) use ($packageIds): void {
+                $query->whereNull('package_id')
+                    ->orWhereNotIn('package_id', $packageIds);
+            })
+            ->delete();
+
+        $existing = static::query()
+            ->where('user_id', $user->getKey())
+            ->whereIn('package_id', $packageIds)
+            ->get()
+            ->keyBy('package_id');
+        $rows = new Collection;
+
+        foreach ($packages as $package) {
+            $current = $existing->get($package->getKey());
+            $qualifiedAt = $current instanceof self && $current->qualified_at !== null
+                ? $current->qualified_at
+                : now();
+
+            $rows->push(static::query()->updateOrCreate(
+                [
+                    'user_id' => $user->getKey(),
+                    'package_id' => $package->getKey(),
+                ],
+                [
+                    'self_bv' => $selfBv,
+                    'direct_bv' => $directBv,
+                    'is_qualified' => true,
+                    'qualified_at' => $qualifiedAt,
+                ],
+            ));
+        }
+
+        return $rows;
+    }
+
+    private static function storeUnqualified(User $user, float $selfBv, float $directBv): self
+    {
+        static::query()->where('user_id', $user->getKey())->whereNotNull('package_id')->delete();
+
+        $existing = static::query()->where('user_id', $user->getKey())->whereNull('package_id')->first();
+
+        if ($existing instanceof self) {
+            $existing->update([
                 'self_bv' => $selfBv,
                 'direct_bv' => $directBv,
-                'is_qualified' => $package instanceof Package,
-                'qualified_at' => $qualifiedAt,
-            ],
-        );
+                'is_qualified' => false,
+                'qualified_at' => null,
+            ]);
+
+            return $existing;
+        }
+
+        return static::query()->create([
+            'user_id' => $user->getKey(),
+            'package_id' => null,
+            'self_bv' => $selfBv,
+            'direct_bv' => $directBv,
+            'is_qualified' => false,
+            'qualified_at' => null,
+        ]);
     }
 
     /**

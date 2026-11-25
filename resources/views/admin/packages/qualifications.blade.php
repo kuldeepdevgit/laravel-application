@@ -9,8 +9,8 @@
         @if ($total === 0)
             <section class="panel cat-empty">
                 <span class="cat-empty-mark" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
-                <h2>No package qualification yet</h2>
-                <p class="mb-0">A row appears here when an admin approves an order.</p>
+                <h2>No qualified members yet</h2>
+                <p class="mb-0">A member appears here after an admin approves an order and they qualify for a package.</p>
             </section>
         @else
             <div class="cat-toolbar">
@@ -30,7 +30,7 @@
             @else
                 <section class="panel">
                     <h2>Package Qualification History</h2>
-                    <p class="text-secondary">Every saved qualification is listed here. Total <strong>{{ number_format($total) }}</strong>.</p>
+                    <p class="text-secondary">Qualified members are listed here. Total <strong>{{ number_format($total) }}</strong>.</p>
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle mb-0 team-table">

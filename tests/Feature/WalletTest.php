@@ -71,7 +71,7 @@ class WalletTest extends TestCase
             ->assertSee('Debit')
             ->assertSee('₹160.00')
             ->assertSee('Franchise income · NB-500005')
-            ->assertSeeInOrder(['Franchise Income History', 'Wallet', 'Self ROI Income']);
+            ->assertSeeInOrder(['Franchise Income History', '3x Matrix Level Income', 'Wallet']);
 
         $this->actingAs($sponsor)
             ->get('/dashboard/franchise-income-history')

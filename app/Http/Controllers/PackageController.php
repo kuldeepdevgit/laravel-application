@@ -81,6 +81,7 @@ class PackageController extends Controller
     {
         $search = trim($request->string('q')->toString());
         $qualifications = UserPackageQualification::query()
+            ->where('is_qualified', true)
             ->with(['user', 'package'])
             ->when($search !== '', function ($query) use ($search): void {
                 $like = '%'.addcslashes($search, '%_\\').'%';
@@ -101,7 +102,7 @@ class PackageController extends Controller
         return view('admin.packages.qualifications', [
             'qualifications' => $qualifications,
             'search' => $search,
-            'total' => UserPackageQualification::query()->count(),
+            'total' => UserPackageQualification::query()->where('is_qualified', true)->count(),
         ]);
     }
 

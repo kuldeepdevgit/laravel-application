@@ -8,6 +8,7 @@ use App\Models\OrderPayment;
 use App\Models\Package;
 use App\Models\Template;
 use App\Models\User;
+use App\Models\UserPackageQualification;
 use App\Models\WalletEntry;
 use App\Services\FranchiseIncomeCache;
 use App\Services\FranchiseIncomeRow;
@@ -131,7 +132,11 @@ class DashboardController extends Controller
             ? round((float) $user->walletEntries()->where('direction', WalletEntry::DEBIT)->sum('amount'), 2)
             : null;
         $qualification = $section === 'qualification'
-            ? $user->packageQualification()->with('package')->first()
+            ? $user->packageQualifications()
+                ->with('package')
+                ->get()
+                ->sortByDesc(fn (UserPackageQualification $row): float => (float) ($row->package?->package_bv ?? -1))
+                ->first()
             : null;
         $qualificationPackages = $section === 'qualification'
             ? Package::query()

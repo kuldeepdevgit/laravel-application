@@ -39,12 +39,6 @@
                 ['label' => 'Franchise Income History', 'section' => 'franchise-income-history', 'icon' => 'bi-percent'],
                 ['label' => '3x Matrix Level Income', 'section' => 'matrix-level-income', 'icon' => 'bi-grid-3x3-gap'],
                 ['label' => 'Wallet', 'section' => 'wallet', 'icon' => 'bi-wallet2'],
-                ['label' => 'Self ROI Income', 'section' => 'self-roi-income', 'icon' => 'bi-pie-chart'],
-                ['label' => 'Level Income History', 'section' => 'level-income-history', 'icon' => 'bi-clock-history'],
-                ['label' => 'Level ROI Income History', 'section' => 'level-roi-income-history', 'icon' => 'bi-bar-chart-line'],
-                ['label' => 'Booster Income', 'section' => 'booster-income', 'icon' => 'bi-rocket-takeoff'],
-                ['label' => 'Life Time Reward', 'section' => 'life-time-reward', 'icon' => 'bi-trophy'],
-                ['label' => 'Salary Income', 'section' => 'salary-income', 'icon' => 'bi-cash'],
             ],
         ],
         [

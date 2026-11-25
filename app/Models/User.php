@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -200,11 +199,13 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasOne<UserPackageQualification, $this>
+     * One row for each package this member qualifies for.
+     *
+     * @return HasMany<UserPackageQualification, $this>
      */
-    public function packageQualification(): HasOne
+    public function packageQualifications(): HasMany
     {
-        return $this->hasOne(UserPackageQualification::class);
+        return $this->hasMany(UserPackageQualification::class);
     }
 
     /**

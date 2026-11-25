@@ -176,7 +176,7 @@ class FranchiseIncomeTest extends TestCase
             ->get('/dashboard')
             ->assertOk()
             ->assertSee('Franchise Income History')
-            ->assertSeeInOrder(['Franchise Income History', 'Self ROI Income']);
+            ->assertSeeInOrder(['Franchise Income History', '3x Matrix Level Income', 'Wallet']);
 
         $this->actingAs($sponsor)
             ->get('/dashboard/franchise-income-history')
