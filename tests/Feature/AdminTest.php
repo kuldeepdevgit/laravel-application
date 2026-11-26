@@ -157,6 +157,8 @@ class AdminTest extends TestCase
             ->assertSee('Income Management')
             ->assertSee('Franchise Income History')
             ->assertSee('Open franchise income')
+            ->assertSee('Auto Pool Management')
+            ->assertSee('Open auto pool')
             ->assertSee('Company')
             ->assertSee('Package Management')
             ->assertSee('List package')

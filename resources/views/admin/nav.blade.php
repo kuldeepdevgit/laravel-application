@@ -58,6 +58,10 @@
             </a>
         </div>
     </details>
+    <a class="dash-item @if (request()->routeIs('admin.auto-pool.*')) is-active @endif" href="{{ route('admin.auto-pool.index') }}" @if (request()->routeIs('admin.auto-pool.*')) aria-current="page" @endif>
+        <i class="bi bi-diagram-3" aria-hidden="true"></i>
+        <span>Auto Pool Management</span>
+    </a>
     <a class="dash-item @if (request()->routeIs('admin.companies.*')) is-active @endif" href="{{ route('admin.companies.index') }}" @if (request()->routeIs('admin.companies.*')) aria-current="page" @endif>
         <i class="bi bi-building" aria-hidden="true"></i>
         <span>Company</span>

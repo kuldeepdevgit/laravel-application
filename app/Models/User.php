@@ -265,6 +265,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Auto pool seats held by this member.
+     *
+     * @return HasMany<UserAutoPoolTree, $this>
+     */
+    public function autoPoolTrees(): HasMany
+    {
+        return $this->hasMany(UserAutoPoolTree::class);
+    }
+
+    /**
      * @return HasMany<WalletEntry, $this>
      */
     public function walletEntries(): HasMany

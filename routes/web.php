@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AutoPoolController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BootstrapController;
 use App\Http\Controllers\CartController;
@@ -64,6 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::get('/incomes/franchise', [IncomeController::class, 'franchise'])->name('incomes.franchise');
+        Route::get('/auto-pool', [AutoPoolController::class, 'index'])->name('auto-pool.index');
         Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
         Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
         Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
