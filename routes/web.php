@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/dashboard/update-wallet-address', [DashboardController::class, 'updateWallet'])->name('dashboard.wallet.update');
         Route::get('/dashboard/orders/{order}', [DashboardController::class, 'order'])->name('dashboard.orders.show');
         Route::post('/dashboard/orders/{order}/payment', [DashboardController::class, 'storePayment'])->name('dashboard.orders.payment');
+        Route::get('/user/autopool', [AutoPoolController::class, 'show'])->name('user.autopool');
         Route::get('/dashboard/{section}', [DashboardController::class, 'section'])->name('dashboard.section');
     });
 });

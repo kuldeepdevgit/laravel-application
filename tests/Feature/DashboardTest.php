@@ -870,11 +870,18 @@ class DashboardTest extends TestCase
 
         $this->actingAs($member)
             ->get('/dashboard/matrix-2x-silver')
+            ->assertRedirect('/user/autopool?pool=silver');
+
+        $this->actingAs($member)
+            ->get('/user/autopool?pool=silver')
             ->assertOk()
             ->assertSee('2x Matrix Income')
             ->assertSee('Silver')
             ->assertSee('Gold')
             ->assertSee('Diamond')
+            ->assertSee('/user/autopool?pool=silver', false)
+            ->assertSee('/user/autopool?pool=gold', false)
+            ->assertSee('/user/autopool?pool=diamond', false)
             ->assertSee('Pool Parent')
             ->assertSee('GSI3000001')
             ->assertSee('Pool Child')
@@ -882,11 +889,20 @@ class DashboardTest extends TestCase
             ->assertSee('Your position');
 
         $this->actingAs($member)
-            ->get('/dashboard/matrix-2x-gold')
+            ->get('/user/autopool?pool=gold')
             ->assertOk()
             ->assertSee('2x Matrix Income — Gold')
             ->assertSee('You do not have a seat in this pool yet')
             ->assertSee('No members under you in this pool yet')
             ->assertDontSee('Pool Child');
+
+        $this->actingAs($member)
+            ->get('/user/autopool?pool=other')
+            ->assertNotFound();
+    }
+
+    public function test_autopool_requires_a_member(): void
+    {
+        $this->get('/user/autopool?pool=diamond')->assertRedirect('/login');
     }
 }

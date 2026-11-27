@@ -29,12 +29,18 @@ class AutoPoolManagementTest extends TestCase
             'position',
             'pool_type',
         ]));
-        $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['user_id', 'pool_type'], 'unique'));
-        $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['pool_type', 'tree_id', 'position'], 'unique'));
+        $this->assertFalse(Schema::hasIndex('user_auto_pool_tree', ['user_id', 'pool_type'], 'unique'));
+        $this->assertFalse(Schema::hasIndex('user_auto_pool_tree', ['pool_type', 'tree_id', 'position'], 'unique'));
+        $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['user_id']));
+        $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['tree_id']));
+        $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['pool_type', 'tree_id', 'position']));
         $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['pool_type']));
         $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['pool_type', 'position']));
         $this->assertTrue(Schema::hasForeignKey('user_auto_pool_tree', ['user_id']));
         $this->assertTrue(Schema::hasForeignKey('user_auto_pool_tree', ['tree_id']));
+
+        $treeId = collect(Schema::getColumns('user_auto_pool_tree'))->firstWhere('name', 'tree_id');
+        $this->assertTrue(is_array($treeId) && ($treeId['nullable'] ?? false) === true);
 
         $this->assertDatabaseHas('user_auto_pool_tree', [
             'id' => $seat->id,
@@ -46,6 +52,34 @@ class AutoPoolManagementTest extends TestCase
         $this->assertTrue($seat->user->is($member));
         $this->assertTrue($seat->tree->is($parent));
         $this->assertSame('Gold', $seat->poolLabel());
+    }
+
+    public function test_the_same_member_and_parent_can_be_stored_more_than_once_and_tree_id_can_be_null(): void
+    {
+        $parent = User::factory()->create();
+        $member = User::factory()->create();
+
+        UserAutoPoolTree::factory()->create([
+            'user_id' => $member->id,
+            'tree_id' => $parent->id,
+            'position' => UserAutoPoolTree::POSITION_ONE,
+            'pool_type' => UserAutoPoolTree::POOL_SILVER,
+        ]);
+        UserAutoPoolTree::factory()->positionTwo()->create([
+            'user_id' => $member->id,
+            'tree_id' => $parent->id,
+            'pool_type' => UserAutoPoolTree::POOL_SILVER,
+        ]);
+        UserAutoPoolTree::factory()->create([
+            'user_id' => $member->id,
+            'tree_id' => null,
+            'position' => UserAutoPoolTree::POSITION_ONE,
+            'pool_type' => UserAutoPoolTree::POOL_GOLD,
+        ]);
+
+        $this->assertSame(3, UserAutoPoolTree::query()->where('user_id', $member->id)->count());
+        $this->assertSame(2, UserAutoPoolTree::query()->where('tree_id', $parent->id)->count());
+        $this->assertSame(1, UserAutoPoolTree::query()->where('user_id', $member->id)->whereNull('tree_id')->count());
     }
 
     public function test_guests_and_members_cannot_open_auto_pool_management(): void

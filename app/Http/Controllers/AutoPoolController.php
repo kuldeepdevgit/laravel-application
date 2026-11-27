@@ -2,12 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserAutoPoolTree;
+use App\Support\Impersonation;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AutoPoolController extends Controller
 {
+    public function show(Request $request): View
+    {
+        $pool = $request->string('pool')->toString();
+
+        if ($pool === '') {
+            $pool = UserAutoPoolTree::POOL_SILVER;
+        }
+
+        abort_unless(in_array($pool, UserAutoPoolTree::POOLS, true), 404);
+
+        $user = Impersonation::account($request);
+        abort_unless($user instanceof User, 403);
+
+        [$heading, $intro] = match ($pool) {
+            UserAutoPoolTree::POOL_GOLD => ['2x Matrix Income — Gold', 'Your gold seat in the 2x matrix, and the two positions under you.'],
+            UserAutoPoolTree::POOL_DIAMOND => ['2x Matrix Income — Diamond', 'Your diamond seat in the 2x matrix, and the two positions under you.'],
+            default => ['2x Matrix Income — Silver', 'Your silver seat in the 2x matrix, and the two positions under you.'],
+        };
+
+        return view('dashboard.autopool', [
+            'heading' => $heading,
+            'intro' => $intro,
+            'user' => $user,
+            'pool' => $pool,
+            'autoPoolSeat' => $user->autoPoolTrees()->with('tree')->where('pool_type', $pool)->first(),
+            'autoPoolChildren' => UserAutoPoolTree::query()
+                ->with('user')
+                ->where('tree_id', $user->getKey())
+                ->where('pool_type', $pool)
+                ->orderBy('position')
+                ->orderBy('id')
+                ->get(),
+        ]);
+    }
+
     public function index(Request $request): View
     {
         $search = trim($request->string('q')->toString());

@@ -45,9 +45,9 @@
             'label' => '2x Matrix Income',
             'icon' => 'bi-grid',
             'items' => [
-                ['label' => 'Silver', 'section' => 'matrix-2x-silver', 'icon' => 'bi-circle'],
-                ['label' => 'Gold', 'section' => 'matrix-2x-gold', 'icon' => 'bi-circle-fill'],
-                ['label' => 'Diamond', 'section' => 'matrix-2x-diamond', 'icon' => 'bi-gem'],
+                ['label' => 'Silver', 'pool' => 'silver', 'icon' => 'bi-circle'],
+                ['label' => 'Gold', 'pool' => 'gold', 'icon' => 'bi-circle-fill'],
+                ['label' => 'Diamond', 'pool' => 'diamond', 'icon' => 'bi-gem'],
             ],
         ],
         [
@@ -85,7 +85,10 @@
 
     @foreach ($groups as $group)
         @php
-            $groupOpen = in_array($section, array_column($group['items'], 'section'), true);
+            $sections = array_values(array_filter(array_column($group['items'], 'section')));
+            $pools = array_values(array_filter(array_column($group['items'], 'pool')));
+            $groupOpen = ($section !== null && in_array($section, $sections, true))
+                || ($pools !== [] && request()->routeIs('user.autopool'));
         @endphp
         <details class="dash-group" @if ($groupOpen) open @endif>
             <summary class="dash-item">
@@ -95,7 +98,15 @@
             </summary>
             <div class="dash-sub">
                 @foreach ($group['items'] as $item)
-                    <a class="dash-subitem @if ($section === $item['section']) is-active @endif" href="{{ route('dashboard.section', $item['section']) }}" @if ($section === $item['section']) aria-current="page" @endif>
+                    @php
+                        $itemActive = isset($item['pool'])
+                            ? request()->routeIs('user.autopool') && request()->query('pool', 'silver') === $item['pool']
+                            : $section === ($item['section'] ?? null);
+                        $itemHref = isset($item['pool'])
+                            ? route('user.autopool', ['pool' => $item['pool']])
+                            : route('dashboard.section', $item['section']);
+                    @endphp
+                    <a class="dash-subitem @if ($itemActive) is-active @endif" href="{{ $itemHref }}" @if ($itemActive) aria-current="page" @endif>
                         <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
                         <span>{{ $item['label'] }}</span>
                     </a>

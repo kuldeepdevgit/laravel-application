@@ -59,12 +59,6 @@
             <p class="text-secondary">{{ $intro }}</p>
             @include('dashboard.matrix-income')
         </section>
-    @elseif (in_array($section, ['matrix-2x-silver', 'matrix-2x-gold', 'matrix-2x-diamond'], true))
-        <section class="panel">
-            <h2>{{ $heading }}</h2>
-            <p class="text-secondary">{{ $intro }}</p>
-            @include('dashboard.matrix-2x')
-        </section>
     @elseif ($section === 'wallet')
         <section class="panel">
             <h2>{{ $heading }}</h2>

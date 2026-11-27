@@ -43,8 +43,19 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function section(Request $request, string $section, FranchiseIncomeCache $franchiseIncomeCache): View
+    public function section(Request $request, string $section, FranchiseIncomeCache $franchiseIncomeCache): View|RedirectResponse
     {
+        $matrixPool = match ($section) {
+            'matrix-2x-silver' => UserAutoPoolTree::POOL_SILVER,
+            'matrix-2x-gold' => UserAutoPoolTree::POOL_GOLD,
+            'matrix-2x-diamond' => UserAutoPoolTree::POOL_DIAMOND,
+            default => null,
+        };
+
+        if (is_string($matrixPool)) {
+            return redirect()->route('user.autopool', ['pool' => $matrixPool]);
+        }
+
         $pages = [
             'ref-link' => ['Ref Link', 'Share this link so new members join under your account.'],
             'manage-profile' => ['Manage Profile', 'Your account details are listed below.'],
@@ -66,9 +77,6 @@ class DashboardController extends Controller
             'franchise-income-history' => ['Franchise Income History', 'When an admin approves an order that lists you as the franchise sponsor, you receive 10% of its total BV.'],
             'matrix-level-income' => ['3x Matrix Level Income', 'This income has two levels. 40% of a confirmed order\'s BV is split in half: level 1 and level 2 each receive 20%.'],
             'wallet' => ['Wallet', 'Credits and debits on your wallet are listed here. Franchise income is added as a credit.'],
-            'matrix-2x-silver' => ['2x Matrix Income — Silver', 'Your silver seat in the 2x matrix, and the two positions under you.'],
-            'matrix-2x-gold' => ['2x Matrix Income — Gold', 'Your gold seat in the 2x matrix, and the two positions under you.'],
-            'matrix-2x-diamond' => ['2x Matrix Income — Diamond', 'Your diamond seat in the 2x matrix, and the two positions under you.'],
             'self-roi-income' => ['Self ROI Income', 'Your self ROI income will be listed here.'],
             'level-income-history' => ['Level Income History', 'When an admin confirms an order, 40% of its total BV is level income. Level 1 and level 2 each receive half of that.'],
             'level-roi-income-history' => ['Level ROI Income History', 'Your level ROI income history will be listed here.'],
@@ -149,24 +157,6 @@ class DashboardController extends Controller
                 ->orderBy('id')
                 ->get()
             : null;
-        $autoPoolType = match ($section) {
-            'matrix-2x-silver' => UserAutoPoolTree::POOL_SILVER,
-            'matrix-2x-gold' => UserAutoPoolTree::POOL_GOLD,
-            'matrix-2x-diamond' => UserAutoPoolTree::POOL_DIAMOND,
-            default => null,
-        };
-        $autoPoolSeat = $autoPoolType === null
-            ? null
-            : $user->autoPoolTrees()->with('tree')->where('pool_type', $autoPoolType)->first();
-        $autoPoolChildren = $autoPoolType === null
-            ? null
-            : UserAutoPoolTree::query()
-                ->with('user')
-                ->where('tree_id', $user->getKey())
-                ->where('pool_type', $autoPoolType)
-                ->orderBy('position')
-                ->orderBy('id')
-                ->get();
 
         return view('dashboard.section', [
             'heading' => $heading,
@@ -197,8 +187,6 @@ class DashboardController extends Controller
             'walletDebitTotal' => $walletDebitTotal,
             'qualification' => $qualification,
             'qualificationPackages' => $qualificationPackages,
-            'autoPoolSeat' => $autoPoolSeat,
-            'autoPoolChildren' => $autoPoolChildren,
         ]);
     }
 
