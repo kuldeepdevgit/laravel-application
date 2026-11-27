@@ -42,6 +42,15 @@
             ],
         ],
         [
+            'label' => '2x Matrix Income',
+            'icon' => 'bi-grid',
+            'items' => [
+                ['label' => 'Silver', 'section' => 'matrix-2x-silver', 'icon' => 'bi-circle'],
+                ['label' => 'Gold', 'section' => 'matrix-2x-gold', 'icon' => 'bi-circle-fill'],
+                ['label' => 'Diamond', 'section' => 'matrix-2x-diamond', 'icon' => 'bi-gem'],
+            ],
+        ],
+        [
             'label' => 'Withdrawal',
             'icon' => 'bi-cash-coin',
             'items' => [

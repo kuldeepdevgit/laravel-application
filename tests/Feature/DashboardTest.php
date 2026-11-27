@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Package;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\UserAutoPoolTree;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -67,6 +68,8 @@ class DashboardTest extends TestCase
             ->assertSee('Franchise Income History')
             ->assertSee('3x Matrix Level Income')
             ->assertSeeInOrder(['Franchise Income History', '3x Matrix Level Income', 'Wallet'])
+            ->assertSee('2x Matrix Income')
+            ->assertSeeInOrder(['Silver', 'Gold', 'Diamond'])
             ->assertDontSee('Self ROI Income')
             ->assertDontSee('Level Income History')
             ->assertDontSee('Level ROI Income History')
@@ -273,6 +276,8 @@ class DashboardTest extends TestCase
             ->assertSee('Franchise Income History')
             ->assertSee('3x Matrix Level Income')
             ->assertSeeInOrder(['Franchise Income History', '3x Matrix Level Income', 'Wallet'])
+            ->assertSee('2x Matrix Income')
+            ->assertSeeInOrder(['Silver', 'Gold', 'Diamond'])
             ->assertSee('Salary Income')
             ->assertDontSee('Self ROI Income');
 
@@ -834,5 +839,54 @@ class DashboardTest extends TestCase
             ->assertDontSee('Seat 1')
             ->assertDontSee('3 seats')
             ->assertDontSee('9 seats');
+    }
+
+    public function test_2x_matrix_income_shows_the_member_pool_seat(): void
+    {
+        $parent = User::factory()->create([
+            'name' => 'Pool Parent',
+            'user_name' => 'GSI3000001',
+        ]);
+        $member = User::factory()->create([
+            'name' => 'Pool Member',
+            'user_name' => 'GSI3000002',
+        ]);
+        $child = User::factory()->create([
+            'name' => 'Pool Child',
+            'user_name' => 'GSI3000003',
+        ]);
+
+        UserAutoPoolTree::factory()->create([
+            'user_id' => $member->id,
+            'tree_id' => $parent->id,
+            'position' => UserAutoPoolTree::POSITION_ONE,
+            'pool_type' => UserAutoPoolTree::POOL_SILVER,
+        ]);
+        UserAutoPoolTree::factory()->positionTwo()->create([
+            'user_id' => $child->id,
+            'tree_id' => $member->id,
+            'pool_type' => UserAutoPoolTree::POOL_SILVER,
+        ]);
+
+        $this->actingAs($member)
+            ->get('/dashboard/matrix-2x-silver')
+            ->assertOk()
+            ->assertSee('2x Matrix Income')
+            ->assertSee('Silver')
+            ->assertSee('Gold')
+            ->assertSee('Diamond')
+            ->assertSee('Pool Parent')
+            ->assertSee('GSI3000001')
+            ->assertSee('Pool Child')
+            ->assertSee('GSI3000003')
+            ->assertSee('Your position');
+
+        $this->actingAs($member)
+            ->get('/dashboard/matrix-2x-gold')
+            ->assertOk()
+            ->assertSee('2x Matrix Income — Gold')
+            ->assertSee('You do not have a seat in this pool yet')
+            ->assertSee('No members under you in this pool yet')
+            ->assertDontSee('Pool Child');
     }
 }
