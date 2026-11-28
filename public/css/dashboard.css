@@ -1244,3 +1244,154 @@ a.dash-btn-quiet {
     accent-color: var(--dash-accent);
     width: 100%;
 }
+
+.pool-board {
+    background:
+        radial-gradient(circle at 8% 16%, rgba(255, 255, 255, 0.08), transparent 16%),
+        radial-gradient(circle at 94% 10%, rgba(212, 168, 74, 0.9) 0 7px, transparent 8px),
+        radial-gradient(circle at 97% 82%, rgba(255, 255, 255, 0.07), transparent 18%),
+        #134752;
+    border-radius: 1.25rem;
+    margin-top: 1.25rem;
+    overflow-x: auto;
+    padding: 1.6rem 1rem 2rem;
+}
+
+.pool-mark {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 0.7rem;
+    color: #f4fff8;
+    display: flex;
+    font-size: 1.15rem;
+    height: 2.4rem;
+    justify-content: center;
+    margin: 0 auto 1.15rem;
+    width: 2.4rem;
+}
+
+.pool-tree,
+.pool-tree ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pool-tree {
+    margin: 0 auto;
+    min-width: 44rem;
+}
+
+.pool-tree ul {
+    padding-top: 1.35rem;
+    position: relative;
+}
+
+.pool-tree ul::before {
+    border-left: 2px solid rgba(255, 255, 255, 0.92);
+    content: "";
+    height: 0.7rem;
+    left: 50%;
+    position: absolute;
+    top: 0;
+}
+
+.pool-tree li {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem 0.55rem 0;
+    position: relative;
+}
+
+.pool-tree > li {
+    padding-top: 0;
+}
+
+.pool-tree li::before,
+.pool-tree li::after {
+    border-top: 2px solid rgba(255, 255, 255, 0.92);
+    content: "";
+    height: 1.35rem;
+    position: absolute;
+    top: 0;
+    width: 50%;
+}
+
+.pool-tree li::before {
+    right: 50%;
+}
+
+.pool-tree li::after {
+    border-left: 2px solid rgba(255, 255, 255, 0.92);
+    left: 50%;
+}
+
+.pool-tree li:first-child::before,
+.pool-tree li:last-child::after {
+    border: 0 none;
+}
+
+.pool-tree li:last-child::before {
+    border-right: 2px solid rgba(255, 255, 255, 0.92);
+}
+
+.pool-tree > li::before,
+.pool-tree > li::after {
+    display: none;
+}
+
+.pool-tree ul li > .pool-node::before {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid #f7fffb;
+    content: "";
+    left: 50%;
+    position: absolute;
+    top: -0.55rem;
+    transform: translateX(-50%);
+}
+
+.pool-node {
+    align-items: center;
+    border-radius: 0.55rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 2.7rem;
+    min-width: 7.4rem;
+    padding: 0.4rem 0.75rem;
+    position: relative;
+    text-align: center;
+}
+
+.pool-node.is-filled {
+    background: #74d59a;
+    color: #fff;
+}
+
+.pool-node.is-empty {
+    background: rgba(116, 213, 154, 0.28);
+}
+
+.pool-node strong,
+.pool-node small {
+    display: block;
+    line-height: 1.15;
+    max-width: 8.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pool-node strong {
+    font-size: 0.92rem;
+}
+
+.pool-node small {
+    font-size: 0.72rem;
+    opacity: 0.92;
+}
+

@@ -42,6 +42,7 @@ class AutoPoolController extends Controller
                 ->orderBy('position')
                 ->orderBy('id')
                 ->get(),
+            'matrix' => UserAutoPoolTree::matrixUnder($user, $pool),
         ]);
     }
 
