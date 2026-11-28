@@ -12,6 +12,8 @@ class UserAutoPoolTree extends Model
     /** @use HasFactory<UserAutoPoolTreeFactory> */
     use HasFactory;
 
+    public const TREE_NONE = 0;
+
     public const POSITION_ONE = 1;
 
     public const POSITION_TWO = 2;
@@ -41,11 +43,19 @@ class UserAutoPoolTree extends Model
     ];
 
     /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'tree_id' => self::TREE_NONE,
+    ];
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
+            'tree_id' => 'integer',
             'position' => 'integer',
         ];
     }
@@ -61,7 +71,7 @@ class UserAutoPoolTree extends Model
     }
 
     /**
-     * Parent member this seat sits under.
+     * Parent member this seat sits under. tree_id 0 means there is no parent.
      *
      * @return BelongsTo<User, $this>
      */

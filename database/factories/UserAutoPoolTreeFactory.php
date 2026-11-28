@@ -18,7 +18,7 @@ class UserAutoPoolTreeFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'tree_id' => null,
+            'tree_id' => UserAutoPoolTree::TREE_NONE,
             'position' => UserAutoPoolTree::POSITION_ONE,
             'pool_type' => UserAutoPoolTree::POOL_SILVER,
         ];

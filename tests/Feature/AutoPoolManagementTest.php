@@ -37,10 +37,12 @@ class AutoPoolManagementTest extends TestCase
         $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['pool_type']));
         $this->assertTrue(Schema::hasIndex('user_auto_pool_tree', ['pool_type', 'position']));
         $this->assertTrue(Schema::hasForeignKey('user_auto_pool_tree', ['user_id']));
-        $this->assertTrue(Schema::hasForeignKey('user_auto_pool_tree', ['tree_id']));
+        $this->assertFalse(Schema::hasForeignKey('user_auto_pool_tree', ['tree_id']));
 
         $treeId = collect(Schema::getColumns('user_auto_pool_tree'))->firstWhere('name', 'tree_id');
-        $this->assertTrue(is_array($treeId) && ($treeId['nullable'] ?? false) === true);
+        $this->assertTrue(is_array($treeId));
+        $this->assertFalse($treeId['nullable'] ?? true);
+        $this->assertSame(0, (int) trim((string) ($treeId['default'] ?? ''), "'"));
 
         $this->assertDatabaseHas('user_auto_pool_tree', [
             'id' => $seat->id,
@@ -54,7 +56,7 @@ class AutoPoolManagementTest extends TestCase
         $this->assertSame('Gold', $seat->poolLabel());
     }
 
-    public function test_the_same_member_and_parent_can_be_stored_more_than_once_and_tree_id_can_be_null(): void
+    public function test_the_same_member_and_parent_can_be_stored_more_than_once_and_tree_id_defaults_to_zero(): void
     {
         $parent = User::factory()->create();
         $member = User::factory()->create();
@@ -70,16 +72,16 @@ class AutoPoolManagementTest extends TestCase
             'tree_id' => $parent->id,
             'pool_type' => UserAutoPoolTree::POOL_SILVER,
         ]);
-        UserAutoPoolTree::factory()->create([
+        $root = UserAutoPoolTree::factory()->create([
             'user_id' => $member->id,
-            'tree_id' => null,
             'position' => UserAutoPoolTree::POSITION_ONE,
             'pool_type' => UserAutoPoolTree::POOL_GOLD,
         ]);
 
         $this->assertSame(3, UserAutoPoolTree::query()->where('user_id', $member->id)->count());
         $this->assertSame(2, UserAutoPoolTree::query()->where('tree_id', $parent->id)->count());
-        $this->assertSame(1, UserAutoPoolTree::query()->where('user_id', $member->id)->whereNull('tree_id')->count());
+        $this->assertSame(0, $root->refresh()->tree_id);
+        $this->assertNull($root->tree);
     }
 
     public function test_guests_and_members_cannot_open_auto_pool_management(): void
