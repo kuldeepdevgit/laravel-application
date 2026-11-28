@@ -23,15 +23,14 @@ class AutoPoolController extends Controller
         $user = Impersonation::account($request);
         abort_unless($user instanceof User, 403);
 
-        [$heading, $intro] = match ($pool) {
-            UserAutoPoolTree::POOL_GOLD => ['2x Matrix Income — Gold', 'Your gold seat in the 2x matrix, and the two positions under you.'],
-            UserAutoPoolTree::POOL_DIAMOND => ['2x Matrix Income — Diamond', 'Your diamond seat in the 2x matrix, and the two positions under you.'],
-            default => ['2x Matrix Income — Silver', 'Your silver seat in the 2x matrix, and the two positions under you.'],
+        $heading = match ($pool) {
+            UserAutoPoolTree::POOL_GOLD => '2x Matrix Income — Gold',
+            UserAutoPoolTree::POOL_DIAMOND => '2x Matrix Income — Diamond',
+            default => '2x Matrix Income — Silver',
         };
 
         return view('dashboard.autopool', [
             'heading' => $heading,
-            'intro' => $intro,
             'user' => $user,
             'pool' => $pool,
             'autoPoolSeat' => $user->autoPoolTrees()->with('tree')->where('pool_type', $pool)->first(),

@@ -872,8 +872,9 @@ class DashboardTest extends TestCase
             ->get('/dashboard/matrix-2x-silver')
             ->assertRedirect('/user/autopool?pool=silver');
 
-        $this->actingAs($member)
-            ->get('/user/autopool?pool=silver')
+        $page = $this->actingAs($member)->get('/user/autopool?pool=silver');
+
+        $page
             ->assertOk()
             ->assertSee('2x Matrix Income')
             ->assertSee('Silver')
@@ -886,15 +887,41 @@ class DashboardTest extends TestCase
             ->assertSee('GSI3000001')
             ->assertSee('Pool Child')
             ->assertSee('GSI3000003')
-            ->assertSee('Your position');
+            ->assertSee('Name')
+            ->assertSee('ID')
+            ->assertSee('Your position')
+            ->assertSee('<h1>2x Matrix Income — Silver</h1>', false)
+            ->assertSee('<h2>2x Matrix Income — Silver</h2>', false)
+            ->assertDontSee('Your silver seat in the 2x matrix, and the two positions under you.')
+            ->assertDontSee('You do not have a seat in this pool yet')
+            ->assertDontSee('No members under you in this pool yet');
 
-        $this->actingAs($member)
+        $silverUrl = preg_quote(route('user.autopool', ['pool' => 'silver']), '/');
+        $goldUrl = preg_quote(route('user.autopool', ['pool' => 'gold']), '/');
+        $this->assertMatchesRegularExpression(
+            '/<a class="dash-subitem\s+is-active\s+" href="'.$silverUrl.'"\s+aria-current="page"/',
+            $page->getContent(),
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<a class="dash-subitem\s+is-active[^"]*" href="'.$goldUrl.'"/',
+            $page->getContent(),
+        );
+
+        $goldPage = $this->actingAs($member)
             ->get('/user/autopool?pool=gold')
             ->assertOk()
-            ->assertSee('2x Matrix Income — Gold')
-            ->assertSee('You do not have a seat in this pool yet')
-            ->assertSee('No members under you in this pool yet')
+            ->assertSee('<h1>2x Matrix Income — Gold</h1>', false)
+            ->assertSee('<h2>2x Matrix Income — Gold</h2>', false)
+            ->assertDontSee('Your gold seat in the 2x matrix, and the two positions under you.')
+            ->assertDontSee('You do not have a seat in this pool yet')
+            ->assertDontSee('No members under you in this pool yet')
+            ->assertDontSee('For dummy purchase')
             ->assertDontSee('Pool Child');
+
+        $this->assertMatchesRegularExpression(
+            '/<a class="dash-subitem\s+is-active\s+" href="'.$goldUrl.'"\s+aria-current="page"/',
+            $goldPage->getContent(),
+        );
 
         $this->actingAs($member)
             ->get('/user/autopool?pool=other')
